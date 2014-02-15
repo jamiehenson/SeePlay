@@ -2,7 +2,6 @@ import launch
 import sys
 from PySide import QtGui
 
-
 def main():
     qapp = QtGui.QApplication(sys.argv)
 

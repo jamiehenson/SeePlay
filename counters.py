@@ -1,6 +1,4 @@
-import threading
-import sys
-
+import threading, sys
 
 def spike_watch(firsttime):
     global r2, g2, b2, y2, w2, t2, p2, k2

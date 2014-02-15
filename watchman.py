@@ -1,10 +1,12 @@
 from PySide import QtCore, QtGui
+from pyo import *
 import sched, time
 from SimpleCV import *
 
 # CV WATCHING PARAMTERS
-s = sched.scheduler(time.time, time.sleep)
-fps = 10
+sch = sched.scheduler(time.time, time.sleep)
+s = Server()
+fps = 1
 scale = 0.5
 
 def shoot_screen(sc,w,h):
@@ -31,6 +33,7 @@ def shoot_screen(sc,w,h):
         circles = blobs.filter([b.isCircle(0.5) for b in blobs])
         if circles:
             segmented.drawCircle((circles[-1].x, circles[-1].y), circles[-1].radius(),SimpleCV.Color.BLUE,3)
+            #Server.sendMidiNote(s,60,127,0,0)
             
     segmented.show()
 
@@ -40,8 +43,12 @@ def start_watching():
     geo = QtGui.QDesktopWidget().availableGeometry()
     w = geo.width()*scale
     h = geo.height()*scale
-    s.enter(0, 1/fps, shoot_screen, (s,w,h,))
-    s.run()
+    sch.enter(0, 1/fps, shoot_screen, (sch,w,h,))
+    sch.run()
+    
+    s.setMidiInputDevice(0) # Must be called before s.boot()
+    s.boot()
+    s.start()
 
 if __name__ == '__main__':
     start_watching()    

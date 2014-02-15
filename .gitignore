@@ -50,3 +50,9 @@ coverage.xml
 
 # Sphinx documentation
 docs/_build/
+
+# Mac stuff
+.DS_Store
+
+# SeePlay specific
+tempout.png
