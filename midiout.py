@@ -77,14 +77,22 @@ def play_drums(midiout, chan, speed, vol, beat, loop, pattern):
         threading.Timer(speed/timing, play_drums, [midiout, chan, speed, vol, beat, loop, pattern]).start()
 
 def enqueue_drums(midiout, tempo):
-    for i in xrange(len(drumlines)*2):
-        play_drums(midiout, 0x90, tempo, 100, beat, 0, drumlines[i%len(drumlines)].split())
+    while len(drumlines) > 0:
+        play_drums(midiout, 0x90, tempo, 100, beat, 0, drumlines[0].split())
         time.sleep(tempo*tsig)
+        drumlines.pop(0)
 
 def enqueue_bass(midiout, tempo):
-    for i in xrange(len(basslines)*2):
-        play_bass(midiout, 0x91, tempo, 127, beat, 0, basslines[i%len(basslines)].split())
+    while len(basslines) > 0:
+        play_bass(midiout, 0x91, tempo, 127, beat, 0, basslines[0].split())
         time.sleep(tempo*tsig)
+        basslines.pop(0)
+
+def add_bass(pattern):
+    basslines.append(pattern)
+
+def add_drums(pattern):
+    drumlines.append(pattern)
 
 def main():
     midiout = rtmidi.MidiOut(1)
@@ -100,11 +108,14 @@ def main():
 
     print "Tempo:",bpm
     print "Time signature:",tsig,"/ 4"
-    
     print "Playing..."
 
     threading.Timer(0,enqueue_bass,[midiout,tempo_in_time]).start()
     threading.Timer(0,enqueue_drums,[midiout,tempo_in_time]).start()
+
+    newpat = "C1 . . D1 . . E1 . . . F1 . G1 . . ."
+    threading.Timer(1,add_bass,[newpat]).start()
+    threading.Timer(1,add_bass,[newpat]).start()
 
     del midiout
 
