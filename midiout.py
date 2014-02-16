@@ -97,7 +97,7 @@ def add_drums(pattern):
 def main():
     midiout = rtmidi.MidiOut(1)
     available_ports = midiout.get_ports()
-    print available_ports
+    print "Available ports:",available_ports
 
     if available_ports:
         midiout.open_port(0)

@@ -1,11 +1,9 @@
 from PySide import QtCore, QtGui
-from pyo import *
 import sched, time
 from SimpleCV import *
 
 # CV WATCHING PARAMTERS
 sch = sched.scheduler(time.time, time.sleep)
-s = Server()
 fps = 1
 scale = 0.5
 
