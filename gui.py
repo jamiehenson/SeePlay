@@ -1,8 +1,9 @@
-import watchman, oldwatchman
 from PySide import QtGui, QtCore
+import watchman
+import oldwatchman
 
 window_w = 640 
-window_h = 480
+window_h = 360
 user_inputsrc = ""
 user_type = ""
 user_genre = ""
@@ -53,20 +54,34 @@ class SPApp(QtGui.QMainWindow):
         title.setStyleSheet("QLabel { padding: 5px; font-size: 20px; text-align: center; background-color: rgba(100, 100, 100, 100); color: #EFEFEF; }")
         
         # INTERACTIVE CONTROLS     
-        termout = QtGui.QTextEdit(self)
-        termout.resize(window_w*0.33-10,window_h*0.7)
-        termout.move(5,boxheight+10)
-        termout.setReadOnly(True)
+        # termout = QtGui.QTextEdit(self)
+        # termout.resize(window_w*0.33-10,window_h*0.7)
+        # termout.move(5,boxheight+10)
+        # termout.setReadOnly(True)
 
-        oldwatchbtn = QtGui.QPushButton('Old school sampling', self)
-        oldwatchbtn.resize(window_w*0.33-10,boxheight)
-        oldwatchbtn.move(5, window_h-(3*boxheight)-5)
-        oldwatchbtn.clicked.connect(lambda: self.launch_old_watch(64))
-        
+        showtog_slot = 0
+        watchbtn_slot = 1
+        stop_slot = 3
+
+        # oldwatchbtn = QtGui.QPushButton('Old school sampling', self)
+        # oldwatchbtn.resize(window_w * 0.33 - 10, boxheight)
+        # oldwatchbtn.move(5, ((oldwatchbtn_slot * boxheight) + title.height() + 5))
+        # oldwatchbtn.clicked.connect(lambda: self.launch_old_watch(64))
+
+        showtog = QtGui.QCheckBox("Show CV Window?", self)
+        showtog.resize(window_w*0.33-10, boxheight)
+        showtog.move(5, ((showtog_slot * boxheight) + title.height() + 5) - 5)
+        showtog.setStyleSheet("QCheckBox { padding: 5px; color: #EFEFEF; }")
+
         watchbtn = QtGui.QPushButton('LAUNCH', self)
-        watchbtn.resize(window_w*0.33-10,2*boxheight)
-        watchbtn.move(5, window_h-(2*boxheight)-5)
-        watchbtn.clicked.connect(lambda: self.launch_watch())
+        watchbtn.resize(window_w*0.33-10, 2 * boxheight)
+        watchbtn.move(5, ((watchbtn_slot * boxheight) + title.height() + 5) - 5)
+        watchbtn.clicked.connect(lambda: self.launch_watch(showtog.isChecked()))
+
+        stopbtn = QtGui.QPushButton('STOP', self)
+        stopbtn.resize(window_w * 0.33 - 10, boxheight)
+        stopbtn.move(5, ((stop_slot * boxheight) + title.height() + 5) - 5)
+        stopbtn.clicked.connect(lambda: self.stop_watch())
         
         # RIGHT BUTTONS
         # VISUAL SETTINGS
@@ -236,19 +251,21 @@ class SPApp(QtGui.QMainWindow):
         self.show()
         
     def switch_genre_box(self, text):
+        self.set_user_type(text)
+
         if text == "Ambient":
             self.genrebox.clear()
             self.genrebox.addItem("Classical")
             self.genrebox.addItem("Electronic")
             self.genreinfo.setText(self.orch_text)
+            self.set_user_genre("Classical")
         else:
             self.genrebox.clear()
             self.genrebox.addItem("Horror")
             self.genrebox.addItem("Silent Movie")
             self.genrebox.addItem("Action")
-            self.genreinfo.setText(self.orch_text)
-
-        self.set_user_type(text)
+            self.genreinfo.setText(self.horr_text)
+            self.set_user_genre("Horror")
 
     def switch_genre_info_box(self, text):
         if text == "Classical":
@@ -281,10 +298,16 @@ class SPApp(QtGui.QMainWindow):
         self.watch.setCentralWidget(self.watchpanel)
         self.watch.show()
         
-    def launch_watch(self):
-        watchman.start_watching()
+    def launch_watch(self, show):
+        watchman.active = True
+        watchman.start_watching(show)
+
+    def stop_watch(self):
+        watchman.active = False
+        print "Stopping."
 
     def set_initial_vars(self):
+        print "----------------------------"
         self.set_user_inputsrc(self.inputsrcbox.currentText())
         self.set_user_type(self.mustypebox.currentText())
         self.set_user_genre(self.genrebox.currentText())

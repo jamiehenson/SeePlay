@@ -1,11 +1,10 @@
-import launch
+import gui
 import sys
 from PySide import QtGui
 
 def main():
     qapp = QtGui.QApplication(sys.argv)
-
-    sp = launch.SPApp()
+    sp = gui.SPApp()
     sys.exit(qapp.exec_())
 
 if __name__ == "__main__":

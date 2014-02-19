@@ -1,6 +1,7 @@
 import time
 import rtmidi
 import threading
+import watchman
 
 beat = 1
 bpm = 120
@@ -77,13 +78,13 @@ def play_drums(midiout, chan, speed, vol, beat, loop, pattern):
         threading.Timer(speed/timing, play_drums, [midiout, chan, speed, vol, beat, loop, pattern]).start()
 
 def enqueue_drums(midiout, tempo):
-    while len(drumlines) > 0:
+    while watchman.active == True:
         play_drums(midiout, 0x90, tempo, 100, beat, 0, drumlines[0].split())
         time.sleep(tempo*tsig)
         drumlines.pop(0)
 
 def enqueue_bass(midiout, tempo):
-    while len(basslines) > 0:
+    while watchman.active == True:
         play_bass(midiout, 0x91, tempo, 127, beat, 0, basslines[0].split())
         time.sleep(tempo*tsig)
         basslines.pop(0)
@@ -94,7 +95,7 @@ def add_bass(pattern):
 def add_drums(pattern):
     drumlines.append(pattern)
 
-def main():
+def test():
     midiout = rtmidi.MidiOut(1)
     available_ports = midiout.get_ports()
     print "Available ports:",available_ports
@@ -119,6 +120,26 @@ def main():
 
     del midiout
 
+def start(midiout):
+    available_ports = midiout.get_ports()
+    print "Available ports:",available_ports
+
+    if available_ports:
+        midiout.open_port(0)
+    else:
+        midiout.open_virtual_port("My virtual output")
+
+    tempo_in_time = float(60.0/float(bpm))
+
+    print "Tempo:",bpm
+    print "Time signature:",tsig,"/ 4"
+    print "Playing..."
+
+    threading.Timer(0,enqueue_bass,[midiout,tempo_in_time]).start()
+    threading.Timer(0,enqueue_drums,[midiout,tempo_in_time]).start()
+
+    del midiout
+
 if __name__ == '__main__':
-    main()
+    test()
 
