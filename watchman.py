@@ -1,5 +1,4 @@
 from PySide import QtGui
-import sched
 import time
 import rtmidi
 import threading
@@ -8,7 +7,6 @@ import performer
 import wm_ambient
 import os
 
-watch_loop = sched.scheduler(time.time, time.sleep)
 fps = 1
 scale = 0.5
 active = True
@@ -27,9 +25,10 @@ def start_watching(parent,show):
     h = geo.height()*scale
 
     midiout = rtmidi.MidiOut(1)
-    threading.Timer(0,performer.start,[midiout]).start()
+    threading.Timer(0,performer.start,[midiout,parent]).start()
 
-    wm_ambient.start(parent,w,h,show,midiout)
+    if parent.user_type == "Ambient":
+        wm_ambient.start(parent)
 
     del midiout
 

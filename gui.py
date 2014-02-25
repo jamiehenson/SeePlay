@@ -232,20 +232,29 @@ class SPApp(QtGui.QMainWindow):
         self.sigbox.activated[str].connect(lambda: self.set_user_tsig(self.sigbox.currentText()))
         
         # Tempo
-        tempo = QtGui.QLabel(self)
-        tempo.resize(window_w*0.16,boxheight)
-        tempo.move(window_w*0.33, (tempo_slot * boxheight) + 15)
-        tempo.setText('Tempo: ')
-        tempo.setStyleSheet("QLabel { padding: 5px; font-size: 12px; text-align: center; color: #FFFFFF; }")
+        self.tempo = QtGui.QLabel(self)
+        self.tempo.resize(window_w*0.16,boxheight)
+        self.tempo.move(window_w*0.33, (tempo_slot * boxheight) + 15)
+        self.tempo.setText('Tempo: ')
+        self.tempo.setStyleSheet("QLabel { padding: 5px; font-size: 12px; text-align: center; color: #FFFFFF; }")
         
-        self.tempobox = QtGui.QComboBox(self)
+        self.tempobox = QtGui.QSlider(QtCore.Qt.Horizontal, self)
+        self.tempobox.setFocusPolicy(QtCore.Qt.NoFocus)
         self.tempobox.resize(window_w*0.5,boxheight)
         self.tempobox.move(window_w*0.33 + window_w*0.16, (tempo_slot * boxheight) + 15)
-        self.tempobox.addItem("Slow (80 bpm)")
-        self.tempobox.addItem("Normal (120 bpm)")
-        self.tempobox.addItem("Fast (160 bpm)")
-        self.tempobox.setCurrentIndex(1)
-        self.tempobox.activated[str].connect(lambda: self.set_user_tempo(self.tempobox.currentText()))
+        self.tempobox.setMinimum(60)
+        self.tempobox.setMaximum(180)
+        self.tempobox.setValue(120)
+        # self.tempobox.setGeometry(30, 40, 100, 30)
+        self.tempobox.valueChanged[int].connect(lambda: self.set_user_tempo(self.tempobox.value()))
+
+        # self.tempobox = QtGui.QComboBox(self)
+        
+        # self.tempobox.addItem("Slow (80 bpm)")
+        # self.tempobox.addItem("Normal (120 bpm)")
+        # self.tempobox.addItem("Fast (160 bpm)")
+        # self.tempobox.setCurrentIndex(1)
+        # self.tempobox.activated[str].connect(lambda: self.set_user_tempo(self.tempobox.currentText()))
 
         # General info
         # geninfo = QtGui.QLabel(self)
@@ -328,7 +337,7 @@ class SPApp(QtGui.QMainWindow):
         self.set_user_genre(self.genrebox.currentText())
         self.set_user_key(self.keysigbox.currentText())
         self.set_user_mood(self.moodbox.currentText())
-        self.set_user_tempo(self.tempobox.currentText())
+        self.set_user_tempo(self.tempobox.value())
         self.set_user_tsig(self.sigbox.currentText())
         print "----------------------------"
 
@@ -350,26 +359,27 @@ class SPApp(QtGui.QMainWindow):
 
         print "Use set input source:", self.user_inputsrcinfo
 
-    def set_user_tempo(self, text):
-        user_tempo = text
+    def set_user_tempo(self, val):
+        self.user_tempo = int(val)
+        self.tempo.setText("Tempo: " + str(self.user_tempo))
         print "User set tempo:", self.user_tempo
 
     def set_user_genre(self, text):
-        user_genre = text
+        self.user_genre = text
         print "User set genre:", self.user_genre
 
     def set_user_type(self, text):
-        user_type = text
+        self.user_type = text
         print "User set type:", self.user_type
 
     def set_user_key(self, text):
-        user_key = text
+        self.user_key = text
         print "User set key:", self.user_key
 
     def set_user_mood(self, text):
-        user_mood = text
+        self.user_mood = text
         print "User set mood:", self.user_mood
 
     def set_user_tsig(self, text):
-        user_tsig = text
+        self.user_tsig = text[:1]
         print "User set time signature:", self.user_tsig

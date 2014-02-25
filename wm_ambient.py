@@ -1,10 +1,11 @@
 from SimpleCV import *
-import rtmidi
 import threading
 import performer
 import watchman
+import bass_composer
+import chord_composer
 
-def watch(parent,w, h, show, midiout):
+def watch(parent):
     if watchman.active == True:
     	drumtacet = "H................ S................ K................"
     	tacet = ". . . . . . . . . . . . . . . ."
@@ -14,6 +15,7 @@ def watch(parent,w, h, show, midiout):
 
         img = Image("tempout.png")
         hist = img.histogram()
+
         # segmented = dist.stretch(200,255)
         # blobs = segmented.findBlobs()
         # if blobs:
@@ -24,14 +26,12 @@ def watch(parent,w, h, show, midiout):
         #performer.enqueue_bass(midiout,0.5)
         # performer.add_bass("G2 . . C2 . . G3 . . . C1 . . . . . ")
         # performer.add_drums("Hxxxxxxxxxxxxxxxx S.x..x....x..x... Kx.xx..xx..xx....")
-        performer.add_bass("Bb1 . . . Bb1 . . . Bb1 . . . Bb1 . . .")
+
+        chord_composer.ambient_chords(parent,0)
+        bass_composer.ambient_bass(parent,0)
         performer.add_drums(drumtacet)
-        performer.add_chords("Bb-4l . . . . . . . . . . . . . . .")
 
-        if show == True:
-            img.show()
+        threading.Timer((60.0/float(parent.user_tempo)) * float(parent.user_tsig),watch,[parent]).start()
 
-        threading.Timer(1/fps,watch,[parent,w,h,show,midiout]).start()
-
-def start(parent,w,h,show,midiout):
-    threading.Timer(0,watch,[parent,w,h,show,midiout]).start()
+def start(parent):
+    threading.Timer(0,watch,[parent]).start()
