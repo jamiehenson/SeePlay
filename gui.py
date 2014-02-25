@@ -4,13 +4,6 @@ import oldwatchman
 
 window_w = 640 
 window_h = 360
-user_inputsrc = ""
-user_type = ""
-user_genre = ""
-user_key = ""
-user_mood = ""
-user_tempo = ""
-user_tsig = ""
 
 class SPApp(QtGui.QMainWindow):
 
@@ -19,6 +12,15 @@ class SPApp(QtGui.QMainWindow):
     horr_text = "A highly reactive accompaniment, with orchestral instrumentation."
     sile_text = "A reactive solo piano accompaniment."
     acti_text = "A reactive and frantic orchestral accompaniment."
+
+    user_inputsrc = ""
+    user_inputsrcinfo = ""
+    user_type = ""
+    user_genre = ""
+    user_key = ""
+    user_mood = ""
+    user_tempo = ""
+    user_tsig = ""
 
     def __init__(self):
         super(SPApp, self).__init__()
@@ -59,24 +61,23 @@ class SPApp(QtGui.QMainWindow):
         # termout.move(5,boxheight+10)
         # termout.setReadOnly(True)
 
-        showtog_slot = 0
-        watchbtn_slot = 1
-        stop_slot = 3
+        watchbtn_slot = 0
+        stop_slot = 2
 
         # oldwatchbtn = QtGui.QPushButton('Old school sampling', self)
         # oldwatchbtn.resize(window_w * 0.33 - 10, boxheight)
         # oldwatchbtn.move(5, ((oldwatchbtn_slot * boxheight) + title.height() + 5))
         # oldwatchbtn.clicked.connect(lambda: self.launch_old_watch(64))
 
-        showtog = QtGui.QCheckBox("Show CV Window?", self)
-        showtog.resize(window_w*0.33-10, boxheight)
-        showtog.move(5, ((showtog_slot * boxheight) + title.height() + 5) - 5)
-        showtog.setStyleSheet("QCheckBox { padding: 5px; color: #EFEFEF; }")
+        # showtog = QtGui.QCheckBox("Show CV Window?", self)
+        # showtog.resize(window_w*0.33-10, boxheight)
+        # showtog.move(5, ((showtog_slot * boxheight) + title.height() + 5) - 5)
+        # showtog.setStyleSheet("QCheckBox { padding: 5px; color: #EFEFEF; }")
 
         watchbtn = QtGui.QPushButton('LAUNCH', self)
         watchbtn.resize(window_w*0.33-10, 2 * boxheight)
         watchbtn.move(5, ((watchbtn_slot * boxheight) + title.height() + 5) - 5)
-        watchbtn.clicked.connect(lambda: self.launch_watch(showtog.isChecked()))
+        watchbtn.clicked.connect(lambda: self.launch_watch(False))
 
         stopbtn = QtGui.QPushButton('STOP', self)
         stopbtn.resize(window_w * 0.33 - 10, boxheight)
@@ -89,15 +90,16 @@ class SPApp(QtGui.QMainWindow):
         # SLOTS
         visopt_slot = 0
         inputsrc_slot = 1
-        audioopt_slot = 2
-        type_slot = 3
-        genre_slot = 4
-        genreinfo_slot = 5
-        key_slot = 6
-        mood_slot = 7
-        tempo_slot = 8
-        tsig_slot = 9
-        geninfo_slot = 10
+        inputsrcinfo_slot = 2
+        audioopt_slot = 3
+        type_slot = 4
+        genre_slot = 5
+        genreinfo_slot = 6
+        key_slot = 7
+        mood_slot = 8
+        tempo_slot = 9
+        tsig_slot = 10
+        geninfo_slot = 11
 
         stitle = QtGui.QLabel(self)
         stitle.resize(window_w*0.68,boxheight)
@@ -109,15 +111,28 @@ class SPApp(QtGui.QMainWindow):
         inputsrc = QtGui.QLabel(self)
         inputsrc.resize(window_w*0.16,boxheight)
         inputsrc.move(window_w*0.33, (inputsrc_slot * boxheight) + 5)
-        inputsrc.setText('Input source: ')
+        inputsrc.setText('Input region: ')
         inputsrc.setStyleSheet("QLabel { padding: 5px; font-size: 12px; text-align: center; color: #FFFFFF; }")
-        
-        self.inputsrcbox = QtGui.QComboBox(self)
-        self.inputsrcbox.resize(window_w*0.5,boxheight)
-        self.inputsrcbox.move(window_w*0.33 + window_w*0.16, inputsrc_slot * boxheight + 5)
-        self.inputsrcbox.addItem("Screen")
-        self.inputsrcbox.addItem("Camera")
-        self.inputsrcbox.activated[str].connect(lambda: self.set_user_inputsrc(self.inputsrcbox.currentText()))
+
+        self.inputsrcall = QtGui.QPushButton("Whole screen",self)
+        self.inputsrcall.resize(window_w*0.175,boxheight)
+        self.inputsrcall.move(window_w*0.33 + window_w*0.16, inputsrc_slot * boxheight + 5)
+        self.inputsrcall.clicked.connect(lambda: self.set_user_inputsrc("whole"))
+
+        self.inputsrcact = QtGui.QPushButton("Main window",self)
+        self.inputsrcact.resize(window_w*0.175,boxheight)
+        self.inputsrcact.move(window_w*0.33 + window_w*0.32, inputsrc_slot * boxheight + 5)
+        self.inputsrcact.clicked.connect(lambda: self.set_user_inputsrc("active"))
+
+        self.inputsrcreg = QtGui.QPushButton("Region",self)
+        self.inputsrcreg.resize(window_w*0.175,boxheight)
+        self.inputsrcreg.move(window_w*0.33 + window_w*0.481, inputsrc_slot * boxheight + 5)
+        self.inputsrcreg.clicked.connect(lambda: self.set_user_inputsrc("manual"))
+
+        self.inputsrcinfo = QtGui.QLabel("",self)
+        self.inputsrcinfo.resize(window_w*0.5,boxheight)
+        self.inputsrcinfo.move(window_w * 0.33, inputsrcinfo_slot * boxheight + 5)
+        self.inputsrcinfo.setStyleSheet("QLabel { padding: 5px; font-style: italic; font-size: 12px; text-align: center; color: #FFFFFF; }")
         
         # AUDIO SETTINGS
         stitle2 = QtGui.QLabel(self)
@@ -300,7 +315,7 @@ class SPApp(QtGui.QMainWindow):
         
     def launch_watch(self, show):
         watchman.active = True
-        watchman.start_watching(show)
+        watchman.start_watching(self,show)
 
     def stop_watch(self):
         watchman.active = False
@@ -308,7 +323,7 @@ class SPApp(QtGui.QMainWindow):
 
     def set_initial_vars(self):
         print "----------------------------"
-        self.set_user_inputsrc(self.inputsrcbox.currentText())
+        self.set_user_inputsrc("whole")
         self.set_user_type(self.mustypebox.currentText())
         self.set_user_genre(self.genrebox.currentText())
         self.set_user_key(self.keysigbox.currentText())
@@ -318,29 +333,43 @@ class SPApp(QtGui.QMainWindow):
         print "----------------------------"
 
     def set_user_inputsrc(self, text):
-        user_inputsrc = text
-        print "User set input source:", user_inputsrc
+        self.user_inputsrc = text
+        self.set_user_inputsrcinfo(text)
+        #print "User set input source:", user_inputsrc
+
+    def set_user_inputsrcinfo(self, text):
+        if text == "whole":
+            chosenText = "Capturing the whole screen."
+        elif text == "active":
+            chosenText = "Capturing the active window."
+        else:
+            chosenText = "Capturing a user-defined region: "
+
+        self.user_inputsrcinfo = chosenText
+        self.inputsrcinfo.setText(self.user_inputsrcinfo)
+
+        print "Use set input source:", self.user_inputsrcinfo
 
     def set_user_tempo(self, text):
         user_tempo = text
-        print "User set tempo:", user_tempo
+        print "User set tempo:", self.user_tempo
 
     def set_user_genre(self, text):
         user_genre = text
-        print "User set genre:", user_genre
+        print "User set genre:", self.user_genre
 
     def set_user_type(self, text):
         user_type = text
-        print "User set type:", user_type
+        print "User set type:", self.user_type
 
     def set_user_key(self, text):
         user_key = text
-        print "User set key:", user_key
+        print "User set key:", self.user_key
 
     def set_user_mood(self, text):
         user_mood = text
-        print "User set mood:", user_mood
+        print "User set mood:", self.user_mood
 
     def set_user_tsig(self, text):
         user_tsig = text
-        print "User set time signature:", user_tsig
+        print "User set time signature:", self.user_tsig

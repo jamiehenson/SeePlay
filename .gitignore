@@ -56,3 +56,4 @@ docs/_build/
 
 # SeePlay specific
 tempout.png
+.tempout.png*
