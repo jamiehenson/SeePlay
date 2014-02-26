@@ -1,26 +1,43 @@
 # UTILITIES
 
 roots = {
-	   "C" : 0,
-	   "C#" : 1,
-	   "D" : 2,
-	   "Eb" : 3,
-	   "E" : 4,
-	   "F" : 5,
-	   "F#" : 6,
-	   "G" : 7,
-	   "Ab" : 8,
-	   "A" : 9,
-	   "Bb" : 10,
-	   "B" : 11
-	}
+   "C" : 0,
+   "C#" : 1,
+   "D" : 2,
+   "Eb" : 3,
+   "E" : 4,
+   "F" : 5,
+   "F#" : 6,
+   "G" : 7,
+   "Ab" : 8,
+   "A" : 9,
+   "Bb" : 10,
+   "B" : 11
+}
 
+lengths = {
+	"se" : 0.25,
+	"qu" : 0.5,
+	"cr" : 1,
+	"mi" : 2,
+	"S1" : 4,
+	"S2" : 8,
+	"S3" : 12,
+	"S4" : 16,
+	"S6" : 24,
+	"S8" : 32
+}
 
-def midi_to_letter(scale, dicto, octave):
+def midi_to_genletter(note):
+	revroots = dict((v,k) for k,v in roots.iteritems())
+	return revroots[note % 12]
+
+def midi_to_letter(scale, octave):
 	newscale = []
+	revroots = dict((v,k) for k,v in roots.iteritems())
 
 	for note in scale:
-		newscale.append(dicto[note % 12] + str(octave))
+		newscale.append(revroots[note % 12] + str(octave))
 
 	return newscale
 
@@ -29,26 +46,23 @@ def make_scale(key, mode, octave):
 	majscale = [root, root+2, root+4, root+5, root+7, root+9, root+11, root+12]
 	minscale = [root, root+2, root+3, root+5, root+7, root+8, root+10, root+12]
 
-	revroots = dict((v,k) for k,v in roots.iteritems())
-
-	if mode == "Major":
-		return midi_to_letter(majscale,revroots, octave)
+	if mode == "+":
+		return midi_to_letter(majscale, octave)
 	else:
-		return midi_to_letter(minscale,revroots, octave)
+		return midi_to_letter(minscale, octave)
 
 def make_chord(key, mode, octave):
-	modesign = "+" if mode == "Major" else "-"
-	chordname = key + str(octave) + modesign
+	chordname = key + str(octave) + mode
 	return chordname
 
 def get_chord(chord):
-	if len(chord) == 5:
+	if len(chord) == 6:
 		pitch = chord[:2]
 	else:
 		pitch = chord[:1]
 
-	octave = int(chord[-2:-1]) * 12
-	mode = str(chord[-1:])
+	octave = int(chord[-4:-3]) * 12
+	mode = str(chord[-3:-2])
 
 	pitch = roots[pitch] + 24
 	minoroffset = 3 if mode == "-" else 4

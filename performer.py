@@ -2,21 +2,25 @@ import time
 import rtmidi
 import threading
 import watchman
+import conductor
 import general_composer
 import chord_composer
 import bass_composer
 
-bar = 1
+
 beat = 1
 
 drums_channel = 0x90
 bass_channel = 0x91
 chords_channel = 0x92
 
+# ALL TO CHANGE
+bar = 0
 tempo_in_time = 0
 bpm = 0
 tsig = 0
 timing = 0
+buff = 0
 
 tacet = ". . . . . . . . . . . . . . . ."
 drumtacet = "H................ S................ K................"
@@ -25,42 +29,43 @@ drumlines = [drumtacet]
 basslines = [tacet]
 chords = [tacet]
 
+def init_features(parent):
+    global timing, buff, bar
+
+    timing = 4
+    buff = 2
+    bar = -buff
+    update_features(parent)
+
 def update_features(parent):
-    global bpm, tempo_in_time, tsig, timing
+    global bpm, tempo_in_time, tsig
+    
     bpm = int(parent.user_tempo)
     tempo_in_time = float(60.0 / float(bpm))
     tsig = float(parent.user_tsig)
-    timing = 4
 
 def kill_all(midiout, chan):
     for note in xrange(1,100):
-        note_off = [chan, note, 0]
-        midiout.send_message(note_off)
+        midiout.send_message([chan, note, 0])
 
 def kill_chord(midiout, chord):
-    for note in chord:
-        note_off = [chords_channel, note, 0]
-        midiout.send_message(note_off)
+    for note in chord: 
+        midiout.send_message([chords_channel, note, 0])
 
-def play_note(midiout, chan, note, velo):
-    note_on = [chan, note, velo]
-    note_off = [chan, note, 0]
-
-    midiout.send_message(note_on)
-    time.sleep(tempo_in_time)
-    midiout.send_message(note_off)
+def play_note(midiout, chan, note, velo, length):
+    midiout.send_message([chan, note, velo])
+    time.sleep(tempo_in_time * length)
+    midiout.send_message([chan, note, 0])
 
 def play_notes(midiout, chan, chord, velo, delay, length, chordsize):
     chord = chord[:chord[chordsize]]
     for note in chord:
-        note_on = [chan, note, velo]
-        midiout.send_message(note_on)
+        midiout.send_message([chan, note, velo])
 
     time.sleep(tempo_in_time * tsig)
 
     for note in chord:
-        note_off = [chan, note, 0]
-        midiout.send_message(note_off)
+        midiout.send_message([chan, note, 0])
 
 def play_chord(midiout, chan, speed, vol, beat, loop, pattern):
     chordarray = list(pattern)
@@ -69,7 +74,7 @@ def play_chord(midiout, chan, speed, vol, beat, loop, pattern):
     if noteinfo != ".":
         chord = general_composer.get_chord(noteinfo)
         length = noteinfo[-1:]
-        chordsize = 3
+        chordsize = 6
         threading.Timer(0,play_notes,[midiout,chan,chord,vol,0,length,chordsize]).start()
 
     beat += 1
@@ -83,30 +88,15 @@ def play_bass(midiout, chan, speed, vol, beat, loop, pattern):
     noteinfo = bassarray[(beat % (int(tsig)*timing) - 1)]
     
     if noteinfo != ".":
-        if len(noteinfo) == 3:
+        if len(noteinfo) == 5:
             pitch = noteinfo[:2]
         else:
             pitch = noteinfo[:1]
 
-        octave = int(noteinfo[-1:])
-
-        notes = {
-           "C" : 24,
-           "C#" : 25,
-           "D" : 26,
-           "Eb" : 27,
-           "E" : 28,
-           "F" : 29,
-           "F#" : 30,
-           "G" : 31,
-           "Ab" : 32,
-           "A" : 33,
-           "Bb" : 34,
-           "B" : 35,
-        }
-    
-        conv_note = notes[pitch] + (octave*12)
-        threading.Timer(0,play_note,[midiout,chan,conv_note,vol]).start()
+        octave = int(noteinfo[-3:-2])
+        length = general_composer.lengths[str(noteinfo[-2:])]
+        conv_note = general_composer.roots[pitch] + (octave*12) + 24
+        threading.Timer(0,play_note,[midiout,chan,conv_note,vol,length]).start()
 
     beat += 1
     loop += 1
@@ -205,10 +195,11 @@ def monitor():
         global bar
 
         print "Bar: ", bar
+        print "Key: ", conductor.relativekey, conductor.relativemode
         print "Chords", chords 
         print "Bass", basslines 
-        print "Drums", drumlines 
-        print "##########################################"
+        # print "Drums", drumlines 
+        print ""
         
         bar += 1
 
@@ -223,7 +214,7 @@ def start(midiout,parent):
     else:
         midiout.open_virtual_port("My virtual output")
 
-    update_features(parent)
+    init_features(parent)
 
     print "Playing..."
 

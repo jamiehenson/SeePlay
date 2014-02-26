@@ -18,7 +18,7 @@ class SPApp(QtGui.QMainWindow):
     user_type = ""
     user_genre = ""
     user_key = ""
-    user_mood = ""
+    user_mode = ""
     user_tempo = ""
     user_tsig = ""
 
@@ -77,10 +77,10 @@ class SPApp(QtGui.QMainWindow):
         watchbtn = QtGui.QPushButton('LAUNCH', self)
         watchbtn.resize(window_w*0.33-10, 2 * boxheight)
         watchbtn.move(5, ((watchbtn_slot * boxheight) + title.height() + 5) - 5)
-        watchbtn.clicked.connect(lambda: self.launch_watch(False))
+        watchbtn.clicked.connect(lambda: self.launch_watch())
 
         stopbtn = QtGui.QPushButton('STOP', self)
-        stopbtn.resize(window_w * 0.33 - 10, boxheight)
+        stopbtn.resize(window_w * 0.33 - 10, boxheight * 1.5)
         stopbtn.move(5, ((stop_slot * boxheight) + title.height() + 5) - 5)
         stopbtn.clicked.connect(lambda: self.stop_watch())
         
@@ -96,7 +96,7 @@ class SPApp(QtGui.QMainWindow):
         genre_slot = 5
         genreinfo_slot = 6
         key_slot = 7
-        mood_slot = 8
+        mode_slot = 8
         tempo_slot = 9
         tsig_slot = 10
         geninfo_slot = 11
@@ -202,18 +202,18 @@ class SPApp(QtGui.QMainWindow):
         self.keysigbox.activated[str].connect(lambda: self.set_user_key(self.keysigbox.currentText()))
 
         # Key
-        mood = QtGui.QLabel(self)
-        mood.resize(window_w*0.16,boxheight)
-        mood.move(window_w*0.33, (mood_slot * boxheight) + 15)
-        mood.setText('Mood: ')
-        mood.setStyleSheet("QLabel { padding: 5px; font-size: 12px; text-align: center; color: #FFFFFF; }")
+        mode = QtGui.QLabel(self)
+        mode.resize(window_w*0.16,boxheight)
+        mode.move(window_w*0.33, (mode_slot * boxheight) + 15)
+        mode.setText('mode: ')
+        mode.setStyleSheet("QLabel { padding: 5px; font-size: 12px; text-align: center; color: #FFFFFF; }")
         
-        self.moodbox = QtGui.QComboBox(self)
-        self.moodbox.resize(window_w*0.5,boxheight)
-        self.moodbox.move(window_w*0.33 + window_w*0.16, (mood_slot * boxheight) + 15)
-        self.moodbox.addItem("Major")
-        self.moodbox.addItem("Minor")
-        self.moodbox.activated[str].connect(lambda: self.set_user_mood(self.moodbox.currentText()))
+        self.modebox = QtGui.QComboBox(self)
+        self.modebox.resize(window_w*0.5,boxheight)
+        self.modebox.move(window_w*0.33 + window_w*0.16, (mode_slot * boxheight) + 15)
+        self.modebox.addItem("Major")
+        self.modebox.addItem("Minor")
+        self.modebox.activated[str].connect(lambda: self.set_user_mode(self.modebox.currentText()))
 
         # Time sig
         sig = QtGui.QLabel(self)
@@ -322,9 +322,9 @@ class SPApp(QtGui.QMainWindow):
         self.watch.setCentralWidget(self.watchpanel)
         self.watch.show()
         
-    def launch_watch(self, show):
+    def launch_watch(self):
         watchman.active = True
-        watchman.start_watching(self,show)
+        watchman.start_watching(self)
 
     def stop_watch(self):
         watchman.active = False
@@ -336,7 +336,7 @@ class SPApp(QtGui.QMainWindow):
         self.set_user_type(self.mustypebox.currentText())
         self.set_user_genre(self.genrebox.currentText())
         self.set_user_key(self.keysigbox.currentText())
-        self.set_user_mood(self.moodbox.currentText())
+        self.set_user_mode(self.modebox.currentText())
         self.set_user_tempo(self.tempobox.value())
         self.set_user_tsig(self.sigbox.currentText())
         print "----------------------------"
@@ -376,9 +376,9 @@ class SPApp(QtGui.QMainWindow):
         self.user_key = text
         print "User set key:", self.user_key
 
-    def set_user_mood(self, text):
-        self.user_mood = text
-        print "User set mood:", self.user_mood
+    def set_user_mode(self, text):
+        self.user_mode = "+" if text == "Major" else "-"
+        print "User set mode:", self.user_mode
 
     def set_user_tsig(self, text):
         self.user_tsig = text[:1]

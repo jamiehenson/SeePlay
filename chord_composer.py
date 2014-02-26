@@ -1,22 +1,29 @@
 import general_composer
 import performer
+import conductor
 
 # AMBIENT
-def ambient_chords(parent, threshold):
-	key = parent.user_key
-	mode = parent.user_mood
+def ambient(parent, threshold):
+	key = conductor.relativekey
+	mode = conductor.relativemode
 	bar = ""
 	octave = str(3)
-	buff = int(parent.user_tsig)
 
 	chord = general_composer.make_chord(key,mode,octave)
 
-	for b in xrange(0,15):
-		if b % 16 == 0:
-			bar += str(chord + " ") 
-		else:
-			bar += ". "
+	if threshold == 0:
+		for b in xrange(0,15):
+			if b == 0 and performer.bar % 4 == 0:
+				bar += str(chord + "S4" + " ") 
+			else:
+				bar += ". "
+	if threshold == 1:
+		for b in xrange(0,15):
+			if b == 0 and performer.bar % 4 == 0:
+				bar += str(chord + "S4" + " ") 
+			else:
+				bar += ". "
 
 	bar += "."
 
-	while len(performer.chords) <= buff: performer.add_chords(bar)
+	while len(performer.chords) <= performer.buff: performer.add_chords(bar)
