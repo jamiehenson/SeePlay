@@ -1,6 +1,5 @@
 from PySide import QtGui, QtCore
 import watchman
-import oldwatchman
 
 window_w = 640 
 window_h = 360
@@ -323,8 +322,9 @@ class SPApp(QtGui.QMainWindow):
         self.watch.show()
         
     def launch_watch(self):
-        watchman.active = True
-        watchman.start_watching(self)
+        if watchman.active == False:
+            watchman.active = True
+            watchman.start_watching(self)
 
     def stop_watch(self):
         watchman.active = False

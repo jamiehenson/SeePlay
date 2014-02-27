@@ -7,8 +7,7 @@ import general_composer
 import chord_composer
 import bass_composer
 
-
-beat = 1
+main_beat = 0
 
 drums_channel = 0x90
 bass_channel = 0x91
@@ -33,13 +32,17 @@ def init_features(parent):
     global timing, buff, bar
 
     timing = 4
-    buff = 2
+    buff = 1
     bar = -buff
     update_features(parent)
 
+    # TESTING PURPOSES
+    threading.Timer((tempo_in_time * tsig) + 8, watchman.change_activity, ["up"]).start()
+    threading.Timer((tempo_in_time * tsig) + 16, watchman.change_activity, ["up"]).start()
+
 def update_features(parent):
     global bpm, tempo_in_time, tsig
-    
+
     bpm = int(parent.user_tempo)
     tempo_in_time = float(60.0 / float(bpm))
     tsig = float(parent.user_tsig)
@@ -64,8 +67,8 @@ def play_notes(midiout, chan, chord, velo, delay, length, chordsize):
 
     time.sleep(tempo_in_time * tsig)
 
-    for note in chord:
-        midiout.send_message([chan, note, 0])
+    # for note in chord:
+        # midiout.send_message([chan, note, 0])
 
 def play_chord(midiout, chan, speed, vol, beat, loop, pattern):
     chordarray = list(pattern)
@@ -127,11 +130,9 @@ def play_drums(midiout, chan, speed, vol, beat, loop, pattern):
 
 def enqueue_drums(midiout, parent):
     while watchman.active == True:
-        update_features(parent)
+        if len(drumlines) < buff: add_drums(drumtacet) 
 
-        if len(drumlines) < 2: add_drums(drumtacet) 
-
-        play_drums(midiout, drums_channel, tempo_in_time, 127, beat, 0, drumlines[0].split())
+        play_drums(midiout, drums_channel, tempo_in_time, 127, 1, 0, drumlines[0].split())
         time.sleep(tempo_in_time*tsig)
         drumlines.pop(0)
 
@@ -139,11 +140,9 @@ def enqueue_drums(midiout, parent):
 
 def enqueue_bass(midiout, parent):
     while watchman.active == True:
-        update_features(parent)
+        if len(basslines) < buff: add_bass(tacet)
 
-        if len(basslines) < 2: add_bass(tacet)
-
-        play_bass(midiout, bass_channel, tempo_in_time, 127, beat, 0, basslines[0].split())
+        play_bass(midiout, bass_channel, tempo_in_time, 127, 1, 0, basslines[0].split())
         time.sleep(float(tempo_in_time*tsig))
         basslines.pop(0)
 
@@ -151,11 +150,9 @@ def enqueue_bass(midiout, parent):
 
 def enqueue_chords(midiout, parent):
     while watchman.active == True:
-        update_features(parent)
+        if len(chords) < buff: add_chords(tacet)
 
-        if len(chords) < 2: add_chords(tacet)
-
-        play_chord(midiout, chords_channel, tempo_in_time, 127, beat, 0, chords[0].split())
+        play_chord(midiout, chords_channel, tempo_in_time, 127, 1, 0, chords[0].split())
         time.sleep(float(tempo_in_time*tsig))
         chords.pop(0)
 
@@ -190,14 +187,23 @@ def test():
 
     del midiout
 
-def monitor():
+def monitor_beat():
     while watchman.active == True:
+        global main_beat
+        main_beat += 1
+
+        time.sleep(tempo_in_time)
+
+def monitor_bar(parent):
+    while watchman.active == True:
+        update_features(parent)
+
         global bar
 
-        print "Bar: ", bar
-        print "Key: ", conductor.relativekey, conductor.relativemode
-        print "Chords", chords 
-        print "Bass", basslines 
+        print "Bar: \t", bar
+        print "Key: \t", conductor.relativekey, conductor.relativemode
+        print "Chords \t", chords 
+        print "Bass \t", basslines 
         # print "Drums", drumlines 
         print ""
         
@@ -221,7 +227,8 @@ def start(midiout,parent):
     threading.Timer(0,enqueue_bass,[midiout,parent]).start()
     threading.Timer(0,enqueue_drums,[midiout,parent]).start()
     threading.Timer(0,enqueue_chords,[midiout,parent]).start()
-    threading.Timer(0,monitor).start()
+    threading.Timer(0,monitor_bar,[parent]).start()
+    threading.Timer(0,monitor_beat).start()
 
     del midiout
 

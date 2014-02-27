@@ -7,11 +7,15 @@ import bass_composer
 import chord_composer
 import drum_composer
 
-relativekey = "C"
+relativekey = "F"
 relativemode = "+"
 modulated = False
 
 def init_values(parent):
+    global relativekey
+    global relativemode
+    global modulated
+
     relativekey = parent.user_key
     relativemode = parent.user_mode
     modulated = False
@@ -46,7 +50,7 @@ def watch(parent):
     if watchman.active == True:
     	fps = watchman.fps
 
-    	watchman.take(parent)
+    	# watchman.take(parent)
         # img = Image("tempout.png")
         # hist = img.histogram()
 
@@ -64,7 +68,7 @@ def watch(parent):
         if parent.user_type == "Ambient":
         	ambient(parent, watchman.activity)
 
-        if performer.bar % 4 == 0:
+        if performer.bar % performer.timing == performer.timing-1 and (performer.main_beat % int(parent.user_tsig) == 0 and performer.main_beat > 0):
             relative_keychange(parent)
 
         threading.Timer(performer.tempo_in_time,watch,[parent]).start()

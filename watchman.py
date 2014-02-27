@@ -8,12 +8,18 @@ import os
 
 fps = 1
 scale = 0.5
-active = True
+active = False
 activity = 0
 
 def change_activity(val):
     global activity
-    activity = val
+
+    if val == "up":
+        activity += 1
+    elif val == "down":
+        activity -= 1
+    else: 
+        activity = val
 
 def take(parent): 
     intype = parent.user_inputsrc
@@ -26,9 +32,6 @@ def take(parent):
 def start_watching(parent):
     midiout = rtmidi.MidiOut(1)
     threading.Timer(0,performer.start,[midiout,parent]).start()
-
-    # TESTING PURPOSES
-    threading.Timer(10,change_activity,[1]).start()
 
     conductor.start(parent)
 

@@ -32,6 +32,15 @@ def midi_to_genletter(note):
 	revroots = dict((v,k) for k,v in roots.iteritems())
 	return revroots[note % 12]
 
+def midi_to_chord(scale, mode, octave):
+	newscale = []
+	revroots = dict((v,k) for k,v in roots.iteritems())
+
+	for i in xrange(len(scale)):
+		newscale.append(revroots[scale[i] % 12] + str(octave) + mode[i])
+
+	return newscale
+
 def midi_to_letter(scale, octave):
 	newscale = []
 	revroots = dict((v,k) for k,v in roots.iteritems())
@@ -40,6 +49,19 @@ def midi_to_letter(scale, octave):
 		newscale.append(revroots[note % 12] + str(octave))
 
 	return newscale
+
+def make_chordscale(key, mode, octave):
+	root = roots[key]
+	majscale = [root, root+2, root+4, root+5, root+7, root+9, root+11, root+12]
+	minscale = [root, root+2, root+3, root+5, root+7, root+8, root+10, root+12]
+
+	majmode = ["+","-","-","-","+","+","-","-"]
+	minmode = ["-","-","+","-","-","+","+","-"]
+
+	if mode == "+":
+		return midi_to_chord(majscale, majmode, octave)
+	else:
+		return midi_to_chord(minscale, minmode, octave)
 
 def make_scale(key, mode, octave):
 	root = roots[key]

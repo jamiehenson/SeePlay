@@ -2,33 +2,36 @@ import general_composer
 import performer
 import conductor
 
+def make_phrase(template, scale):
+	bar = ""
+	sequence = template.split()
+	for note in sequence:
+		if note != ".":
+			note = str(scale[int(note[:1])] + str(note[-2:]))
+		bar += (note + " ")
+
+	return bar
+
 # Ambient
-def ambient(parent,threshold):
+def ambient(parent, threshold):
 	key = conductor.relativekey
 	mode = conductor.relativemode
-	bar = ""
 	octave = str(1)
 
 	scale = general_composer.make_scale(key,mode,octave)
 
+	template1 = "0S1 . . . . . . . . . . . . . . ."
+	template2 = "0cr . . . . . . . 1mi . . . . . ."
+	template3 = "0cr . . 1cr . . 4cr . . . 0cr . 0cr . . ."
+
 	if threshold == 0:
-		for b in xrange(0,15):
-			if b == 0:
-				bar += str(scale[0] + "S1" + " ") 
-			else:
-				bar += ". "
+		bar = make_phrase(template1, scale)
+
 	elif threshold == 1:
-		for b in xrange(0,15):
-			if b % 4 == 0:
-				if b == 0: val = 0
-				if b == 4: val = 2
-				if b == 8: val = 4
-				if b == 12: val = 2
+		bar = make_phrase(template2, scale)
 
-				bar += str(scale[val] + "cr" + " ") 
-			else:
-				bar += ". "
+	elif threshold == 2:
+		bar = make_phrase(template3, scale)
 
-	bar += "."
-
-	while len(performer.basslines) <= performer.buff: performer.add_bass(bar)
+	while len(performer.basslines) <= performer.buff: 
+		performer.add_bass(bar)
