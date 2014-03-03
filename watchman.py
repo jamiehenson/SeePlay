@@ -5,6 +5,8 @@ import gui
 import performer
 import conductor
 import os
+import lily
+import write_midi
 from SimpleCV import *
 
 fps = 1
@@ -87,14 +89,12 @@ def add_to_imgbank(img):
 def watch(parent):
     if active == True:
         take(parent)
-        [x,y,w,h] = parent.user_inputregion
 
         img = Image(home + "/sp_0.tiff").resize(int(parent.screen_x * imgscale), int(parent.screen_y * imgscale))
 
         if parent.user_inputsrc == "manual":
+            [x,y,w,h] = parent.user_inputregion
             img = img.crop(x * imgscale, y * imgscale, w * imgscale, h * imgscale)
-        
-        img.show()
         
         add_to_imgbank(img)
 
@@ -106,6 +106,9 @@ def watch(parent):
 def start_watching(parent):
     midiout = rtmidi.MidiOut(1)
     threading.Timer(0,performer.start,[midiout,parent]).start()
+
+    if parent.midibtn.isChecked():
+        lily.init_score()
 
     conductor.init_values(parent)
     threading.Timer(0,watch,[parent]).start()

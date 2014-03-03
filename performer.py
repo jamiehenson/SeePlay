@@ -6,6 +6,8 @@ import conductor
 import general_composer
 import chord_composer
 import bass_composer
+import lily
+import write_midi
 
 main_beat = 0
 
@@ -27,6 +29,9 @@ drumtacet = "H................ S................ K................"
 drumlines = [drumtacet]
 basslines = [tacet]
 chords = [tacet]
+
+def write_things():
+    lily.make()
 
 def init_features(parent):
     global timing, buff, bar
@@ -139,6 +144,8 @@ def enqueue_bass(midiout, parent):
         if len(basslines) < buff: add_bass(tacet)
 
         play_bass(midiout, bass_channel, tempo_in_time, 127, 1, 0, basslines[0].split())
+        lily.add_bass_bar(basslines[0].split())
+
         time.sleep(float(tempo_in_time*tsig))
         basslines.pop(0)
 
@@ -149,6 +156,8 @@ def enqueue_chords(midiout, parent):
         if len(chords) < buff: add_chords(tacet)
 
         play_chord(midiout, chords_channel, tempo_in_time, 127, 1, 0, chords[0].split())
+        lily.add_chords_bar(chords[0].split())
+
         time.sleep(float(tempo_in_time*tsig))
         chords.pop(0)
 
@@ -190,20 +199,20 @@ def monitor_beat():
 
         time.sleep(tempo_in_time)
 
+    write_things()
+
 def monitor_bar(parent):
     while watchman.active == True:
         update_features(parent)
 
         global bar
 
-        '''
         print "Bar: \t", bar
         print "Key: \t", conductor.relativekey, conductor.relativemode
         print "Chords \t", chords 
         print "Bass \t", basslines 
         # print "Drums", drumlines 
         print ""
-        '''
 
         bar += 1
 

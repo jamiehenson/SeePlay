@@ -100,6 +100,7 @@ class SPApp(QtGui.QMainWindow):
         self.midibtn = QtGui.QCheckBox(self)
         self.midibtn.resize(window_w * 0.33 - 10, boxheight * 1)
         self.midibtn.move(10, ((midiout_slot * boxheight) + title.height() + 5) - 5)
+        self.midibtn.setChecked(True)
 
         self.midibtnlbl = QtGui.QLabel('Generate MIDI file?', self)
         self.midibtnlbl.resize(window_w * 0.33 - 10, boxheight * 1)
@@ -109,6 +110,7 @@ class SPApp(QtGui.QMainWindow):
         self.sheetbtn = QtGui.QCheckBox(self)
         self.sheetbtn.resize(window_w * 0.33 - 10, boxheight * 1)
         self.sheetbtn.move(10, ((sheetout_slot * boxheight) + title.height() + 5) - 5)
+        self.sheetbtn.setChecked(True)
 
         self.sheetbtnlbl = QtGui.QLabel('Generate sheet music?', self)
         self.sheetbtnlbl.resize(window_w * 0.33 - 10, boxheight * 1)
