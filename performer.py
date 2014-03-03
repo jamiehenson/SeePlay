@@ -36,10 +36,6 @@ def init_features(parent):
     bar = -buff
     update_features(parent)
 
-    # TESTING PURPOSES
-    threading.Timer((tempo_in_time * tsig) + 8, watchman.change_activity, ["up"]).start()
-    threading.Timer((tempo_in_time * tsig) + 16, watchman.change_activity, ["up"]).start()
-
 def update_features(parent):
     global bpm, tempo_in_time, tsig
 
@@ -200,13 +196,15 @@ def monitor_bar(parent):
 
         global bar
 
+        '''
         print "Bar: \t", bar
         print "Key: \t", conductor.relativekey, conductor.relativemode
         print "Chords \t", chords 
         print "Bass \t", basslines 
         # print "Drums", drumlines 
         print ""
-        
+        '''
+
         bar += 1
 
         time.sleep(tempo_in_time * tsig)

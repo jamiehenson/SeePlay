@@ -4,7 +4,7 @@ import conductor
 
 # AMBIENT
 def ambient(parent, threshold):
-	bar = ""
-	drumtacet = "H................ S................ K................"
+    bar = ""
+    drumtacet = "H................ S................ K................"
 
-	while len(performer.chords) <= performer.buff: performer.add_drums(drumtacet)
+    while len(performer.chords) <= performer.buff: performer.add_drums(drumtacet)

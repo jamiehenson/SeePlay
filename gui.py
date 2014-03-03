@@ -1,5 +1,8 @@
 from PySide import QtGui, QtCore
+import pymouse
 import watchman
+import threading
+import time
 
 window_w = 640 
 window_h = 360
@@ -20,6 +23,7 @@ class SPApp(QtGui.QMainWindow):
     user_mode = ""
     user_tempo = ""
     user_tsig = ""
+    user_inputregion = []
 
     def __init__(self):
         super(SPApp, self).__init__()
@@ -116,22 +120,22 @@ class SPApp(QtGui.QMainWindow):
         self.inputsrcall = QtGui.QPushButton("Whole screen",self)
         self.inputsrcall.resize(window_w*0.175,boxheight)
         self.inputsrcall.move(window_w*0.33 + window_w*0.16, inputsrc_slot * boxheight + 5)
-        self.inputsrcall.clicked.connect(lambda: self.set_user_inputsrc("whole"))
+        self.inputsrcall.clicked.connect(lambda: self.set_user_inputsrc("whole", False))
 
         self.inputsrcact = QtGui.QPushButton("Main window",self)
         self.inputsrcact.resize(window_w*0.175,boxheight)
         self.inputsrcact.move(window_w*0.33 + window_w*0.32, inputsrc_slot * boxheight + 5)
-        self.inputsrcact.clicked.connect(lambda: self.set_user_inputsrc("active"))
+        self.inputsrcact.clicked.connect(lambda: self.set_user_inputsrc("active", False))
 
         self.inputsrcreg = QtGui.QPushButton("Region",self)
         self.inputsrcreg.resize(window_w*0.175,boxheight)
         self.inputsrcreg.move(window_w*0.33 + window_w*0.481, inputsrc_slot * boxheight + 5)
-        self.inputsrcreg.clicked.connect(lambda: self.set_user_inputsrc("manual"))
+        self.inputsrcreg.clicked.connect(lambda: self.set_user_inputsrc("manual", True))
 
         self.inputsrcinfo = QtGui.QLabel("",self)
-        self.inputsrcinfo.resize(window_w*0.5,boxheight)
+        self.inputsrcinfo.resize(window_w*0.66,boxheight)
         self.inputsrcinfo.move(window_w * 0.33, inputsrcinfo_slot * boxheight + 5)
-        self.inputsrcinfo.setStyleSheet("QLabel { padding: 5px; font-style: italic; font-size: 12px; text-align: center; color: #FFFFFF; }")
+        self.inputsrcinfo.setStyleSheet("QLabel { padding: 5px; font-style: italic; font-size: 10px; text-align: center; color: #FFFFFF; }")
         
         # AUDIO SETTINGS
         stitle2 = QtGui.QLabel(self)
@@ -332,7 +336,7 @@ class SPApp(QtGui.QMainWindow):
 
     def set_initial_vars(self):
         print "----------------------------"
-        self.set_user_inputsrc("whole")
+        self.set_user_inputsrc("whole",False)
         self.set_user_type(self.mustypebox.currentText())
         self.set_user_genre(self.genrebox.currentText())
         self.set_user_key(self.keysigbox.currentText())
@@ -341,9 +345,54 @@ class SPApp(QtGui.QMainWindow):
         self.set_user_tsig(self.sigbox.currentText())
         print "----------------------------"
 
-    def set_user_inputsrc(self, text):
+    def grab_region_point(self, count, first):
+        if count > 0:
+            if first:
+                txt = "Move your mouse to the top left corner of your region. (" + str(count) + " seconds remaining)"
+            else:
+                txt = "Move your mouse to the lower right corner of your region. (" + str(count) + " seconds remaining)"
+            print txt
+            self.inputsrcinfo.setText(txt)
+
+            time.sleep(1)
+            count -= 1
+            self.grab_region_point(count, first)
+        else:
+            m = pymouse.PyMouse()
+            
+            if first:
+                txt = "Top left coordinate saved. Moving to bottom right coordinate..."
+            else:
+                txt = "Bottom right coordinate saved."
+
+            print txt
+            self.inputsrcinfo.setText(txt)
+
+            time.sleep(3)
+
+        return m.position()
+
+    def grab_region(self):
+        topleft = self.grab_region_point(5, True)
+        bottomright = self.grab_region_point(5, False)
+
+        print topleft, bottomright
+
+        x = topleft[0]
+        y = topleft[1]
+        w = abs(topleft[0] - bottomright[0])
+        h = abs(topleft[1] - bottomright[1])
+
+        self.user_inputregion = [x,y,w,h]
+        print self.user_inputregion
+
+    def set_user_inputsrc(self, text, region):
         self.user_inputsrc = text
         self.set_user_inputsrcinfo(text)
+
+        if region:
+            threading.Timer(0, self.grab_region, []).start()
+
         #print "User set input source:", user_inputsrc
 
     def set_user_inputsrcinfo(self, text):
@@ -352,7 +401,7 @@ class SPApp(QtGui.QMainWindow):
         elif text == "active":
             chosenText = "Capturing the active window."
         else:
-            chosenText = "Capturing a user-defined region: "
+            chosenText = "Capturing a user-defined region."
 
         self.user_inputsrcinfo = chosenText
         self.inputsrcinfo.setText(self.user_inputsrcinfo)

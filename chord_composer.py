@@ -3,37 +3,37 @@ import performer
 import conductor
 
 def make_phrase(template, scale):
-	bar = ""
+    thisbar = ""
 
-	sequence = template.split()
-	for note in sequence:
-		if note != ".":
-			note = str(scale[int(note[:1])] + note[-2:])
-		bar += (note + " ")
+    sequence = template.split()
+    for note in sequence:
+        if note != ".":
+            note = str(scale[int(note[:1])] + note[-2:])
+        thisbar += (note + " ")
 
-	return bar
+    return thisbar
 
 # Ambient
 def ambient(parent, threshold):
-	key = conductor.relativekey
-	mode = conductor.relativemode
-	bar = ""
-	octave = str(3)
+    key = conductor.relativekey
+    mode = conductor.relativemode
+    thisbar = ""
+    octave = str(3)
 
-	chordscale = general_composer.make_chordscale(key,mode,octave)
+    chordscale = general_composer.make_chordscale(key, mode, octave)
 
-	template1 = "0S1 . . . . . . . . . . . . . . ."
-	template2 = "0cr . . . . . . . 1mi . . . . . ."
-	template3 = "0cr . . 1cr . . 4cr . . . 0cr . 0cr . . ."
+    template1 = "0S1 . . . . . . . . . . . . . . ."
+    template2 = "0cr . . . . . . . 1mi . . . . . ."
+    template3 = "0cr . . 1cr . . 4cr . . . 0cr . 0cr . . ."
 
-	if threshold == 0:
-		bar = make_phrase(template1, chordscale)
-	elif threshold == 1:
-		bar = make_phrase(template2, chordscale)
-	elif threshold == 2:
-		bar = make_phrase(template3, chordscale)
+    if threshold == 0:
+        thisbar = make_phrase(template1, chordscale)
+    elif threshold == 1:
+        thisbar = make_phrase(template2, chordscale)
+    elif threshold == 2:
+        thisbar = make_phrase(template3, chordscale)
 
-	bar += "."
+    thisbar += "."
 
-	while len(performer.chords) <= performer.buff: 
-		performer.add_chords(bar)
+    while len(performer.chords) <= performer.buff: 
+        performer.add_chords(thisbar)
