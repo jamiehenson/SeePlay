@@ -74,6 +74,8 @@ class SPApp(QtGui.QMainWindow):
 
         watchbtn_slot = 0
         stop_slot = 2
+        midiout_slot = 3
+        sheetout_slot = 4
 
         # oldwatchbtn = QtGui.QPushButton('Old school sampling', self)
         # oldwatchbtn.resize(window_w * 0.33 - 10, boxheight)
@@ -91,9 +93,27 @@ class SPApp(QtGui.QMainWindow):
         watchbtn.clicked.connect(lambda: self.launch_watch())
 
         stopbtn = QtGui.QPushButton('STOP', self)
-        stopbtn.resize(window_w * 0.33 - 10, boxheight * 1.5)
+        stopbtn.resize(window_w * 0.33 - 10, boxheight * 1)
         stopbtn.move(5, ((stop_slot * boxheight) + title.height() + 5) - 5)
         stopbtn.clicked.connect(lambda: self.stop_watch())
+
+        self.midibtn = QtGui.QCheckBox(self)
+        self.midibtn.resize(window_w * 0.33 - 10, boxheight * 1)
+        self.midibtn.move(10, ((midiout_slot * boxheight) + title.height() + 5) - 5)
+
+        self.midibtnlbl = QtGui.QLabel('Generate MIDI file?', self)
+        self.midibtnlbl.resize(window_w * 0.33 - 10, boxheight * 1)
+        self.midibtnlbl.move(25, ((midiout_slot * boxheight) + title.height() + 5) - 5)
+        self.midibtnlbl.setStyleSheet("QLabel { padding: 5px; font-size: 12px; text-align: center; color: #FFFFFF; }")
+
+        self.sheetbtn = QtGui.QCheckBox(self)
+        self.sheetbtn.resize(window_w * 0.33 - 10, boxheight * 1)
+        self.sheetbtn.move(10, ((sheetout_slot * boxheight) + title.height() + 5) - 5)
+
+        self.sheetbtnlbl = QtGui.QLabel('Generate sheet music?', self)
+        self.sheetbtnlbl.resize(window_w * 0.33 - 10, boxheight * 1)
+        self.sheetbtnlbl.move(25, ((sheetout_slot * boxheight) + title.height() + 5) - 5)
+        self.sheetbtnlbl.setStyleSheet("QLabel { padding: 5px; font-size: 12px; text-align: center; color: #FFFFFF; }")
         
         # RIGHT BUTTONS
         # VISUAL SETTINGS
@@ -126,18 +146,13 @@ class SPApp(QtGui.QMainWindow):
         inputsrc.setStyleSheet("QLabel { padding: 5px; font-size: 12px; text-align: center; color: #FFFFFF; }")
 
         self.inputsrcall = QtGui.QPushButton("Whole screen",self)
-        self.inputsrcall.resize(window_w*0.175,boxheight)
+        self.inputsrcall.resize(window_w*0.25,boxheight)
         self.inputsrcall.move(window_w*0.33 + window_w*0.16, inputsrc_slot * boxheight + 5)
         self.inputsrcall.clicked.connect(lambda: self.set_user_inputsrc("whole", False))
 
-        self.inputsrcact = QtGui.QPushButton("Main window",self)
-        self.inputsrcact.resize(window_w*0.175,boxheight)
-        self.inputsrcact.move(window_w*0.33 + window_w*0.32, inputsrc_slot * boxheight + 5)
-        self.inputsrcact.clicked.connect(lambda: self.set_user_inputsrc("active", False))
-
         self.inputsrcreg = QtGui.QPushButton("Region",self)
-        self.inputsrcreg.resize(window_w*0.175,boxheight)
-        self.inputsrcreg.move(window_w*0.33 + window_w*0.481, inputsrc_slot * boxheight + 5)
+        self.inputsrcreg.resize(window_w*0.25,boxheight)
+        self.inputsrcreg.move(window_w*0.33 + window_w*0.41, inputsrc_slot * boxheight + 5)
         self.inputsrcreg.clicked.connect(lambda: self.set_user_inputsrc("manual", True))
 
         self.inputsrcinfo = QtGui.QLabel("",self)
@@ -397,6 +412,7 @@ class SPApp(QtGui.QMainWindow):
 
         self.user_inputregion = [int(x), int(y), int(w), int(h)]
         print self.user_inputregion
+        self.inputsrcinfo.setText("Thanks! Selected region: (" + str(self.user_inputregion)) + ")"
 
     def set_user_inputsrc(self, text, region):
         self.user_inputsrc = text

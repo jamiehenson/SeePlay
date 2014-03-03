@@ -58,3 +58,6 @@ docs/_build/
 tempout.png
 .tempout.png*
 .idea/*
+*.midi
+*.mid
+*.pdf
