@@ -25,6 +25,9 @@ class SPApp(QtGui.QMainWindow):
     user_tsig = ""
     user_inputregion = []
 
+    screen_x = 0
+    screen_y = 0
+
     def __init__(self):
         super(SPApp, self).__init__()
         self.init_ui()
@@ -33,6 +36,11 @@ class SPApp(QtGui.QMainWindow):
         self.center()
         self.setWindowTitle('SeePlay')
         self.setFixedSize(window_w, window_h)
+
+        m = pymouse.PyMouse()
+        screencoords = m.screen_size()
+        self.screen_x = int(screencoords[0])
+        self.screen_y = int(screencoords[1])
 
         boxheight = 30
 
@@ -346,20 +354,24 @@ class SPApp(QtGui.QMainWindow):
         print "----------------------------"
 
     def grab_region_point(self, count, first):
+        mouse_pos = None
+
         if count > 0:
+            m = pymouse.PyMouse()
             if first:
                 txt = "Move your mouse to the top left corner of your region. (" + str(count) + " seconds remaining)"
             else:
                 txt = "Move your mouse to the lower right corner of your region. (" + str(count) + " seconds remaining)"
+            
             print txt
             self.inputsrcinfo.setText(txt)
 
             time.sleep(1)
             count -= 1
+            mouse_pos = m.position()
+
             self.grab_region_point(count, first)
         else:
-            m = pymouse.PyMouse()
-            
             if first:
                 txt = "Top left coordinate saved. Moving to bottom right coordinate..."
             else:
@@ -368,22 +380,22 @@ class SPApp(QtGui.QMainWindow):
             print txt
             self.inputsrcinfo.setText(txt)
 
-            time.sleep(3)
+            time.sleep(1)
 
-        return m.position()
+        return mouse_pos
 
     def grab_region(self):
-        topleft = self.grab_region_point(5, True)
-        bottomright = self.grab_region_point(5, False)
-
-        print topleft, bottomright
+        topleft = self.grab_region_point(2, True)
+        print topleft
+        bottomright = self.grab_region_point(2, False)
+        print bottomright
 
         x = topleft[0]
         y = topleft[1]
         w = abs(topleft[0] - bottomright[0])
         h = abs(topleft[1] - bottomright[1])
 
-        self.user_inputregion = [x,y,w,h]
+        self.user_inputregion = [int(x), int(y), int(w), int(h)]
         print self.user_inputregion
 
     def set_user_inputsrc(self, text, region):
@@ -400,7 +412,7 @@ class SPApp(QtGui.QMainWindow):
             chosenText = "Capturing the whole screen."
         elif text == "active":
             chosenText = "Capturing the active window."
-        else:
+        elif text == "manual":
             chosenText = "Capturing a user-defined region."
 
         self.user_inputsrcinfo = chosenText

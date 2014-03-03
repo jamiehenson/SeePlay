@@ -5,7 +5,6 @@ import general_composer
 import bass_composer
 import chord_composer
 import drum_composer
-import PIL
 
 relativekey = "F"
 relativemode = "+"

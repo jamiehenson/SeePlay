@@ -6,7 +6,6 @@ import performer
 import conductor
 import os
 from SimpleCV import *
-import pylab as plt
 
 fps = 1
 scale = 0.5
@@ -16,6 +15,7 @@ activity = 0
 home = os.path.join(os.path.expanduser('~'))
 imgbank = []
 imglimit = 5
+imgscale = 0.5
 
 def change_activity(val):
     global activity
@@ -29,7 +29,7 @@ def change_activity(val):
 
 def take(parent): 
     intype = parent.user_inputsrc
-    os.system("screencapture -xdarot tiff " + home + "/sp_0.tiff")
+    os.system("screencapture -xdaro " + home + "/sp_0.tiff")
 
 # def filecascade(img, depth):
 #     for i in xrange(0,depth-1):
@@ -53,7 +53,7 @@ def get_dominant_colour():
 
     newpeak = current.huePeaks()[0]
     oldpeak = older.huePeaks()[0]
-    print newpeak, oldpeak
+    #print newpeak, oldpeak
 
     #avgpeak = (newpeak + oldpeak) / 2
     #print avgpeak
@@ -86,9 +86,16 @@ def add_to_imgbank(img):
 
 def watch(parent):
     if active == True:
-        
         take(parent)
-        img = Image(home + "/sp_0.tiff").resize(800, 600)
+        [x,y,w,h] = parent.user_inputregion
+
+        img = Image(home + "/sp_0.tiff").resize(int(parent.screen_x * imgscale), int(parent.screen_y * imgscale))
+
+        if parent.user_inputsrc == "manual":
+            img = img.crop(x * imgscale, y * imgscale, w * imgscale, h * imgscale)
+        
+        img.show()
+        
         add_to_imgbank(img)
 
         motion = get_motion()
