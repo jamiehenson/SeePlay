@@ -107,7 +107,8 @@ def start_watching(parent):
     midiout = rtmidi.MidiOut(1)
     threading.Timer(0,performer.start,[midiout,parent]).start()
 
-    if parent.midibtn.isChecked():
+    if parent.sheetbtn.isChecked():
+        print parent.sheetbtn.isChecked()
         lily.init_score()
 
     conductor.init_values(parent)

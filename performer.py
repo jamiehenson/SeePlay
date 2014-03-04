@@ -30,8 +30,8 @@ drumlines = [drumtacet]
 basslines = [tacet]
 chords = [tacet]
 
-def write_things():
-    lily.make()
+def write_things(parent):
+    if parent.sheetbtn.isChecked(): lily.make()
 
 def init_features(parent):
     global timing, buff, bar
@@ -192,14 +192,14 @@ def test():
 
     del midiout
 
-def monitor_beat():
+def monitor_beat(parent):
     while watchman.active == True:
         global main_beat
         main_beat += 1
 
         time.sleep(tempo_in_time)
 
-    write_things()
+    write_things(parent)
 
 def monitor_bar(parent):
     while watchman.active == True:
@@ -235,7 +235,7 @@ def start(midiout,parent):
     threading.Timer(0,enqueue_drums,[midiout,parent]).start()
     threading.Timer(0,enqueue_chords,[midiout,parent]).start()
     threading.Timer(0,monitor_bar,[parent]).start()
-    threading.Timer(0,monitor_beat).start()
+    threading.Timer(0,monitor_beat,[parent]).start()
 
     del midiout
 
