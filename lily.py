@@ -1,4 +1,5 @@
 from abjad import *
+from PySide import QtGui
 import general_composer
 
 show_piano_righthand = True
@@ -111,7 +112,7 @@ def add_bass_bar(bar):
     bar = lily_convert_bass(bar)
     bass_staff.extend(bar)
 
-def init_score():
+def init():
     global piano_staff, bass_staff
     attach(Clef('bass'), lower_staff)
     attach(piano, piano_staff)
@@ -119,7 +120,7 @@ def init_score():
     attach(Clef('bass'), bass_staff)
     attach(bass, bass_staff)
 
-def make():
+def make(parent):
     global piano_staff, bass_staff
     if (show_piano_righthand): piano_staff.append(upper_staff)
     if (show_piano_lefthand): piano_staff.append(lower_staff)
@@ -129,7 +130,7 @@ def make():
     print "Compiling sheet music..."
 
     lily = lilypondfiletools.make_basic_lilypond_file(score)
-    lily.header_block.title = markuptools.Markup('SeePlay Demo')
+    lily.header_block.title = markuptools.Markup(parent.user_score_title)
     lily.header_block.composer = markuptools.Markup('Jamie Henson')
     lily.global_staff_size = 16
     lily.default_paper_size = 'A4', 'portrait'

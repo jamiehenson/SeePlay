@@ -3,6 +3,7 @@ import pymouse
 import watchman
 import threading
 import time
+import mixer
 
 window_w = 640 
 window_h = 360
@@ -24,6 +25,7 @@ class SPApp(QtGui.QMainWindow):
     user_tempo = ""
     user_tsig = ""
     user_inputregion = []
+    user_score_title = "SeePlay auto-score"
 
     screen_x = 0
     screen_y = 0
@@ -76,6 +78,7 @@ class SPApp(QtGui.QMainWindow):
         stop_slot = 2
         midiout_slot = 3
         sheetout_slot = 4
+        mixer_slot = 5
 
         # oldwatchbtn = QtGui.QPushButton('Old school sampling', self)
         # oldwatchbtn.resize(window_w * 0.33 - 10, boxheight)
@@ -110,13 +113,18 @@ class SPApp(QtGui.QMainWindow):
         self.sheetbtn = QtGui.QCheckBox(self)
         self.sheetbtn.resize(window_w * 0.33 - 10, boxheight * 1)
         self.sheetbtn.move(10, ((sheetout_slot * boxheight) + title.height() + 5) - 5)
-        self.sheetbtn.setChecked(True)
+        self.sheetbtn.setChecked(False)
 
         self.sheetbtnlbl = QtGui.QLabel('Generate sheet music?', self)
         self.sheetbtnlbl.resize(window_w * 0.33 - 10, boxheight * 1)
         self.sheetbtnlbl.move(25, ((sheetout_slot * boxheight) + title.height() + 5) - 5)
         self.sheetbtnlbl.setStyleSheet("QLabel { padding: 5px; font-size: 12px; text-align: center; color: #FFFFFF; }")
         
+        mixerbtn = QtGui.QPushButton('OPEN MIXER', self)
+        mixerbtn.resize(window_w * 0.33 - 10, boxheight * 1)
+        mixerbtn.move(5, ((mixer_slot * boxheight) + title.height() + 5) - 5)
+        mixerbtn.clicked.connect(lambda: self.open_mixer())
+
         # RIGHT BUTTONS
         # VISUAL SETTINGS
 
@@ -301,6 +309,103 @@ class SPApp(QtGui.QMainWindow):
         self.set_initial_vars()
 
         self.show()
+
+    def open_mixer(self):
+        print "Opening mixer."
+
+        mix_w = 400
+        row_w = mix_w / 2
+        row_h = 30
+        mix_h = row_h * 7
+
+        firstcolx = 0
+        secondcolx = row_w
+
+        title_slot = 0
+        stitle_slot = 1
+        header_slot = 2
+        drums_slot = 3
+        bass_slot = 4
+        chords_slot = 5
+        info_slot = 6
+
+        self.mix = QtGui.QWidget()
+        self.mix.resize(mix_w, mix_h)
+        self.mix.setWindowTitle('SeePlay Mixer')
+        self.center()
+
+        mixbg = QtGui.QLabel(self.mix)
+        mixbg.resize(mix_w, mix_h)
+        mixbg.move(0, 0)
+        mixbg.setStyleSheet("QLabel { background-color: #333333; color: #EEEEEE; }")
+
+        mixtitle = QtGui.QLabel(self.mix)
+        mixtitle.resize(mix_w, row_h)
+        mixtitle.move(0, row_h * title_slot)
+        mixtitle.setText('SeePlay Mixer')
+        mixtitle.setStyleSheet("QLabel { padding: 5px; font-size: 18px; text-align: center; background-color: rgba(100, 100, 100, 100); color: #FFFFFF; }")
+
+        mixstitle = QtGui.QLabel(self.mix)
+        mixstitle.resize(mix_w, row_h)
+        mixstitle.move(0, row_h * stitle_slot)
+        mixstitle.setText('Assign the instrument channels for MIDI output (0-15).')
+        mixstitle.setStyleSheet("QLabel { padding: 5px; font-size: 10px; text-align: center; background-color: rgba(200, 200, 200, 150); color: #333333; }")
+
+        self.mix.inst = QtGui.QLabel("Instrument:", self.mix)
+        self.mix.inst.resize(row_w, row_h)
+        self.mix.inst.move(firstcolx, row_h * header_slot)
+        self.mix.inst.setStyleSheet("QLabel { padding: 5px; font-size: 16px; text-align: center; color: #FFFFFF; }")
+
+        self.mix.chan = QtGui.QLabel("Channel:", self.mix)
+        self.mix.chan.resize(row_w, row_h)
+        self.mix.chan.move(secondcolx, row_h * header_slot)
+        self.mix.chan.setStyleSheet("QLabel { padding: 5px; font-size: 16px; text-align: center; color: #FFFFFF; }")
+
+        self.mix.drums = QtGui.QLabel("Drums:", self.mix)
+        self.mix.drums.resize(row_w, row_h)
+        self.mix.drums.move(firstcolx, row_h * drums_slot)
+        self.mix.drums.setStyleSheet("QLabel { padding: 5px; font-size: 14px; font-weight: bold; text-align: center; color: #FFFFFF; }")
+
+        self.mix.drumbox = QtGui.QComboBox(self.mix)
+        self.mix.drumbox.resize(row_w, row_h)
+        self.mix.drumbox.move(secondcolx,row_h * drums_slot)
+        for i in xrange(16):
+            self.mix.drumbox.addItem(str(i))
+        self.mix.drumbox.setCurrentIndex(mixer.get_stdchannel("drums"))
+        self.mix.drumbox.activated[str].connect(lambda: mixer.set_channel("drums",int(self.mix.drumbox.currentText())))
+
+        self.mix.bass = QtGui.QLabel("Bass:", self.mix)
+        self.mix.bass.resize(secondcolx, row_h)
+        self.mix.bass.move(firstcolx, row_h * bass_slot)
+        self.mix.bass.setStyleSheet("QLabel { padding: 5px; font-size: 14px; font-weight: bold; text-align: center; color: #FFFFFF; }")
+
+        self.mix.bassbox = QtGui.QComboBox(self.mix)
+        self.mix.bassbox.resize(row_w, row_h)
+        self.mix.bassbox.move(secondcolx,row_h * bass_slot)
+        for i in xrange(16):
+            self.mix.bassbox.addItem(str(i))
+        self.mix.bassbox.setCurrentIndex(mixer.get_stdchannel("bass"))
+        self.mix.bassbox.activated[str].connect(lambda: mixer.set_channel("bass",int(self.mix.bassbox.currentText())))
+
+        self.mix.chords = QtGui.QLabel("Chords:", self.mix)
+        self.mix.chords.resize(row_w, row_h)
+        self.mix.chords.move(firstcolx, row_h * chords_slot)
+        self.mix.chords.setStyleSheet("QLabel { padding: 5px; font-size: 14px; font-weight: bold; text-align: center; color: #FFFFFF; }")
+
+        self.mix.chordsbox = QtGui.QComboBox(self.mix)
+        self.mix.chordsbox.resize(row_w, row_h)
+        self.mix.chordsbox.move(secondcolx,row_h * chords_slot)
+        for i in xrange(16):
+            self.mix.chordsbox.addItem(str(i))
+        self.mix.chordsbox.setCurrentIndex(mixer.get_stdchannel("chords"))
+        self.mix.chordsbox.activated[str].connect(lambda: mixer.set_channel("chords",int(self.mix.chordsbox.currentText())))
+
+        self.mix.info = QtGui.QLabel("Please use your connected DAW to control channel and master volume.", self.mix)
+        self.mix.info.resize(mix_w, row_h)
+        self.mix.info.move(firstcolx, row_h * info_slot)
+        self.mix.info.setStyleSheet("QLabel { padding: 5px; font-style: italic; font-size: 10px; text-align: center; color: #FFFFFF; }")
+
+        self.mix.show()
         
     def switch_genre_box(self, text):
         self.set_user_type(text)
@@ -352,6 +457,10 @@ class SPApp(QtGui.QMainWindow):
         
     def launch_watch(self):
         if watchman.active == False:
+            if self.sheetbtn.isChecked() or self.midibtn.isChecked():
+                self.user_score_title, ok = QtGui.QInputDialog.getText(self, 'Name your piece!', 
+                'Enter a title for your music:')
+
             watchman.active = True
             watchman.start_watching(self)
 

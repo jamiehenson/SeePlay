@@ -6,7 +6,7 @@ import performer
 import conductor
 import os
 import lily
-import write_midi
+import recorder
 from SimpleCV import *
 
 fps = 1
@@ -108,14 +108,16 @@ def start_watching(parent):
     threading.Timer(0,performer.start,[midiout,parent]).start()
 
     if parent.sheetbtn.isChecked():
-        print parent.sheetbtn.isChecked()
-        lily.init_score()
+        lily.init()
+
+    if parent.midibtn.isChecked():
+        recorder.init()
 
     conductor.init_values(parent)
     threading.Timer(0,watch,[parent]).start()
     threading.Timer(0,conductor.conduct,[parent]).start()
 
-    del midiout
+    #del midiout
 
 if __name__ == '__main__':
     start_watching()    

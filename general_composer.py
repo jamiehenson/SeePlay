@@ -28,6 +28,9 @@ lengths = {
     "S8" : 32
 }
 
+def letter_to_midi(note, octave):
+    return roots[note] + (octave * 12) + 24
+
 def midi_to_genletter(note):
     revroots = dict((v,k) for k,v in roots.iteritems())
     return revroots[note % 12]
@@ -86,7 +89,7 @@ def get_chord(chord):
     octave = int(chord[-4:-3]) * 12
     mode = str(chord[-3:-2])
 
-    pitch = roots[pitch] + 24
+    pitch = letter_to_midi(pitch, 0)
     minoroffset = 3 if mode == "-" else 4
     chord = [pitch+octave, pitch+minoroffset+octave, pitch+7+octave, pitch+12+octave, pitch+12+minoroffset+octave, pitch+19+octave, pitch+24+octave]
     return chord

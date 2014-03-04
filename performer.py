@@ -7,13 +7,10 @@ import general_composer
 import chord_composer
 import bass_composer
 import lily
-import write_midi
+import recorder
+import mixer
 
 main_beat = 0
-
-drums_channel = 0x90
-bass_channel = 0x91
-chords_channel = 0x92
 
 # ALL TO CHANGE
 bar = 0
@@ -31,7 +28,8 @@ basslines = [tacet]
 chords = [tacet]
 
 def write_things(parent):
-    if parent.sheetbtn.isChecked(): lily.make()
+    if parent.sheetbtn.isChecked(): lily.make(parent)
+    if parent.midibtn.isChecked(): recorder.make(parent)
 
 def init_features(parent):
     global timing, buff, bar
@@ -54,7 +52,7 @@ def kill_all(midiout, chan):
 
 def kill_chord(midiout, chord):
     for note in chord: 
-        midiout.send_message([chords_channel, note, 0])
+        midiout.send_message([mixer.get_channel("chords"), note, 0])
 
 def play_note(midiout, chan, note, velo, length):
     midiout.send_message([chan, note, velo])
@@ -133,35 +131,37 @@ def enqueue_drums(midiout, parent):
     while watchman.active == True:
         if len(drumlines) < buff: add_drums(drumtacet) 
 
-        play_drums(midiout, drums_channel, tempo_in_time, 127, 1, 0, drumlines[0].split())
+        play_drums(midiout, mixer.get_channel("drums"), tempo_in_time, 127, 1, 0, drumlines[0].split())
         time.sleep(tempo_in_time*tsig)
         drumlines.pop(0)
 
-    kill_all(midiout, drums_channel)
+    kill_all(midiout, mixer.get_channel("drums"))
 
 def enqueue_bass(midiout, parent):
     while watchman.active == True:
         if len(basslines) < buff: add_bass(tacet)
 
-        play_bass(midiout, bass_channel, tempo_in_time, 127, 1, 0, basslines[0].split())
+        play_bass(midiout, mixer.get_channel("bass"), tempo_in_time, 127, 1, 0, basslines[0].split())
+        
         lily.add_bass_bar(basslines[0].split())
+        recorder.add_bass_bar(basslines[0].split())
 
         time.sleep(float(tempo_in_time*tsig))
         basslines.pop(0)
 
-    kill_all(midiout, bass_channel)
+    kill_all(midiout, mixer.get_channel("bass"))
 
 def enqueue_chords(midiout, parent):
     while watchman.active == True:
         if len(chords) < buff: add_chords(tacet)
 
-        play_chord(midiout, chords_channel, tempo_in_time, 127, 1, 0, chords[0].split())
+        play_chord(midiout, mixer.get_channel("chords"), tempo_in_time, 127, 1, 0, chords[0].split())
         lily.add_chords_bar(chords[0].split())
 
         time.sleep(float(tempo_in_time*tsig))
         chords.pop(0)
 
-    kill_all(midiout, chords_channel)
+    kill_all(midiout, mixer.get_channel("chords"))
 
 def add_bass(pattern):
     basslines.append(pattern)
