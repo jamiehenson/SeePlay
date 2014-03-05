@@ -26,6 +26,8 @@ class SPApp(QtGui.QMainWindow):
     user_tsig = ""
     user_inputregion = []
     user_score_title = "SeePlay auto-score"
+    user_sheetmusic = False
+    user_midioutput = False
 
     screen_x = 0
     screen_y = 0
@@ -103,7 +105,8 @@ class SPApp(QtGui.QMainWindow):
         self.midibtn = QtGui.QCheckBox(self)
         self.midibtn.resize(window_w * 0.33 - 10, boxheight * 1)
         self.midibtn.move(10, ((midiout_slot * boxheight) + title.height() + 5) - 5)
-        self.midibtn.setChecked(True)
+        self.midibtn.setChecked(False)
+        self.midibtn.stateChanged.connect(self.set_user_midioutput)
 
         self.midibtnlbl = QtGui.QLabel('Generate MIDI file?', self)
         self.midibtnlbl.resize(window_w * 0.33 - 10, boxheight * 1)
@@ -114,6 +117,7 @@ class SPApp(QtGui.QMainWindow):
         self.sheetbtn.resize(window_w * 0.33 - 10, boxheight * 1)
         self.sheetbtn.move(10, ((sheetout_slot * boxheight) + title.height() + 5) - 5)
         self.sheetbtn.setChecked(False)
+        self.sheetbtn.stateChanged.connect(self.set_user_sheetmusic)
 
         self.sheetbtnlbl = QtGui.QLabel('Generate sheet music?', self)
         self.sheetbtnlbl.resize(window_w * 0.33 - 10, boxheight * 1)
@@ -571,3 +575,13 @@ class SPApp(QtGui.QMainWindow):
     def set_user_tsig(self, text):
         self.user_tsig = text[:1]
         print "User set time signature:", self.user_tsig
+
+    def set_user_sheetmusic(self):
+        status = self.sheetbtn.isChecked()
+        self.user_sheetmusic = status
+        print "User requests sheet music:", self.user_sheetmusic
+
+    def set_user_midioutput(self):
+        status = self.midibtn.isChecked()
+        self.user_midioutput = status
+        print "User requests sheet music:", self.user_midioutput

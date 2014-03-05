@@ -19,6 +19,32 @@ def init():
     sp_midi.addTempo(0,0,127)
 
 # Note framework: track,channel,pitch,time,duration,volume
+def add_chords_bar(bar):
+    global sp_midi
+
+    track = mixer.channels["chords"]
+    channel = track
+    volume = 127
+
+    sequence = list(bar)
+    beat_ref = (performer.bar - 1) * performer.timing
+
+    for i in xrange(len(sequence)):
+        chord = sequence[i]
+        if chord != ".":
+            chordnotes = general_composer.get_chord(chord)
+
+            if len(chord) == 5:
+                pitch = chord[:2]
+            else:
+                pitch = chord[:1]
+
+            length = general_composer.lengths[str(chord[-2:])]
+            time = beat_ref + ((i+1)/performer.timing)
+
+            for note in chordnotes:    
+                sp_midi.addNote(track, channel, note, time, length, volume)
+
 def add_bass_bar(bar):
     global sp_midi
 

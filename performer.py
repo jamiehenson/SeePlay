@@ -28,8 +28,8 @@ basslines = [tacet]
 chords = [tacet]
 
 def write_things(parent):
-    if parent.sheetbtn.isChecked(): lily.make(parent)
-    if parent.midibtn.isChecked(): recorder.make(parent)
+    if parent.user_sheetmusic: lily.make(parent)
+    if parent.user_midioutput: recorder.make(parent)
 
 def init_features(parent):
     global timing, buff, bar
@@ -143,8 +143,8 @@ def enqueue_bass(midiout, parent):
 
         play_bass(midiout, mixer.get_channel("bass"), tempo_in_time, 127, 1, 0, basslines[0].split())
         
-        lily.add_bass_bar(basslines[0].split())
-        recorder.add_bass_bar(basslines[0].split())
+        if parent.user_sheetmusic: lily.add_bass_bar(basslines[0].split())
+        if parent.user_midioutput: recorder.add_bass_bar(basslines[0].split())
 
         time.sleep(float(tempo_in_time*tsig))
         basslines.pop(0)
@@ -156,7 +156,10 @@ def enqueue_chords(midiout, parent):
         if len(chords) < buff: add_chords(tacet)
 
         play_chord(midiout, mixer.get_channel("chords"), tempo_in_time, 127, 1, 0, chords[0].split())
-        lily.add_chords_bar(chords[0].split())
+        
+        if parent.user_sheetmusic: lily.add_chords_bar(chords[0].split())
+        if parent.user_midioutput: recorder.add_chords_bar(chords[0].split())
+        
 
         time.sleep(float(tempo_in_time*tsig))
         chords.pop(0)
