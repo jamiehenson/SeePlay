@@ -89,7 +89,7 @@ def play_bass(midiout, chan, speed, vol, beat, loop, pattern):
     bassarray = list(pattern)
     noteinfo = bassarray[(beat % (int(tsig)*timing) - 1)]
     
-    if noteinfo != ".":
+    if noteinfo != "." and noteinfo.startswith("r") == False:
         if len(noteinfo) == 5:
             pitch = noteinfo[:2]
         else:

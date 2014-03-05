@@ -29,6 +29,8 @@ def change_activity(val):
     else: 
         activity = val
 
+    conductor.gen_templates(activity)
+
 def take(parent): 
     intype = parent.user_inputsrc
     os.system("screencapture -xdaro " + home + "/sp_0.tiff")
@@ -114,9 +116,12 @@ def start_watching(parent):
         recorder.init()
 
     conductor.init_values(parent)
+
     threading.Timer(0,watch,[parent]).start()
     threading.Timer(0,conductor.conduct,[parent]).start()
-
+    
+    time.sleep(1)
+    change_activity(0)
     #del midiout
 
 if __name__ == '__main__':

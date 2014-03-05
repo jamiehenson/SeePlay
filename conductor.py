@@ -24,6 +24,9 @@ def ambient(parent,thresh):
     bass_composer.ambient(parent,thresh)
     drum_composer.ambient(parent,thresh)
 
+def gen_templates(level):
+    bass_composer.gen(level)
+
 def relative_keychange(parent):
     global relativekey
     global relativemode

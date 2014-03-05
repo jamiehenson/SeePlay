@@ -18,15 +18,26 @@ roots = {
 lengths = {
     "se" : 0.25,
     "qu" : 0.5,
-    "cr" : 1,
-    "mi" : 2,
-    "S1" : 4,
-    "S2" : 8,
-    "S3" : 12,
-    "S4" : 16,
-    "S6" : 24,
-    "S8" : 32
+    "dq" : 0.75,
+    "cr" : 1.0,
+    "dc" : 1.5,
+    "mi" : 2.0,
+    "dm" : 3.0,
+    "S1" : 4.0,
+    "S2" : 8.0,
+    "S3" : 12.0,
+    "S4" : 16.0,
+    "S6" : 24.0,
+    "S8" : 32.0
 }
+
+def length_key_check(num):
+    revlength = dict((v,k) for k,v in lengths.iteritems())
+    return True if num in revlength else False
+
+def length_num_to_code(num):
+    revlength = dict((v,k) for k,v in lengths.iteritems())
+    return revlength[num]
 
 def letter_to_midi(note, octave):
     return roots[note] + (octave * 12) + 24

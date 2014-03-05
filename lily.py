@@ -12,7 +12,10 @@ upper_staff = Staff([])
 lower_staff = Staff([])
 bass_staff = Staff([])
 
-piano = instrumenttools.Piano()
+piano = instrumenttools.Piano(
+    instrument_name="Chords",
+    short_instrument_name="C."
+)
 bass = instrumenttools.BassTrombone(
     instrument_name='Bass',
     short_instrument_name='B.',
@@ -22,16 +25,19 @@ bass = instrumenttools.BassTrombone(
 
 def lily_length(leng):
     lenconv = {
-        "se" : 16,
-        "qu" : 8,
-        "cr" : 4,
-        "mi" : 2,
-        "S1" : 1,
-        "S2" : 1,
-        "S3" : 1,
-        "S4" : 1,
-        "S6" : 1,
-        "S8" : 1
+        "se" : "16",
+        "qu" : "8",
+        "dq" : "8.",
+        "cr" : "4",
+        "dc" : "4.",
+        "mi" : "2",
+        "dm" : "2.",
+        "S1" : "1",
+        "S2" : "1",
+        "S3" : "1",
+        "S4" : "1",
+        "S6" : "1",
+        "S8" : "1"
     }
     return str(lenconv[leng])
 
@@ -42,9 +48,9 @@ def lily_note(note):
 
     return "".join(note).lower()
 
-def lily_octave(oct):
+def lily_octave(oct, instmid):
     octstr = ""
-    octdiff = int(oct) - 2
+    octdiff = int(oct) - instmid
 
     if octdiff > 0:
         for i in xrange(octdiff):
@@ -57,13 +63,13 @@ def lily_octave(oct):
 
 def lily_convert_chord(bar):
     sequence = list(bar)
-    lilybar = []
+    lilybar = ""
 
     for chord in sequence:
         if chord != ".":
             chordnotes = general_composer.get_chord(chord)
             chordsize = 3
-            octave = lily_octave(int(chord[-4:-3]))
+            octave = lily_octave(int(chord[-4:-3]), 2)
             length = lily_length(str(chord[-2:]))
 
             lilychord = "<"
@@ -74,27 +80,32 @@ def lily_convert_chord(bar):
                 lilynote = str(lily_note(pitch) + octave + " ")
                 lilychord += lilynote
             lilychord += ">" + length
-            lilybar.append(lilychord)
+            lilybar += lilychord
 
     return lilybar
 
 def lily_convert_bass(bar):
+    print bar
     sequence = list(bar)
     lilybar = []
 
     for note in sequence:
         if note != ".":
-            if len(note) == 5:
-                pitch = note[:2]
-            else:
-                pitch = note[:1]
-
-            octave = lily_octave(int(note[-3:-2]))
             length = lily_length(str(note[-2:]))
-            lilynote = str(lily_note(pitch) + octave + length + " ")
-            lilybar.append(lilynote)
+            if note.startswith("r") == False:
+                if len(note) == 5:
+                    pitch = note[:2]
+                else:
+                    pitch = note[:1]
 
-    return lilybar
+                octave = lily_octave(int(note[-3:-2]), 1)
+                lilynote = str(lily_note(pitch) + octave + length + " ")
+
+                lilybar.append(lilynote)
+            else:
+                lilybar.append("r" + length)
+
+    return " ".join(lilybar)
 
 def change_tsig():
     global bass_staff
