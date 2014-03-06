@@ -3,7 +3,7 @@ from PySide import QtGui
 import general_composer
 
 show_piano_righthand = True
-show_piano_lefthand = False
+show_piano_lefthand = True
 show_bass = True
 
 score = Score([])
@@ -12,8 +12,12 @@ upper_staff = Staff([])
 lower_staff = Staff([])
 bass_staff = Staff([])
 
-piano = instrumenttools.Piano(
-    instrument_name="Chords",
+melody = instrumenttools.Piano(
+    instrument_name="Melody",
+    short_instrument_name="M."
+)
+chords = instrumenttools.Piano(
+    instrument_name="Lead",
     short_instrument_name="C."
 )
 bass = instrumenttools.BassTrombone(
@@ -63,7 +67,7 @@ def lily_octave(oct, instmid):
 
 def lily_convert_chord(bar):
     sequence = list(bar)
-    lilybar = ""
+    lilybar = []
 
     for chord in sequence:
         if chord != ".":
@@ -80,16 +84,19 @@ def lily_convert_chord(bar):
                 lilynote = str(lily_note(pitch) + octave + " ")
                 lilychord += lilynote
             lilychord += ">" + length
-            lilybar += lilychord
+            lilybar.append(lilychord)
 
-    return lilybar
+    return " ".join(lilybar)
 
-def lily_convert_bass(bar):
-    print bar
+def lily_convert_single(bar):
     sequence = list(bar)
     lilybar = []
 
     for note in sequence:
+        if note == 'r1':
+            lilybar.append("r1")
+            break
+        
         if note != ".":
             length = lily_length(str(note[-2:]))
             if note.startswith("r") == False:
@@ -112,21 +119,26 @@ def change_tsig():
     tsig = indicatortools.TimeSignature((4, 4))
     attach(tsig, bass_staff)
 
-def add_chords_bar(bar):
-    global upper_staff, lower_staff
-    bar = lily_convert_chord(bar)
+def add_melody_bar(bar):
+    global upper_staff
+    bar = lily_convert_single(bar)
     upper_staff.extend(bar)
-    #lower_staff.extend(bar)
+
+def add_chords_bar(bar):
+    global lower_staff
+    bar = lily_convert_chord(bar)
+    lower_staff.extend(bar)
 
 def add_bass_bar(bar):
     global bass_staff
-    bar = lily_convert_bass(bar)
+    bar = lily_convert_single(bar)
     bass_staff.extend(bar)
 
 def init():
     global piano_staff, bass_staff
     attach(Clef('bass'), lower_staff)
-    attach(piano, piano_staff)
+    attach(melody, upper_staff)
+    attach(chords, lower_staff)
 
     attach(Clef('bass'), bass_staff)
     attach(bass, bass_staff)

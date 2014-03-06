@@ -320,7 +320,7 @@ class SPApp(QtGui.QMainWindow):
         mix_w = 400
         row_w = mix_w / 2
         row_h = 30
-        mix_h = row_h * 7
+        mix_h = row_h * 8
 
         firstcolx = 0
         secondcolx = row_w
@@ -331,7 +331,8 @@ class SPApp(QtGui.QMainWindow):
         drums_slot = 3
         bass_slot = 4
         chords_slot = 5
-        info_slot = 6
+        melody_slot = 6
+        info_slot = 7
 
         self.mix = QtGui.QWidget()
         self.mix.resize(mix_w, mix_h)
@@ -375,6 +376,7 @@ class SPApp(QtGui.QMainWindow):
         self.mix.drumbox.move(secondcolx,row_h * drums_slot)
         for i in xrange(16):
             self.mix.drumbox.addItem(str(i))
+        self.mix.drumbox.addItem("Off")
         self.mix.drumbox.setCurrentIndex(mixer.get_stdchannel("drums"))
         self.mix.drumbox.activated[str].connect(lambda: mixer.set_channel("drums",int(self.mix.drumbox.currentText())))
 
@@ -388,6 +390,7 @@ class SPApp(QtGui.QMainWindow):
         self.mix.bassbox.move(secondcolx,row_h * bass_slot)
         for i in xrange(16):
             self.mix.bassbox.addItem(str(i))
+        self.mix.bassbox.addItem("Off")
         self.mix.bassbox.setCurrentIndex(mixer.get_stdchannel("bass"))
         self.mix.bassbox.activated[str].connect(lambda: mixer.set_channel("bass",int(self.mix.bassbox.currentText())))
 
@@ -401,8 +404,23 @@ class SPApp(QtGui.QMainWindow):
         self.mix.chordsbox.move(secondcolx,row_h * chords_slot)
         for i in xrange(16):
             self.mix.chordsbox.addItem(str(i))
+        self.mix.chordsbox.addItem("Off")
         self.mix.chordsbox.setCurrentIndex(mixer.get_stdchannel("chords"))
         self.mix.chordsbox.activated[str].connect(lambda: mixer.set_channel("chords",int(self.mix.chordsbox.currentText())))
+
+        self.mix.melody = QtGui.QLabel("Melody:", self.mix)
+        self.mix.melody.resize(row_w, row_h)
+        self.mix.melody.move(firstcolx, row_h * melody_slot)
+        self.mix.melody.setStyleSheet("QLabel { padding: 5px; font-size: 14px; font-weight: bold; text-align: center; color: #FFFFFF; }")
+
+        self.mix.melodybox = QtGui.QComboBox(self.mix)
+        self.mix.melodybox.resize(row_w, row_h)
+        self.mix.melodybox.move(secondcolx,row_h * melody_slot)
+        for i in xrange(16):
+            self.mix.melodybox.addItem(str(i))
+        self.mix.melodybox.addItem("Off")
+        self.mix.melodybox.setCurrentIndex(mixer.get_stdchannel("melody"))
+        self.mix.melodybox.activated[str].connect(lambda: mixer.set_channel("melody",int(self.mix.melodybox.currentText())))
 
         self.mix.info = QtGui.QLabel("Please use your connected DAW to control channel and master volume.", self.mix)
         self.mix.info.resize(mix_w, row_h)

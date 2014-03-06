@@ -5,6 +5,7 @@ import general_composer
 import bass_composer
 import chord_composer
 import drum_composer
+import melody_composer
 
 relativekey = "F"
 relativemode = "+"
@@ -23,9 +24,11 @@ def ambient(parent,thresh):
     chord_composer.ambient(parent,thresh)
     bass_composer.ambient(parent,thresh)
     drum_composer.ambient(parent,thresh)
+    melody_composer.ambient(parent,thresh)
 
 def gen_templates(level):
     bass_composer.gen(level)
+    melody_composer.gen(level)
 
 def relative_keychange(parent):
     global relativekey

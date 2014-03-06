@@ -18,7 +18,7 @@ def ambient(parent, threshold):
     key = conductor.relativekey
     mode = conductor.relativemode
     thisbar = ""
-    octave = str(3)
+    octave = str(2)
 
     chordscale = general_composer.make_chordscale(key, mode, octave)
 

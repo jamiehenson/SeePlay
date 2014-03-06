@@ -3,17 +3,16 @@ import performer
 import conductor
 import random
 
-current_bass = ". . . . . . . . . . . . . . . ."
+current_melody = ". . . . . . . . . . . . . . . ."
 
 def make_phrase(template, scale):
-    bar = ""
+    bar = []
     sequence = template.split()
     for note in sequence:
         if note != "." and note.startswith("r") == False:
             note = str(scale[int(note[:1])] + str(note[-2:]))
-        bar += (note + " ")
-
-    return bar
+        bar.append(note)
+    return " ".join(bar)
 
 def gen_rhythm(template, threshold):
     # Rhythm
@@ -41,23 +40,22 @@ def gen_notes(template):
     return template
 
 def gen(threshold):
-    global current_bass
+    global current_melody
 
     template = []
     template = gen_rhythm(template, threshold)
     template = gen_notes(template)
 
-    current_bass = " ".join(template)
+    current_melody = " ".join(template)
 
 # Ambient
 def ambient(parent, threshold):
     key = conductor.relativekey
     mode = conductor.relativemode
-    octave = str(1)
+    octave = str(3)
 
     scale = general_composer.make_scale(key, mode, octave)
+    bar = make_phrase(current_melody, scale)
 
-    bar = make_phrase(current_bass, scale)
-
-    while len(performer.basslines) <= performer.buff: 
-        performer.add_bass(bar)
+    while len(performer.melodylines) <= performer.buff:
+        performer.add_melody(bar)

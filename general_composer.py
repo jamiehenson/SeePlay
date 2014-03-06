@@ -1,3 +1,7 @@
+import performer
+import math
+import random
+
 # UTILITIES
 
 roots = {
@@ -105,3 +109,42 @@ def get_chord(chord):
     chord = [pitch+octave, pitch+minoroffset+octave, pitch+7+octave, pitch+12+octave, pitch+12+minoroffset+octave, pitch+19+octave, pitch+24+octave]
     return chord
 
+def find_next_note(i, template):
+    next_note = float(performer.tsig * performer.timing)
+    for j in xrange(i+1, int(performer.tsig * performer.timing)):
+        if template[j] != ".":
+            next_note = float(j)
+            break
+    
+    return float((next_note - i) / performer.timing)
+
+def place_notes(i, template, notes):
+    code = find_next_note(i, template)
+    
+    if notes:
+        chosen_scaleno = str(random.randrange(0,5))
+    else:
+        chosen_scaleno = "r"
+
+    if length_key_check(code):
+        chosen_length = str(length_num_to_code(code))
+        template[i] = chosen_scaleno + chosen_length
+    else:
+        rounded = float(pow(2, math.floor(math.log(code, 2))))
+        diff = code - rounded
+        long_length = str(length_num_to_code(rounded))
+        template[i] = chosen_scaleno + long_length
+
+    # Might not be enough
+        if length_key_check(diff):
+            short_length = str(length_num_to_code(diff))
+            template[i + int(rounded * 4)] = chosen_scaleno + short_length
+        else:
+            roundtwo = float(pow(2, math.floor(math.log(diff, 2))))
+            difftwo = diff - roundtwo
+            long_lengthtwo = str(length_num_to_code(roundtwo))
+            template[i + int(rounded * 4)] = chosen_scaleno + long_lengthtwo
+            shorter_length = str(length_num_to_code(difftwo))
+            template[i + int(rounded * 4) + int(roundtwo * 4)] = chosen_scaleno + shorter_length
+
+    return template

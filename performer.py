@@ -26,6 +26,7 @@ drumtacet = "H................ S................ K................"
 drumlines = [drumtacet]
 basslines = [tacet]
 chords = [tacet]
+melodylines = [tacet]
 
 def write_things(parent):
     if parent.user_sheetmusic: lily.make(parent)
@@ -127,6 +128,28 @@ def play_drums(midiout, chan, speed, vol, beat, loop, pattern):
     if loop < (tsig * 4):
         threading.Timer(speed/timing, play_drums, [midiout, chan, speed, vol, beat, loop, pattern]).start()
 
+def play_melody(midiout, chan, speed, vol, beat, loop, pattern):
+    melodyarray = list(pattern)
+    noteinfo = melodyarray[(beat % (int(tsig)*timing) - 1)]
+    
+    if noteinfo != "." and noteinfo.startswith("r") == False:
+        if len(noteinfo) == 5:
+            pitch = noteinfo[:2]
+        else:
+            pitch = noteinfo[:1]
+
+        octave = int(noteinfo[-3:-2])
+        length = general_composer.lengths[str(noteinfo[-2:])]
+        conv_note = general_composer.roots[pitch] + (octave*12) + 24
+        threading.Timer(0,play_note,[midiout,chan,conv_note,vol,length]).start()
+
+    beat += 1
+    loop += 1
+    
+    if loop < (tsig * 4):
+        threading.Timer(speed/timing,play_melody,[midiout, chan, speed, vol, beat, loop, pattern]).start()
+
+
 def enqueue_drums(midiout, parent):
     while watchman.active == True:
         if len(drumlines) < buff: add_drums(drumtacet) 
@@ -160,11 +183,24 @@ def enqueue_chords(midiout, parent):
         if parent.user_sheetmusic: lily.add_chords_bar(chords[0].split())
         if parent.user_midioutput: recorder.add_chords_bar(chords[0].split())
         
-
         time.sleep(float(tempo_in_time*tsig))
         chords.pop(0)
 
     kill_all(midiout, mixer.get_channel("chords"))
+
+def enqueue_melody(midiout, parent):
+    while watchman.active == True:
+        if len(melodylines) < buff: add_melody(tacet)
+
+        play_melody(midiout, mixer.get_channel("melody"), tempo_in_time, 127, 1, 0, melodylines[0].split())
+        
+        if parent.user_sheetmusic: lily.add_melody_bar(melodylines[0].split())
+        if parent.user_midioutput: recorder.add_melody_bar(melodylines[0].split())
+
+        time.sleep(float(tempo_in_time*tsig))
+        melodylines.pop(0)
+
+    kill_all(midiout, mixer.get_channel("melody"))
 
 def add_bass(pattern):
     basslines.append(pattern)
@@ -174,6 +210,9 @@ def add_drums(pattern):
 
 def add_chords(pattern):
     chords.append(pattern)
+
+def add_melody(pattern):
+    melodylines.append(pattern)
 
 def test():
     midiout = rtmidi.MidiOut(1)
@@ -212,9 +251,10 @@ def monitor_bar(parent):
 
         print "Bar: \t", bar
         print "Key: \t", conductor.relativekey, conductor.relativemode
-        print "Chords \t", chords 
-        print "Bass \t", basslines 
-        # print "Drums", drumlines 
+        print "Melo: \t", melodylines
+        print "Chor: \t", chords 
+        print "Bass: \t", basslines 
+        # print "Drum", drumlines 
         print ""
 
         bar += 1
@@ -237,6 +277,7 @@ def start(midiout,parent):
     threading.Timer(0,enqueue_bass,[midiout,parent]).start()
     threading.Timer(0,enqueue_drums,[midiout,parent]).start()
     threading.Timer(0,enqueue_chords,[midiout,parent]).start()
+    threading.Timer(0,enqueue_melody,[midiout,parent]).start()
     threading.Timer(0,monitor_bar,[parent]).start()
     threading.Timer(0,monitor_beat,[parent]).start()
 
