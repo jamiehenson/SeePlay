@@ -29,6 +29,7 @@ def ambient(parent,thresh):
 def gen_templates(level):
     bass_composer.gen(level)
     melody_composer.gen(level)
+    drum_composer.gen(level)
 
 def relative_keychange(parent):
     global relativekey

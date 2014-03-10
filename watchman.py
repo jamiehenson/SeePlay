@@ -35,18 +35,6 @@ def take(parent):
     intype = parent.user_inputsrc
     os.system("screencapture -xdaro " + home + "/sp_0.tiff")
 
-# def filecascade(img, depth):
-#     for i in xrange(0,depth-1):
-#         for filename in os.listdir(home):
-#             lim = len(os.listdir(home))
-#             if filename == "sp_" + str(lim-i) + ".png":
-#                 os.rename(home + "/sp_" + str(lim-i) + ".png", home + "/sp_" + str(lim-i + 1) + ".png")
-
-# def fileflush(depth):
-#     for i in xrange(0,depth):
-#         for filename in os.listdir(home):
-#             if filename == "sp_" + str(i) + ".png":
-#                 os.remove(home + "/" + filename)
 def get_dominant_colour():
     current = imgbank[0]
     
@@ -90,18 +78,20 @@ def add_to_imgbank(img):
 
 def watch(parent):
     if active == True:
-        take(parent)
+        # take(parent)
 
-        img = Image(home + "/sp_0.tiff").resize(int(parent.screen_x * imgscale), int(parent.screen_y * imgscale))
+        # img = Image(home + "/sp_0.tiff").resize(int(parent.screen_x * imgscale), int(parent.screen_y * imgscale))
 
-        if parent.user_inputsrc == "manual":
-            [x,y,w,h] = parent.user_inputregion
-            img = img.crop(x * imgscale, y * imgscale, w * imgscale, h * imgscale)
+        # if parent.user_inputsrc == "manual":
+        #     [x,y,w,h] = parent.user_inputregion
+        #     img = img.crop(x * imgscale, y * imgscale, w * imgscale, h * imgscale)
         
-        add_to_imgbank(img)
+        # add_to_imgbank(img)
 
-        motion = get_motion()
-        get_dominant_colour()
+        # motion = get_motion()
+        # get_dominant_colour()
+
+        # if motion > 10: change_activity(1)
 
         threading.Timer(performer.tempo_in_time, watch, [parent]).start()
 
@@ -119,7 +109,7 @@ def start_watching(parent):
 
     threading.Timer(0,watch,[parent]).start()
     threading.Timer(0,conductor.conduct,[parent]).start()
-    
+
     time.sleep(1)
     change_activity(0)
     #del midiout
