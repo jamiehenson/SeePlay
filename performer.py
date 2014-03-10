@@ -44,7 +44,7 @@ def update_features(parent):
     global bpm, tempo_in_time, tsig
 
     bpm = int(parent.user_tempo)
-    tempo_in_time = float(60.0 / float(bpm))
+    tempo_in_time = float(60.0 / float(bpm)) / float(parent.user_tempo_modifier)
     tsig = float(parent.user_tsig)
 
 def kill_all(midiout):
@@ -61,13 +61,15 @@ def kill_chord(midiout, chord):
     for note in chord: 
         midiout.send_message([mixer.get_channel("chords"), note, 0])
 
-def play_note(midiout, chan, note, velo, length):
+def play_note(midiout, chan, note, length):
+    velo = mixer.get_volume(mixer.get_channelname(chan))
     midiout.send_message([chan, note, velo])
     time.sleep(tempo_in_time * length)
     midiout.send_message([chan, note, 0])
 
-def play_notes(midiout, chan, chord, velo, delay, length, chordsize):
+def play_notes(midiout, chan, chord, delay, length, chordsize):
     chord = chord[:chord[chordsize]]
+    velo = mixer.get_volume("chords")
     for note in chord:
         midiout.send_message([chan, note, velo])
 
@@ -76,7 +78,7 @@ def play_notes(midiout, chan, chord, velo, delay, length, chordsize):
     for note in chord:
         midiout.send_message([chan, note, 0])
 
-def play_chord(midiout, chan, speed, vol, beat, pattern):
+def play_chord(midiout, chan, speed, beat, pattern):
     while beat < (tsig * timing):        
         noteinfo = pattern[beat]
         
@@ -84,14 +86,14 @@ def play_chord(midiout, chan, speed, vol, beat, pattern):
             chord = general_composer.get_chord(noteinfo)
             length = noteinfo[-1:]
             chordsize = 6
-            # play_notes(midiout,chan,chord,vol,0,length,chordsize)
-            threading.Timer(0,play_notes,[midiout,chan,chord,vol,0,length,chordsize]).start()
+            # play_notes(midiout,chan,chord,0,length,chordsize)
+            threading.Timer(0,play_notes,[midiout,chan,chord,0,length,chordsize]).start()
 
         nextbeat = float(float(speed)/float(timing))
         time.sleep(nextbeat)
         beat += 1
 
-def play_bass(midiout, chan, speed, vol, beat, pattern):
+def play_bass(midiout, chan, speed, beat, pattern):
     while beat < (tsig * timing):
         noteinfo = pattern[beat]
         
@@ -104,32 +106,32 @@ def play_bass(midiout, chan, speed, vol, beat, pattern):
             octave = int(noteinfo[-3:-2])
             length = general_composer.lengths[str(noteinfo[-2:])]
             conv_note = general_composer.roots[pitch] + (octave*12) + 24
-            # play_note(midiout,chan,conv_note,vol,length)
-            threading.Timer(0,play_note,[midiout,chan,conv_note,vol,length]).start()
+            # play_note(midiout,chan,conv_note,length)
+            threading.Timer(0,play_note,[midiout,chan,conv_note,length]).start()
 
         nextbeat = float(float(speed)/float(timing))
         time.sleep(nextbeat)
         beat += 1
 
-def play_drums(midiout, chan, speed, vol, beat, pattern):
+def play_drums(midiout, chan, speed, beat, pattern):
     while beat < (tsig * timing):
         # HATS
         if pattern[0][beat] == "x":
-            play_note(midiout,chan,42,vol,0.01)
+            play_note(midiout,chan,42,0.01)
 
         # SNARE
         if pattern[1][beat] == "x":
-            play_note(midiout,chan,40,vol,0.01)
+            play_note(midiout,chan,40,0.01)
 
         # KICK
         if pattern[2][beat] == "x":
-            play_note(midiout,chan,36,vol,0.01)
+            play_note(midiout,chan,36,0.01)
         
         nextbeat = float(float(speed)/float(timing))
         time.sleep(nextbeat)
         beat += 1
 
-def play_melody(midiout, chan, speed, vol, beat, pattern):
+def play_melody(midiout, chan, speed, beat, pattern):
     while beat < (tsig * timing):
         noteinfo = pattern[beat]
         
@@ -142,8 +144,8 @@ def play_melody(midiout, chan, speed, vol, beat, pattern):
             octave = int(noteinfo[-3:-2])
             length = general_composer.lengths[str(noteinfo[-2:])]
             conv_note = general_composer.roots[pitch] + (octave*12) + 24
-            # play_note(midiout,chan,conv_note,vol,length)
-            threading.Timer(0,play_note,[midiout,chan,conv_note,vol,length]).start()
+            # play_note(midiout,chan,conv_note,length)
+            threading.Timer(0,play_note,[midiout,chan,conv_note,length]).start()
 
         nextbeat = float(float(speed)/float(timing))
         time.sleep(nextbeat)
@@ -155,16 +157,14 @@ def enqueue_drums(midiout, parent):
     current_bar = drumlines[0].split()
     beatarray = [list(current_bar[0][1:]),list(current_bar[1][1:]),list(current_bar[2][1:])]
 
-    start = time.time()
-    play_drums(midiout, mixer.get_channel("drums"), tempo_in_time, 127, 0, beatarray)
-    print time.time() - start
+    play_drums(midiout, mixer.get_channel("drums"), tempo_in_time, 0, beatarray)
 
     drumlines.pop(0)
 
 def enqueue_bass(midiout, parent):
     if len(basslines) < buff: add_bass(tacet)
 
-    play_bass(midiout, mixer.get_channel("bass"), tempo_in_time, 127, 0, list(basslines[0].split()))
+    play_bass(midiout, mixer.get_channel("bass"), tempo_in_time, 0, list(basslines[0].split()))
     
     if parent.user_sheetmusic: lily.add_bass_bar(basslines[0].split())
     if parent.user_midioutput: recorder.add_bass_bar(basslines[0].split())
@@ -174,7 +174,7 @@ def enqueue_bass(midiout, parent):
 def enqueue_chords(midiout, parent):
     if len(chords) < buff: add_chords(tacet)
 
-    play_chord(midiout, mixer.get_channel("chords"), tempo_in_time, 127, 0, list(chords[0].split()))
+    play_chord(midiout, mixer.get_channel("chords"), tempo_in_time, 0, list(chords[0].split()))
     
     if parent.user_sheetmusic: lily.add_chords_bar(chords[0].split())
     if parent.user_midioutput: recorder.add_chords_bar(chords[0].split())
@@ -184,7 +184,7 @@ def enqueue_chords(midiout, parent):
 def enqueue_melody(midiout, parent):
     if len(melodylines) < buff: add_melody(tacet)
 
-    play_melody(midiout, mixer.get_channel("melody"), tempo_in_time, 127, 0, list(melodylines[0].split()))
+    play_melody(midiout, mixer.get_channel("melody"), tempo_in_time, 0, list(melodylines[0].split()))
     
     if parent.user_sheetmusic: lily.add_melody_bar(melodylines[0].split())
     if parent.user_midioutput: recorder.add_melody_bar(melodylines[0].split())

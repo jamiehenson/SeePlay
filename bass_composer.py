@@ -45,6 +45,7 @@ def gen(threshold):
 
     template = []
     template = gen_rhythm(template, threshold)
+    print template
     template = gen_notes(template)
 
     current_bass = " ".join(template)
@@ -58,6 +59,5 @@ def ambient(parent, threshold):
     scale = general_composer.make_scale(key, mode, octave)
 
     bar = make_phrase(current_bass, scale)
-
     while len(performer.basslines) <= performer.buff: 
         performer.add_bass(bar)

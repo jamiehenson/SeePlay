@@ -7,7 +7,7 @@ import chord_composer
 import drum_composer
 import melody_composer
 
-relativekey = "F"
+relativekey = "C"
 relativemode = "+"
 modulated = False
 
@@ -54,7 +54,7 @@ def conduct(parent):
         if parent.user_type == "Ambient":
             ambient(parent, watchman.activity)
 
-        if performer.bar % performer.timing == performer.timing-1 and (performer.main_beat % int(parent.user_tsig) == 0 and performer.main_beat > 0):
+        if performer.bar % (performer.timing * 2) == performer.timing-1 and (performer.main_beat % int(parent.user_tsig) == 0 and performer.main_beat > 0):
             relative_keychange(parent)
 
         threading.Timer(performer.tempo_in_time,conduct,[parent]).start()

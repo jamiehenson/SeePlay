@@ -23,6 +23,7 @@ class SPApp(QtGui.QMainWindow):
     user_key = ""
     user_mode = ""
     user_tempo = ""
+    user_tempo_modifier = ""
     user_tsig = ""
     user_inputregion = []
     user_score_title = "SeePlay auto-score"
@@ -35,6 +36,7 @@ class SPApp(QtGui.QMainWindow):
     def __init__(self):
         super(SPApp, self).__init__()
         self.init_ui()
+        self.open_mixer()
 
     def init_ui(self):
         self.center()
@@ -245,7 +247,7 @@ class SPApp(QtGui.QMainWindow):
         mode = QtGui.QLabel(self)
         mode.resize(window_w*0.16,boxheight)
         mode.move(window_w*0.33, (mode_slot * boxheight) + 15)
-        mode.setText('mode: ')
+        mode.setText('Mode: ')
         mode.setStyleSheet("QLabel { padding: 5px; font-size: 12px; text-align: center; color: #FFFFFF; }")
         
         self.modebox = QtGui.QComboBox(self)
@@ -276,7 +278,7 @@ class SPApp(QtGui.QMainWindow):
         self.tempo.resize(window_w*0.16,boxheight)
         self.tempo.move(window_w*0.33, (tempo_slot * boxheight) + 15)
         self.tempo.setText('Tempo: ')
-        self.tempo.setStyleSheet("QLabel { padding: 5px; font-size: 12px; text-align: center; color: #FFFFFF; }")
+        self.tempo.setStyleSheet("QLabel { padding: 5px; font-size: 10px; text-align: center; color: #FFFFFF; }")
         
         self.tempobox = QtGui.QSlider(QtCore.Qt.Horizontal, self)
         self.tempobox.setFocusPolicy(QtCore.Qt.NoFocus)
@@ -318,12 +320,13 @@ class SPApp(QtGui.QMainWindow):
         print "Opening mixer."
 
         mix_w = 400
-        row_w = mix_w / 2
+        row_w = mix_w / 4
         row_h = 30
         mix_h = row_h * 8
 
         firstcolx = 0
         secondcolx = row_w
+        thirdcolx = row_w * 2
 
         title_slot = 0
         stitle_slot = 1
@@ -335,6 +338,7 @@ class SPApp(QtGui.QMainWindow):
         info_slot = 7
 
         self.mix = QtGui.QWidget()
+
         self.mix.resize(mix_w, mix_h)
         self.mix.setWindowTitle('SeePlay Mixer')
         self.center()
@@ -366,6 +370,11 @@ class SPApp(QtGui.QMainWindow):
         self.mix.chan.move(secondcolx, row_h * header_slot)
         self.mix.chan.setStyleSheet("QLabel { padding: 5px; font-size: 16px; text-align: center; color: #FFFFFF; }")
 
+        self.mix.vol = QtGui.QLabel("Volume (auto):", self.mix)
+        self.mix.vol.resize(row_w * 2, row_h)
+        self.mix.vol.move(thirdcolx, row_h * header_slot)
+        self.mix.vol.setStyleSheet("QLabel { padding: 5px; font-size: 16px; text-align: center; color: #FFFFFF; }")
+
         self.mix.drums = QtGui.QLabel("Drums:", self.mix)
         self.mix.drums.resize(row_w, row_h)
         self.mix.drums.move(firstcolx, row_h * drums_slot)
@@ -379,6 +388,15 @@ class SPApp(QtGui.QMainWindow):
         self.mix.drumbox.addItem("Off")
         self.mix.drumbox.setCurrentIndex(mixer.get_stdchannel("drums"))
         self.mix.drumbox.activated[str].connect(lambda: mixer.set_channel("drums",int(self.mix.drumbox.currentText())))
+
+        self.mix.drumvol = QtGui.QSlider(QtCore.Qt.Horizontal, self.mix)
+        self.mix.drumvol.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.mix.drumvol.resize(row_w * 2, row_h)
+        self.mix.drumvol.move(thirdcolx, row_h * drums_slot)
+        self.mix.drumvol.setMinimum(0)
+        self.mix.drumvol.setMaximum(127)
+        self.mix.drumvol.setValue(mixer.get_volume("drums"))
+        self.mix.drumvol.valueChanged[int].connect(lambda: mixer.set_volume(self, "drums", self.mix.drumvol.value()))
 
         self.mix.bass = QtGui.QLabel("Bass:", self.mix)
         self.mix.bass.resize(secondcolx, row_h)
@@ -394,6 +412,15 @@ class SPApp(QtGui.QMainWindow):
         self.mix.bassbox.setCurrentIndex(mixer.get_stdchannel("bass"))
         self.mix.bassbox.activated[str].connect(lambda: mixer.set_channel("bass",int(self.mix.bassbox.currentText())))
 
+        self.mix.bassvol = QtGui.QSlider(QtCore.Qt.Horizontal, self.mix)
+        self.mix.bassvol.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.mix.bassvol.resize(row_w * 2, row_h)
+        self.mix.bassvol.move(thirdcolx, row_h * bass_slot)
+        self.mix.bassvol.setMinimum(0)
+        self.mix.bassvol.setMaximum(127)
+        self.mix.bassvol.setValue(mixer.get_volume("bass"))
+        self.mix.bassvol.valueChanged[int].connect(lambda: mixer.set_volume(self, "bass", self.mix.bassvol.value()))
+
         self.mix.chords = QtGui.QLabel("Chords:", self.mix)
         self.mix.chords.resize(row_w, row_h)
         self.mix.chords.move(firstcolx, row_h * chords_slot)
@@ -407,6 +434,15 @@ class SPApp(QtGui.QMainWindow):
         self.mix.chordsbox.addItem("Off")
         self.mix.chordsbox.setCurrentIndex(mixer.get_stdchannel("chords"))
         self.mix.chordsbox.activated[str].connect(lambda: mixer.set_channel("chords",int(self.mix.chordsbox.currentText())))
+
+        self.mix.chordsvol = QtGui.QSlider(QtCore.Qt.Horizontal, self.mix)
+        self.mix.chordsvol.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.mix.chordsvol.resize(row_w * 2, row_h)
+        self.mix.chordsvol.move(thirdcolx, row_h * chords_slot)
+        self.mix.chordsvol.setMinimum(0)
+        self.mix.chordsvol.setMaximum(127)
+        self.mix.chordsvol.setValue(100)
+        self.mix.chordsvol.valueChanged[int].connect(lambda: mixer.set_volume(self, "chords", self.mix.chordsvol.value()))
 
         self.mix.melody = QtGui.QLabel("Melody:", self.mix)
         self.mix.melody.resize(row_w, row_h)
@@ -422,7 +458,16 @@ class SPApp(QtGui.QMainWindow):
         self.mix.melodybox.setCurrentIndex(mixer.get_stdchannel("melody"))
         self.mix.melodybox.activated[str].connect(lambda: mixer.set_channel("melody",int(self.mix.melodybox.currentText())))
 
-        self.mix.info = QtGui.QLabel("Please use your connected DAW to control channel and master volume.", self.mix)
+        self.mix.melodyvol = QtGui.QSlider(QtCore.Qt.Horizontal, self.mix)
+        self.mix.melodyvol.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.mix.melodyvol.resize(row_w * 2, row_h)
+        self.mix.melodyvol.move(thirdcolx, row_h * melody_slot)
+        self.mix.melodyvol.setMinimum(0)
+        self.mix.melodyvol.setMaximum(127)
+        self.mix.melodyvol.setValue(100)
+        self.mix.melodyvol.valueChanged[int].connect(lambda: mixer.set_volume(self, "melody", self.mix.melodyvol.value()))
+
+        self.mix.info = QtGui.QLabel("Please use your connected DAW to control master volume.", self.mix)
         self.mix.info.resize(mix_w, row_h)
         self.mix.info.move(firstcolx, row_h * info_slot)
         self.mix.info.setStyleSheet("QLabel { padding: 5px; font-style: italic; font-size: 10px; text-align: center; color: #FFFFFF; }")
@@ -498,6 +543,7 @@ class SPApp(QtGui.QMainWindow):
         self.set_user_key(self.keysigbox.currentText())
         self.set_user_mode(self.modebox.currentText())
         self.set_user_tempo(self.tempobox.value())
+        self.set_user_tempo_modifier("1.0")
         self.set_user_tsig(self.sigbox.currentText())
         print "----------------------------"
 
@@ -571,8 +617,13 @@ class SPApp(QtGui.QMainWindow):
 
     def set_user_tempo(self, val):
         self.user_tempo = int(val)
-        self.tempo.setText("Tempo: " + str(self.user_tempo))
-        print "User set tempo:", self.user_tempo
+        self.tempo.setText("Tempo: " + str(self.user_tempo) + " (x" + str(self.user_tempo_modifier) + " modifier)")
+        print "User set tempo:", self.user_tempo, self.user_tempo_modifier
+
+    def set_user_tempo_modifier(self, val):
+        self.user_tempo_modifier = float(val)
+        self.tempo.setText("Tempo: " + str(self.user_tempo) + " (x" + str(self.user_tempo_modifier) + " modifier)")
+        print "User set tempo:", self.user_tempo, " x",self.user_tempo_modifier
 
     def set_user_genre(self, text):
         self.user_genre = text
@@ -603,3 +654,13 @@ class SPApp(QtGui.QMainWindow):
         status = self.midibtn.isChecked()
         self.user_midioutput = status
         print "User requests sheet music:", self.user_midioutput
+
+    def set_volumebar(self, chan, val):
+        if chan == "drums":
+            self.mix.drumvol.setValue(val)
+        if chan == "bass":
+            self.mix.bassvol.setValue(val)
+        if chan == "chords":
+            self.mix.chordsvol.setValue(val)
+        if chan == "melody":
+            self.mix.melodyvol.setValue(val)

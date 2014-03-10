@@ -16,7 +16,7 @@ def gen_drumline(type, threshold):
         for i in xrange(int(performer.tsig * performer.timing)):
             if i % (performer.timing / 2) == 0:
                 template.append ("x")
-            elif random.random() < (0 * (threshold)):
+            elif random.random() < (0.1 * (threshold)):
                 template.append("x")
             else:
                 template.append(".")
@@ -26,7 +26,7 @@ def gen_drumline(type, threshold):
         for i in xrange(int(performer.tsig * performer.timing)):
             if i % (performer.timing * 2) == 4:
                 template.append ("x")
-            elif random.random() < (0 * (threshold)):
+            elif random.random() < (0.1 * (threshold)):
                 template.append("x")
             else:
                 template.append(".")
@@ -36,7 +36,7 @@ def gen_drumline(type, threshold):
         for i in xrange(int(performer.tsig * performer.timing)):
             if i % performer.timing == 0:
                 template.append ("x")
-            elif random.random() < (0 * (threshold)):
+            elif random.random() < (0.1 * (threshold)):
                 template.append("x")
             else:
                 template.append(".")
