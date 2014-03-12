@@ -17,6 +17,7 @@ def make_phrase(template, scale):
 
 def gen_rhythm(template, threshold):
     # Rhythm
+    # print performer.tsig, performer.timing
     for i in xrange(int(performer.tsig * performer.timing)):
         if random.random() < (0.2 * (threshold + 1)):
             template.append("x")
@@ -45,7 +46,7 @@ def gen(threshold):
 
     template = []
     template = gen_rhythm(template, threshold)
-    print template
+    # print "AFTER RHYTHM", template
     template = gen_notes(template)
 
     current_bass = " ".join(template)

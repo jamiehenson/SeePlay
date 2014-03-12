@@ -278,7 +278,7 @@ class SPApp(QtGui.QMainWindow):
         self.tempo.resize(window_w*0.16,boxheight)
         self.tempo.move(window_w*0.33, (tempo_slot * boxheight) + 15)
         self.tempo.setText('Tempo: ')
-        self.tempo.setStyleSheet("QLabel { padding: 5px; font-size: 10px; text-align: center; color: #FFFFFF; }")
+        self.tempo.setStyleSheet("QLabel { padding: 5px; font-size: 8px; text-align: center; color: #FFFFFF; }")
         
         self.tempobox = QtGui.QSlider(QtCore.Qt.Horizontal, self)
         self.tempobox.setFocusPolicy(QtCore.Qt.NoFocus)
@@ -617,12 +617,12 @@ class SPApp(QtGui.QMainWindow):
 
     def set_user_tempo(self, val):
         self.user_tempo = int(val)
-        self.tempo.setText("Tempo: " + str(self.user_tempo) + " (x" + str(self.user_tempo_modifier) + " modifier)")
+        self.tempo.setText("Tempo: " + str(self.user_tempo) + " (x" + str(self.user_tempo_modifier) + ")")
         print "User set tempo:", self.user_tempo, self.user_tempo_modifier
 
     def set_user_tempo_modifier(self, val):
         self.user_tempo_modifier = float(val)
-        self.tempo.setText("Tempo: " + str(self.user_tempo) + " (x" + str(self.user_tempo_modifier) + " modifier)")
+        self.tempo.setText("Tempo: " + str(self.user_tempo) + " (x" + str(self.user_tempo_modifier) + ")")
         print "User set tempo:", self.user_tempo, " x",self.user_tempo_modifier
 
     def set_user_genre(self, text):

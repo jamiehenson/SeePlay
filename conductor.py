@@ -26,10 +26,16 @@ def ambient(parent,thresh):
     drum_composer.ambient(parent,thresh)
     melody_composer.ambient(parent,thresh)
 
-def gen_templates(level):
-    bass_composer.gen(level)
-    melody_composer.gen(level)
-    drum_composer.gen(level)
+def gen_templates(inst):
+
+    if inst == "bass":
+        bass_composer.gen(watchman.activities[inst])
+    elif inst == "melody":
+        melody_composer.gen(watchman.activities[inst])
+    elif inst == "drums":
+        drum_composer.gen(watchman.activities[inst])
+    elif inst == "chords":
+        chord_composer.gen(watchman.activities[inst])
 
 def relative_keychange(parent):
     global relativekey

@@ -13,24 +13,41 @@ from SimpleCV import *
 fps = 1
 scale = 0.5
 active = False
+
 activity = 0
+
+activities = {
+    "all" : 0,
+    "bass" : 0,
+    "chords" : 0,
+    "melody" : 0,
+    "drums" : 0
+}
 
 home = os.path.join(os.path.expanduser('~'))
 imgbank = []
 imglimit = 5
 imgscale = 0.5
 
-def change_activity(val):
-    global activity
+def change_activity(inst, val):
+    global activities
 
     if val == "up":
-        activity += 1
+        activities[inst] += 1
     elif val == "down":
-        activity -= 1
+        activities[inst] -= 1
     else: 
-        activity = val
+        activities[inst] = val
 
-    conductor.gen_templates(activity)
+    activities["all"] = activities["bass"] + activities["drums"] + activities["chords"] + activities["melody"]
+
+    conductor.gen_templates(inst)
+
+def change_all_activity(val):
+    change_activity("bass", val)
+    change_activity("drums", val)
+    change_activity("chords", val)
+    change_activity("melody", val)
 
 def take(parent): 
     intype = parent.user_inputsrc
@@ -121,13 +138,23 @@ def watch(parent):
         
         add_to_imgbank(img)
 
-        facecount = get_facecount(img)
-        parent.set_user_tempo_modifier(1)
+        # FACE DETECTION IS TOO SLOW FOR ON A PER-BAR BASIS - CAUSES SLOWDOWNS
+        if performer.bar % 4 == 0:
+            facecount = get_facecount(img)
+        # parent.set_user_tempo_modifier(1)
 
         motion = get_motion()
-        # if motion > 20: change_activity(1)
+        if motion > 20: change_all_activity(1)
+
+        # FACES FOR STABS
+
+        # PAIR TEMPO 
+
+        # GET RED, BLUE AND GREEN AND CHAIN THEM TO THE COMPLEXITY OF BASS MELODY CHORDS
+        # PAIR DRUM DIFFICULTY TO BASS
 
         brightness = get_brightness(img, 100, 10)
+        print brightness
         mixer.set_volume(parent, "bass", 127 * (1 - brightness))
         mixer.set_volume(parent, "drums", 127 * (1 - brightness))
         mixer.set_volume(parent, "chords", 127 * brightness)
@@ -145,10 +172,13 @@ def start_watching(parent):
         recorder.init()
 
     conductor.init_values(parent)
-    change_activity(0)
 
     threading.Timer(0,watch,[parent]).start()
     threading.Timer(0,conductor.conduct,[parent]).start()
+
+    change_all_activity(0)
+
+    parent.set_user_tempo_modifier(1)
 
     #del midiout
 

@@ -117,15 +117,15 @@ def play_drums(midiout, chan, speed, beat, pattern):
     while beat < (tsig * timing):
         # HATS
         if pattern[0][beat] == "x":
-            play_note(midiout,chan,42,0.01)
+            play_note(midiout,chan,42,0.001)
 
         # SNARE
         if pattern[1][beat] == "x":
-            play_note(midiout,chan,40,0.01)
+            play_note(midiout,chan,40,0.001)
 
         # KICK
         if pattern[2][beat] == "x":
-            play_note(midiout,chan,36,0.01)
+            play_note(midiout,chan,36,0.001)
         
         nextbeat = float(float(speed)/float(timing))
         time.sleep(nextbeat)

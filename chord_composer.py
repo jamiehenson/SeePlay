@@ -13,6 +13,9 @@ def make_phrase(template, scale):
 
     return thisbar
 
+def gen(inst):
+    return 0
+
 # Ambient
 def ambient(parent, threshold):
     key = conductor.relativekey
