@@ -53,6 +53,29 @@ docs/_build/
 
 # Mac stuff
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+ehthumbs.db
+Thumbs.db
+
+ExportedObj/
+*.svd
+*.userprefs
+*.csproj
+*.pidb
+*.suo
+*.sln
+*.user
+*.unityproj
+*.booproj
+
+Temp/
+Obj/
+UnityGenerated/
+Library/
 
 # SeePlay specific
 tempout.png

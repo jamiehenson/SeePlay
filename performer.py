@@ -82,7 +82,7 @@ def play_chord(midiout, chan, speed, beat, pattern):
     while beat < (tsig * timing):        
         noteinfo = pattern[beat]
         
-        if noteinfo != ".":
+        if noteinfo != "." and noteinfo.startswith("r") == False:
             chord = general_composer.get_chord(noteinfo)
             length = noteinfo[-1:]
             chordsize = 6
@@ -233,10 +233,10 @@ def monitor_bar(parent):
 
         print "Bar: \t", bar
         print "Key: \t", conductor.relativekey, conductor.relativemode
-        print "Melo: \t", melodylines
-        print "Chor: \t", chords 
-        print "Bass: \t", basslines 
-        print "Drum: \t", drumlines 
+        print "Melo: \t", "(" + str(watchman.activities["melody"]) + ")\t", melodylines
+        print "Chor: \t", "(" + str(watchman.activities["chords"]) + ")\t", chords 
+        print "Bass: \t", "(" + str(watchman.activities["bass"]) + ")\t", basslines 
+        print "Drum: \t", "(" + str(watchman.activities["drums"]) + ")\t", drumlines 
         print ""
 
         bar += 1

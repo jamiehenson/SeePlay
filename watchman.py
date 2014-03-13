@@ -8,13 +8,14 @@ import os
 import lily
 import recorder
 import mixer
+import profiles
 from SimpleCV import *
 
 fps = 1
 scale = 0.5
 active = False
 
-activity = 0
+activity_boost = 0
 
 activities = {
     "all" : 0,
@@ -32,12 +33,7 @@ imgscale = 0.5
 def change_activity(inst, val):
     global activities
 
-    if val == "up":
-        activities[inst] += 1
-    elif val == "down":
-        activities[inst] -= 1
-    else: 
-        activities[inst] = val
+    activities[inst] = (val + activity_boost) / 4
 
     activities["all"] = activities["bass"] + activities["drums"] + activities["chords"] + activities["melody"]
 
@@ -67,6 +63,7 @@ def get_dominant_colour():
 
     #avgpeak = (newpeak + oldpeak) / 2
     #print avgpeak
+    return newpeak
 
 def get_motion():
     current = imgbank[0]
@@ -95,8 +92,7 @@ def compare_colour_channels(img, val):
 
     return imgbank[0].histogram(val)
 
-def get_brightness(img, val, detail):
-    hist = img.histogram(val)
+def get_brightness(hist, detail):
     vals = []
     for i in xrange(detail):
         vals.append(0)
@@ -126,6 +122,29 @@ def get_facecount(img):
             f += 1
     return f
 
+def count_colours(img):
+    r = g = b = 0
+
+    w = img.width
+    h = img.height
+    step = 2
+    rounder = 2
+
+    for i in xrange(0, w, step):
+        for j in xrange(0, h, step):
+            (r2, g2, b2) = img.getPixel(i, j)
+            r += r2
+            g += g2
+            b += b2
+    
+    pixtotal = r + g + b
+
+    r_val = round(float(r/pixtotal), rounder)
+    g_val = round(float(g/pixtotal), rounder)
+    b_val = round(float(b/pixtotal), rounder)
+
+    return [r_val, g_val, b_val]
+
 def watch(parent):
     if active == True:
         take(parent)
@@ -139,25 +158,12 @@ def watch(parent):
         add_to_imgbank(img)
 
         # FACE DETECTION IS TOO SLOW FOR ON A PER-BAR BASIS - CAUSES SLOWDOWNS
-        if performer.bar % 4 == 0:
-            facecount = get_facecount(img)
-        # parent.set_user_tempo_modifier(1)
-
-        motion = get_motion()
-        if motion > 20: change_all_activity(1)
-
         # FACES FOR STABS
-
         # PAIR TEMPO 
-
         # GET RED, BLUE AND GREEN AND CHAIN THEM TO THE COMPLEXITY OF BASS MELODY CHORDS
         # PAIR DRUM DIFFICULTY TO BASS
-
-        brightness = get_brightness(img, 100, 10)
-        print brightness
-        mixer.set_volume(parent, "bass", 127 * (1 - brightness))
-        mixer.set_volume(parent, "drums", 127 * (1 - brightness))
-        mixer.set_volume(parent, "chords", 127 * brightness)
+        # CURRENT PROFILE
+        getattr(profiles, 'default')(parent, img)
 
         threading.Timer(performer.tempo_in_time, watch, [parent]).start()
 

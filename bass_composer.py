@@ -2,6 +2,7 @@ import general_composer
 import performer
 import conductor
 import random
+import watchman
 
 current_bass = ". . . . . . . . . . . . . . . ."
 
@@ -15,11 +16,11 @@ def make_phrase(template, scale):
 
     return bar
 
-def gen_rhythm(template, threshold):
+def gen_rhythm(template):
     # Rhythm
     # print performer.tsig, performer.timing
     for i in xrange(int(performer.tsig * performer.timing)):
-        if random.random() < (0.2 * (threshold + 1)):
+        if random.random() < watchman.activities["bass"]:
             template.append("x")
         else:
             template.append(".")
@@ -41,18 +42,17 @@ def gen_notes(template):
 
     return template
 
-def gen(threshold):
+def gen():
     global current_bass
 
     template = []
-    template = gen_rhythm(template, threshold)
-    # print "AFTER RHYTHM", template
+    template = gen_rhythm(template)
     template = gen_notes(template)
 
     current_bass = " ".join(template)
 
 # Ambient
-def ambient(parent, threshold):
+def ambient():
     key = conductor.relativekey
     mode = conductor.relativemode
     octave = str(1)

@@ -1,42 +1,74 @@
 import general_composer
 import performer
 import conductor
+import random
+import watchman
+
+current_chords = ". . . . . . . . . . . . . . . ."
+
+# def make_phrase(template, scale):
+#     thisbar = ""
+
+#     sequence = template.split()
+#     for note in sequence:
+#         if note != ".":
+#             note = str(scale[int(note[:1])] + note[-2:])
+#         thisbar += (note + " ")
+
+#     return thisbar
 
 def make_phrase(template, scale):
-    thisbar = ""
-
+    bar = []
     sequence = template.split()
     for note in sequence:
-        if note != ".":
+        if note != "." and note.startswith("r") == False:
             note = str(scale[int(note[:1])] + note[-2:])
-        thisbar += (note + " ")
+        bar.append(note)
+    return " ".join(bar)
 
-    return thisbar
+def gen_rhythm(template):
+    # Rhythm
+    for i in xrange(int(performer.tsig * performer.timing)):
+        if random.random() < watchman.activities["chords"] / 2:
+            template.append("x")
+        else:
+            template.append(".")
 
-def gen(inst):
-    return 0
+    return template
+
+def gen_notes(template):
+    # Note lengths and pitch
+    if "x" in template:
+        for i in xrange(int(performer.tsig * performer.timing)):
+            if template[i] != ".":
+                template = general_composer.place_notes(i, template, True)
+    else:
+        template[0] = "r1"
+
+    # Starting rest
+    if template[0] == '.':
+        template = general_composer.place_notes(0, template, False)
+
+    return template
+
+def gen():
+    global current_chords
+
+    template = []
+    template = gen_rhythm(template)
+    template = gen_notes(template)
+
+    current_chords = " ".join(template)
 
 # Ambient
-def ambient(parent, threshold):
+def ambient():
     key = conductor.relativekey
     mode = conductor.relativemode
-    thisbar = ""
     octave = str(2)
 
-    chordscale = general_composer.make_chordscale(key, mode, octave)
+    scale = general_composer.make_chordscale(key, mode, octave)
+    bar = make_phrase(current_chords, scale)
 
-    template1 = "0S1 . . . . . . . . . . . . . . ."
-    template2 = "0cr . . . . . . . 1mi . . . . . ."
-    template3 = "0cr . . 1cr . . 4cr . . . 0cr . 0cr . . ."
+    while len(performer.chords) <= performer.buff:
+        performer.add_chords(bar)
 
-    if threshold == 0:
-        thisbar = make_phrase(template1, chordscale)
-    elif threshold == 1:
-        thisbar = make_phrase(template2, chordscale)
-    elif threshold == 2:
-        thisbar = make_phrase(template3, chordscale)
-
-    thisbar += "."
-
-    while len(performer.chords) <= performer.buff: 
-        performer.add_chords(thisbar)

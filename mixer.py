@@ -36,7 +36,7 @@ def set_volume(parent, chan, val):
     global volume
 
     if volume[chan] != val:
-        print "Channel", chan.upper(), "volume set to", val
+        # print "Channel", chan.upper(), "volume set to", val
         volume[chan] = val
         parent.set_volumebar(chan, val)
 
