@@ -7,7 +7,6 @@ import time
 import math
 
 def multifire(motion):
-    print motion
     divider = 10
     times = int(max(min(8, motion/divider), 1))
 

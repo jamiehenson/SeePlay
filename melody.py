@@ -49,8 +49,7 @@ def gen():
 
     current_melody = " ".join(template)
 
-# Ambient
-def ambient():
+def play():
     key = conductor.relativekey
     mode = conductor.relativemode
     octave = str(3)

@@ -55,7 +55,6 @@ def gen():
 
     current_drums = hats + " " + snare + " " + kick
 
-# Ambient
-def ambient():
+def play():
     while len(performer.drumlines) <= performer.buff:
         performer.add_drums(current_drums)

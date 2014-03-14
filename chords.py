@@ -55,8 +55,7 @@ def gen():
 
     current_chords = " ".join(template)
 
-# Ambient
-def ambient():
+def play():
     key = conductor.relativekey
     mode = conductor.relativemode
     octave = str(2)

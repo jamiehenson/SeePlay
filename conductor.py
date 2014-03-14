@@ -20,12 +20,6 @@ def init_values(parent):
     relativemode = parent.user_mode
     modulated = False
 
-def ambient():
-    chords.ambient()
-    bass.ambient()
-    drum.ambient()
-    melody.ambient()
-
 def gen_templates(inst):
     if inst == "bass":
         bass.gen()
@@ -56,15 +50,17 @@ def relative_keychange(parent):
 
 def conduct(parent):
     if watchman.active == True:
-        if parent.user_type == "Ambient":
-            ambient()
+        chords.play()
+        bass.play()
+        drum.play()
+        melody.play()
 
-        case1 = True if performer.bar > 0 else False
-        case2 = True if performer.bar % (performer.timing * 2) == performer.timing - 1 else False
-        case3 = True if performer.main_beat % int(parent.user_tsig) == 0 else False
-        case4 = True if performer.main_beat > 0 else False
+        if performer.bar > 0:
+            case1 = True if performer.bar % (performer.timing * 2) == performer.timing - 1 else False
+            case2 = True if performer.main_beat % int(parent.user_tsig) == 0 else False
+            case3 = True if performer.main_beat > 0 else False
 
-        if case1 and case2 and case3 and case4:
-            relative_keychange(parent)
+            if case1 and case2 and case3:
+                relative_keychange(parent)
 
         threading.Timer(performer.tempo_in_time,conduct,[parent]).start()

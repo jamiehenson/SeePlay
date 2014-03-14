@@ -147,6 +147,11 @@ def count_colours(img):
 
     return [r_val, g_val, b_val]
 
+def invlerp(minval, maxval, val):
+    bottomgap = abs(minval - val)
+    gap = abs(maxval - minval)
+    return max(min(1.0, float(bottomgap / gap)), 0.0) 
+
 def watch(parent):
     if active == True:
         take(parent)
@@ -159,14 +164,8 @@ def watch(parent):
         
         add_to_imgbank(img)
 
-        # FACE DETECTION IS TOO SLOW FOR ON A PER-BAR BASIS - CAUSES SLOWDOWNS
-        # FACES FOR STABS
-        # PAIR TEMPO 
-        # GET RED, BLUE AND GREEN AND CHAIN THEM TO THE COMPLEXITY OF BASS MELODY CHORDS
-        # PAIR DRUM DIFFICULTY TO BASS
-        # CURRENT PROFILE
-        # getattr(profiles, 'default')(parent, img)
-        threading.Timer(0, profiles.default, [parent, img]).start()
+        if parent.user_type == "Standard":
+            threading.Timer(0, profiles.standard_b, [parent, img]).start()
 
         threading.Timer(performer.tempo_in_time, watch, [parent]).start()
 

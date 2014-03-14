@@ -16,6 +16,11 @@ class SPApp(QtGui.QMainWindow):
     sile_text = "A reactive solo piano accompaniment."
     acti_text = "A reactive and frantic orchestral accompaniment."
 
+    infotexts = {
+        "Standard" : "A standard, balanced ambient profile.",
+        "Sparse" : "A more spaced out ambient profile."
+    }
+
     user_inputsrc = ""
     user_inputsrcinfo = ""
     user_type = ""
@@ -140,13 +145,13 @@ class SPApp(QtGui.QMainWindow):
         inputsrcinfo_slot = 2
         audioopt_slot = 3
         type_slot = 4
-        genre_slot = 5
-        genreinfo_slot = 6
-        key_slot = 7
-        mode_slot = 8
-        tempo_slot = 9
-        tsig_slot = 10
-        geninfo_slot = 11
+        # genre_slot = 5
+        genreinfo_slot = 5
+        key_slot = 6
+        mode_slot = 7
+        tempo_slot = 8
+        tsig_slot = 9
+        geninfo_slot = 10
 
         stitle = QtGui.QLabel(self)
         stitle.resize(window_w*0.68,boxheight)
@@ -184,40 +189,40 @@ class SPApp(QtGui.QMainWindow):
         stitle2.setStyleSheet("QLabel { padding: 5px; font-size: 18px; text-align: center; background-color: rgba(200, 200, 200, 150); color: #333333; }")
         
         # Genre
-        genre = QtGui.QLabel(self)
-        genre.resize(window_w*0.16,boxheight)
-        genre.move(window_w*0.33, (genre_slot * boxheight) + 15)
-        genre.setText('Genre: ')
-        genre.setStyleSheet("QLabel { padding: 5px; font-size: 12px; text-align: center; color: #FFFFFF; }")
+        # genre = QtGui.QLabel(self)
+        # genre.resize(window_w*0.16,boxheight)
+        # genre.move(window_w*0.33, (genre_slot * boxheight) + 15)
+        # genre.setText('Profile: ')
+        # genre.setStyleSheet("QLabel { padding: 5px; font-size: 12px; text-align: center; color: #FFFFFF; }")
         
-        self.genrebox = QtGui.QComboBox(self)
-        self.genrebox.resize(window_w*0.5,boxheight)
-        self.genrebox.move(window_w*0.33 + window_w*0.16, (genre_slot * boxheight) + 15)
-        self.genrebox.addItem("Classical")
-        self.genrebox.addItem("Electronic")
-
-        # Genre Info
-        self.genreinfo = QtGui.QLabel(self)
-        self.genreinfo.resize(window_w*0.68,boxheight)
-        self.genreinfo.setText("A light orchestral accompaniment, reacting to colour changes.")
-        self.genreinfo.move(window_w*0.33, (genreinfo_slot * boxheight) + 15)
-        self.genreinfo.setStyleSheet("QLabel { padding: 5px; font-size: 12px; font-weight: bold; text-align: center; color: #FFFFFF; }")
+        # self.genrebox = QtGui.QComboBox(self)
+        # self.genrebox.resize(window_w*0.5,boxheight)
+        # self.genrebox.move(window_w*0.33 + window_w*0.16, (genre_slot * boxheight) + 15)
+        # self.genrebox.addItem("Classical")
+        # self.genrebox.addItem("Electronic")
 
         # Music type
         mustype = QtGui.QLabel(self)
         mustype.resize(window_w*0.16,boxheight)
         mustype.move(window_w*0.33, (type_slot * boxheight) + 15)
-        mustype.setText('Music type: ')
+        mustype.setText('Profile: ')
         mustype.setStyleSheet("QLabel { padding: 5px; font-size: 12px; text-align: center; color: #FFFFFF; }")
         
         self.mustypebox = QtGui.QComboBox(self)
         self.mustypebox.resize(window_w*0.5,boxheight)
         self.mustypebox.move(window_w*0.33 + window_w*0.16, (type_slot * boxheight) + 15)
-        self.mustypebox.addItem("Ambient")
-        self.mustypebox.addItem("Reactive")
+        self.mustypebox.addItem("Standard")
+        self.mustypebox.addItem("Sparse")
 
         self.mustypebox.activated[str].connect(lambda: self.switch_genre_box(self.mustypebox.currentText()))
-        self.genrebox.activated[str].connect(lambda: self.switch_genre_info_box(self.genrebox.currentText()))
+        # self.genrebox.activated[str].connect(lambda: self.switch_genre_info_box(self.genrebox.currentText()))
+
+        # Genre Info
+        self.genreinfo = QtGui.QLabel(self)
+        self.genreinfo.resize(window_w*0.68,boxheight)
+        self.genreinfo.setText(self.infotexts[self.mustypebox.currentText()])
+        self.genreinfo.move(window_w*0.33, (genreinfo_slot * boxheight) + 15)
+        self.genreinfo.setStyleSheet("QLabel { padding: 5px; font-size: 12px; font-weight: bold; text-align: center; color: #FFFFFF; }")
 
         # Key
         keysig = QtGui.QLabel(self)
@@ -500,20 +505,21 @@ class SPApp(QtGui.QMainWindow):
         
     def switch_genre_box(self, text):
         self.set_user_type(text)
+        self.genreinfo.setText(self.infotexts[text])
 
-        if text == "Ambient":
-            self.genrebox.clear()
-            self.genrebox.addItem("Classical")
-            self.genrebox.addItem("Electronic")
-            self.genreinfo.setText(self.orch_text)
-            self.set_user_genre("Classical")
-        else:
-            self.genrebox.clear()
-            self.genrebox.addItem("Horror")
-            self.genrebox.addItem("Silent Movie")
-            self.genrebox.addItem("Action")
-            self.genreinfo.setText(self.horr_text)
-            self.set_user_genre("Horror")
+        # if text == "Ambient":
+        #     self.genrebox.clear()
+        #     self.genrebox.addItem("Classical")
+        #     self.genrebox.addItem("Electronic")
+        #     self.genreinfo.setText(self.orch_text)
+        #     self.set_user_genre("Classical")
+        # else:
+        #     self.genrebox.clear()
+        #     self.genrebox.addItem("Horror")
+        #     self.genrebox.addItem("Silent Movie")
+        #     self.genrebox.addItem("Action")
+        #     self.genreinfo.setText(self.horr_text)
+        #     self.set_user_genre("Horror")
 
     def switch_genre_info_box(self, text):
         if text == "Classical":
@@ -563,7 +569,7 @@ class SPApp(QtGui.QMainWindow):
         print "----------------------------"
         self.set_user_inputsrc("whole",False)
         self.set_user_type(self.mustypebox.currentText())
-        self.set_user_genre(self.genrebox.currentText())
+        # self.set_user_genre(self.genrebox.currentText())
         self.set_user_key(self.keysigbox.currentText())
         self.set_user_mode(self.modebox.currentText())
         self.set_user_tempo(self.tempobox.value())
