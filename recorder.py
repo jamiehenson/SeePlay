@@ -1,7 +1,7 @@
 from midiutil.MidiFile import MIDIFile
 import lily
 import performer
-import general_composer
+import tools
 import mixer
 
 sp_midi = None
@@ -32,14 +32,14 @@ def add_chords_bar(bar):
     for i in xrange(len(sequence)):
         chord = sequence[i]
         if chord != ".":
-            chordnotes = general_composer.get_chord(chord)
+            chordnotes = tools.get_chord(chord)
 
             if len(chord) == 5:
                 pitch = chord[:2]
             else:
                 pitch = chord[:1]
 
-            length = general_composer.lengths[str(chord[-2:])]
+            length = tools.lengths[str(chord[-2:])]
             time = beat_ref + ((i+1)/performer.timing)
 
             for note in chordnotes:    
@@ -64,8 +64,8 @@ def add_bass_bar(bar):
                 pitch = note[:1]
 
             octave = int(note[-3:-2])
-            length = general_composer.lengths[str(note[-2:])]
-            pitch = general_composer.letter_to_midi(pitch, octave)
+            length = tools.lengths[str(note[-2:])]
+            pitch = tools.letter_to_midi(pitch, octave)
             time = beat_ref + ((i+1)/performer.timing)
             sp_midi.addNote(track, channel, pitch, time, length, volume)
 

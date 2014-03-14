@@ -1,11 +1,11 @@
 import threading
 import performer
 import watchman
-import general_composer
-import bass_composer
-import chord_composer
-import drum_composer
-import melody_composer
+import tools
+import bass
+import chords
+import drum
+import melody
 
 relativekey = "C"
 relativemode = "+"
@@ -21,20 +21,20 @@ def init_values(parent):
     modulated = False
 
 def ambient():
-    chord_composer.ambient()
-    bass_composer.ambient()
-    drum_composer.ambient()
-    melody_composer.ambient()
+    chords.ambient()
+    bass.ambient()
+    drum.ambient()
+    melody.ambient()
 
 def gen_templates(inst):
     if inst == "bass":
-        bass_composer.gen()
+        bass.gen()
     elif inst == "melody":
-        melody_composer.gen()
+        melody.gen()
     elif inst == "drums":
-        drum_composer.gen()
+        drum.gen()
     elif inst == "chords":
-        chord_composer.gen()
+        chords.gen()
 
 def relative_keychange(parent):
     global relativekey
@@ -43,10 +43,10 @@ def relative_keychange(parent):
 
     if modulated == False:
         if relativemode == "+":
-            relativekey = general_composer.midi_to_genletter((general_composer.roots[parent.user_key] - 3) % 12)
+            relativekey = tools.midi_to_genletter((tools.roots[parent.user_key] - 3) % 12)
             relativemode = "-"
         else:
-            relativekey = general_composer.midi_to_genletter((general_composer.roots[parent.user_key] + 3) % 12)
+            relativekey = tools.midi_to_genletter((tools.roots[parent.user_key] + 3) % 12)
             relativemode = "+"
         modulated = True
     else:

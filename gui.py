@@ -322,7 +322,7 @@ class SPApp(QtGui.QMainWindow):
         mix_w = 400
         row_w = mix_w / 4
         row_h = 30
-        mix_h = row_h * 8
+        mix_h = row_h * 9
 
         firstcolx = 0
         secondcolx = row_w
@@ -335,7 +335,8 @@ class SPApp(QtGui.QMainWindow):
         bass_slot = 4
         chords_slot = 5
         melody_slot = 6
-        info_slot = 7
+        stabs_slot = 7
+        info_slot = 8
 
         self.mix = QtGui.QWidget()
 
@@ -466,6 +467,29 @@ class SPApp(QtGui.QMainWindow):
         self.mix.melodyvol.setMaximum(127)
         self.mix.melodyvol.setValue(100)
         self.mix.melodyvol.valueChanged[int].connect(lambda: mixer.set_volume(self, "melody", self.mix.melodyvol.value()))
+
+        self.mix.stabs = QtGui.QLabel("Stabs:", self.mix)
+        self.mix.stabs.resize(row_w, row_h)
+        self.mix.stabs.move(firstcolx, row_h * stabs_slot)
+        self.mix.stabs.setStyleSheet("QLabel { padding: 5px; font-size: 14px; font-weight: bold; text-align: center; color: #FFFFFF; }")
+
+        self.mix.stabsbox = QtGui.QComboBox(self.mix)
+        self.mix.stabsbox.resize(row_w, row_h)
+        self.mix.stabsbox.move(secondcolx,row_h * stabs_slot)
+        for i in xrange(16):
+            self.mix.stabsbox.addItem(str(i))
+        self.mix.stabsbox.addItem("Off")
+        self.mix.stabsbox.setCurrentIndex(mixer.get_stdchannel("stabs"))
+        self.mix.stabsbox.activated[str].connect(lambda: mixer.set_channel("stabs",int(self.mix.stabsbox.currentText())))
+
+        self.mix.stabsvol = QtGui.QSlider(QtCore.Qt.Horizontal, self.mix)
+        self.mix.stabsvol.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.mix.stabsvol.resize(row_w * 2, row_h)
+        self.mix.stabsvol.move(thirdcolx, row_h * stabs_slot)
+        self.mix.stabsvol.setMinimum(0)
+        self.mix.stabsvol.setMaximum(127)
+        self.mix.stabsvol.setValue(100)
+        self.mix.stabsvol.valueChanged[int].connect(lambda: mixer.set_volume(self, "stabs", self.mix.stabsvol.value()))
 
         self.mix.info = QtGui.QLabel("Please use your connected DAW to control master volume.", self.mix)
         self.mix.info.resize(mix_w, row_h)

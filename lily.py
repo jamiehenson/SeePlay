@@ -1,6 +1,6 @@
 from abjad import *
 from PySide import QtGui
-import general_composer
+import tools
 
 show_piano_righthand = True
 show_piano_lefthand = True
@@ -71,7 +71,7 @@ def lily_convert_chord(bar):
 
     for chord in sequence:
         if chord != ".":
-            chordnotes = general_composer.get_chord(chord)
+            chordnotes = tools.get_chord(chord)
             chordsize = 3
             octave = lily_octave(int(chord[-4:-3]), 2)
             length = lily_length(str(chord[-2:]))
@@ -79,7 +79,7 @@ def lily_convert_chord(bar):
             lilychord = "<"
             for i in xrange(chordsize):
                 note = chordnotes[i]
-                pitch = general_composer.midi_to_genletter(note)
+                pitch = tools.midi_to_genletter(note)
                 
                 lilynote = str(lily_note(pitch) + octave + " ")
                 lilychord += lilynote

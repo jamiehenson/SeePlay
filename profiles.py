@@ -1,6 +1,8 @@
 import watchman
 import performer
 import mixer
+import stabs
+import threading
 
 def default(parent, img):
     brightness = watchman.get_brightness(img.histogram(250), 20)
@@ -11,8 +13,9 @@ def default(parent, img):
         facecount = watchman.get_facecount(img)
     # parent.set_user_tempo_modifier(1)
 
-    if motion > 20: 
+    if motion > 5: 
         watchman.activity_boost = 1
+        stabs.multifire(motion)
     else:
         watchman.activity_boost = 0
 

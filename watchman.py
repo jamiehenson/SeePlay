@@ -33,7 +33,11 @@ imgscale = 0.5
 def change_activity(inst, val):
     global activities
 
-    activities[inst] = (val + activity_boost) / 4
+    # corrected_val = (val + activity_boost) / 4
+    corrected_val = (val) / 4
+
+    if abs(activities[inst] - corrected_val) > 0.05:
+        activities[inst] = corrected_val
 
     activities["all"] = activities["bass"] + activities["drums"] + activities["chords"] + activities["melody"]
 
@@ -168,8 +172,7 @@ def watch(parent):
         threading.Timer(performer.tempo_in_time, watch, [parent]).start()
 
 def start_watching(parent):
-    midiout = rtmidi.MidiOut(1)
-    threading.Timer(0,performer.start,[midiout,parent]).start()
+    threading.Timer(0,performer.start,[parent]).start()
 
     if parent.user_sheetmusic:
         lily.init()
@@ -185,8 +188,6 @@ def start_watching(parent):
     change_all_activity(0)
 
     parent.set_user_tempo_modifier(1)
-
-    #del midiout
 
 if __name__ == '__main__':
     start_watching()    
