@@ -13,15 +13,15 @@ def default(parent, img):
         facecount = watchman.get_facecount(img)
     # parent.set_user_tempo_modifier(1)
 
-    if motion > 5: 
+    if motion > 10: 
         watchman.activity_boost = 1
         stabs.multifire(motion)
     else:
         watchman.activity_boost = 0
 
     watchman.change_activity("bass", red_brightness)
-    watchman.change_activity("drums", red_brightness)
-    watchman.change_activity("melody", green_brightness)
+    watchman.change_activity("drums", green_brightness)
+    watchman.change_activity("melody", red_brightness)
     watchman.change_activity("chords", green_brightness)
 
     if blue_brightness > 0.5: 
@@ -32,3 +32,4 @@ def default(parent, img):
     mixer.set_volume(parent, "bass", 127 * (1 - brightness))
     mixer.set_volume(parent, "drums", 127 * (1 - brightness))
     mixer.set_volume(parent, "chords", 127 * brightness)
+    mixer.set_volume(parent, "melody", 127 * brightness)

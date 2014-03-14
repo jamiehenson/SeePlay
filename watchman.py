@@ -33,15 +33,13 @@ imgscale = 0.5
 def change_activity(inst, val):
     global activities
 
-    # corrected_val = (val + activity_boost) / 4
-    corrected_val = (val) / 4
+    corrected_val = (val + activity_boost) / 4
+    # corrected_val = (val) / 4
 
-    if abs(activities[inst] - corrected_val) > 0.05:
+    if abs(activities[inst] - corrected_val) > 0.1 or performer.bar < 4:
         activities[inst] = corrected_val
-
-    activities["all"] = activities["bass"] + activities["drums"] + activities["chords"] + activities["melody"]
-
-    conductor.gen_templates(inst)
+        activities["all"] = activities["bass"] + activities["drums"] + activities["chords"] + activities["melody"]
+        conductor.gen_templates(inst)
 
 def change_all_activity(val):
     change_activity("bass", val)
@@ -167,7 +165,8 @@ def watch(parent):
         # GET RED, BLUE AND GREEN AND CHAIN THEM TO THE COMPLEXITY OF BASS MELODY CHORDS
         # PAIR DRUM DIFFICULTY TO BASS
         # CURRENT PROFILE
-        getattr(profiles, 'default')(parent, img)
+        # getattr(profiles, 'default')(parent, img)
+        threading.Timer(0, profiles.default, [parent, img]).start()
 
         threading.Timer(performer.tempo_in_time, watch, [parent]).start()
 

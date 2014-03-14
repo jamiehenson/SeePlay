@@ -7,10 +7,14 @@ import time
 import math
 
 def multifire(motion):
+    print motion
     divider = 10
-    intensity = int(pow(2, math.floor(math.log(motion, 2)))) / 4
+    times = int(max(min(8, motion/divider), 1))
 
-    for i in xrange(int(motion / divider)):
+    intensity = int(pow(2, math.floor(math.log(motion, 2)))) / 16
+    intensity = max(min(8, intensity), 1)
+
+    for i in xrange(times):
         fire()
         time.sleep(performer.tempo_in_time / intensity)
 
