@@ -67,7 +67,7 @@ def standard_b(parent, img):
     watchman.change_activity("bass", red_brightness)
     watchman.change_activity("drums", green_brightness)
     watchman.change_activity("melody", red_brightness)
-    watchman.change_activity("chords", green_brightness)
+    watchman.change_activity("chords", blue_brightness)
 
     if blue_brightness > 0.5: 
         if parent.user_mode == "+": parent.set_user_mode("Minor")

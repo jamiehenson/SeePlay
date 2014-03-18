@@ -5,12 +5,14 @@ import tools
 show_piano_righthand = True
 show_piano_lefthand = True
 show_bass = True
+show_stabs = True
 
 score = Score([])
 piano_staff = scoretools.PianoStaff([])
 upper_staff = Staff([])
 lower_staff = Staff([])
 bass_staff = Staff([])
+stabs_staff = Staff([])
 
 melody = instrumenttools.Piano(
     instrument_name="Melody",
@@ -19,6 +21,10 @@ melody = instrumenttools.Piano(
 chords = instrumenttools.Piano(
     instrument_name="Lead",
     short_instrument_name="C."
+)
+stabs = instrumenttools.Piano(
+    instrument_name="Stabs",
+    short_instrument_name="S."
 )
 bass = instrumenttools.BassTrombone(
     instrument_name='Bass',
@@ -70,6 +76,10 @@ def lily_convert_chord(bar):
     lilybar = []
 
     for chord in sequence:
+        if chord == 'r1':
+            lilybar.append("r1")
+            break
+
         if chord != ".":
             chordnotes = tools.get_chord(chord)
             chordsize = 3
@@ -154,7 +164,7 @@ def make(parent):
 
     lily = lilypondfiletools.make_basic_lilypond_file(score)
     lily.header_block.title = markuptools.Markup(parent.user_score_title)
-    lily.header_block.composer = markuptools.Markup('Jamie Henson')
+    lily.header_block.composer = markuptools.Markup('SeePlay')
     lily.global_staff_size = 16
     lily.default_paper_size = 'A4', 'portrait'
     show(lily)
