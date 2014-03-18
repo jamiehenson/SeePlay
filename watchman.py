@@ -8,6 +8,7 @@ import os
 import lily
 import recorder
 import mixer
+import tools
 import profiles
 from SimpleCV import *
 
@@ -30,10 +31,10 @@ imgbank = []
 imglimit = 5
 imgscale = 0.5
 
-def change_activity(inst, val):
+def change_activity(inst, val, sen):
     global activities
 
-    corrected_val = (val + activity_boost) / 4
+    corrected_val = (val + activity_boost) / sen
     # corrected_val = (val) / 4
 
     if abs(activities[inst] - corrected_val) > 0.1 or performer.bar < 4:
@@ -41,11 +42,11 @@ def change_activity(inst, val):
         activities["all"] = activities["bass"] + activities["drums"] + activities["chords"] + activities["melody"]
         conductor.gen_templates(inst)
 
-def change_all_activity(val):
-    change_activity("bass", val)
-    change_activity("drums", val)
-    change_activity("chords", val)
-    change_activity("melody", val)
+def change_all_activity(val, sen):
+    change_activity("bass", val, sen)
+    change_activity("drums", val, sen)
+    change_activity("chords", val, sen)
+    change_activity("melody", val, sen)
 
 def take(parent): 
     intype = parent.user_inputsrc
@@ -125,7 +126,7 @@ def get_facecount(img):
     return f
 
 def count_colours(img):
-    r = g = b = 0
+    r = g = b = 1
 
     w = img.width
     h = img.height
@@ -147,11 +148,6 @@ def count_colours(img):
 
     return [r_val, g_val, b_val]
 
-def invlerp(minval, maxval, val):
-    bottomgap = abs(minval - val)
-    gap = abs(maxval - minval)
-    return max(min(1.0, float(bottomgap / gap)), 0.0) 
-
 def watch(parent):
     if active == True:
         take(parent)
@@ -164,8 +160,12 @@ def watch(parent):
         
         add_to_imgbank(img)
 
-        if parent.user_type == "Standard":
+        if parent.user_type == "Standard A":
+            threading.Timer(0, profiles.standard_a, [parent, img]).start()
+        elif parent.user_type == "Standard B":
             threading.Timer(0, profiles.standard_b, [parent, img]).start()
+        elif parent.user_type == "Sparse":
+            threading.Timer(0, profiles.sparse, [parent, img]).start()
 
         threading.Timer(performer.tempo_in_time, watch, [parent]).start()
 
@@ -183,7 +183,7 @@ def start_watching(parent):
     threading.Timer(0,watch,[parent]).start()
     threading.Timer(0,conductor.conduct,[parent]).start()
 
-    change_all_activity(0)
+    change_all_activity(0, 4)
 
     parent.set_user_tempo_modifier(1)
 

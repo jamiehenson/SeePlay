@@ -1,12 +1,13 @@
 from PySide import QtGui, QtCore
 import pymouse
 import watchman
+import collections
 import threading
 import time
 import mixer
 
 window_w = 640 
-window_h = 360
+window_h = 400
 
 class SPApp(QtGui.QMainWindow):
 
@@ -16,10 +17,9 @@ class SPApp(QtGui.QMainWindow):
     sile_text = "A reactive solo piano accompaniment."
     acti_text = "A reactive and frantic orchestral accompaniment."
 
-    infotexts = {
-        "Standard" : "A standard, balanced ambient profile.",
-        "Sparse" : "A more spaced out ambient profile."
-    }
+    infotexts = collections.OrderedDict()
+    prog_types = collections.OrderedDict()
+    mode_types = collections.OrderedDict()
 
     user_inputsrc = ""
     user_inputsrcinfo = ""
@@ -34,6 +34,7 @@ class SPApp(QtGui.QMainWindow):
     user_score_title = "SeePlay auto-score"
     user_sheetmusic = False
     user_midioutput = False
+    user_prog_type = ""
 
     screen_x = 0
     screen_y = 0
@@ -42,6 +43,30 @@ class SPApp(QtGui.QMainWindow):
         super(SPApp, self).__init__()
         self.init_ui()
         self.open_mixer()
+
+    def populate_dictionaries(self):
+        self.infotexts["Standard A"] = "A standard, balanced ambient profile. (colour driven)"
+        self.infotexts["Standard B"] = "A standard, balanced ambient profile. (motion driven)"
+        self.infotexts["Sparse"] = "A more spaced out ambient profile."
+
+        self.prog_types["None"] = "none"
+        self.prog_types["Random"] = "random"
+        self.prog_types["Relative (I VI)"] = "relative"
+        self.prog_types["Blues (I IV V)"] = "blues"
+        self.prog_types["I to V"] = "fifth"
+        self.prog_types["50s (I VI IV V)"] = "50s"
+        self.prog_types["Circle of fifths"] = "circ5"
+        self.prog_types["Circle of fourths"] = "circ4"
+
+        self.mode_types["Major"] = "major"
+        self.mode_types["Minor"] = "minor"
+        self.mode_types["Ionian"] = "ionian"
+        self.mode_types["Dorian"] = "dorian"
+        self.mode_types["Phrygian"] = "phrygian"
+        self.mode_types["Lydian"] = "lydian"
+        self.mode_types["Mixolydian"] = "mixolydian"
+        self.mode_types["Aeolian"] = "aeolian"
+        self.mode_types["Locrian"] = "locrian"
 
     def init_ui(self):
         self.center()
@@ -54,6 +79,8 @@ class SPApp(QtGui.QMainWindow):
         self.screen_y = int(screencoords[1])
 
         boxheight = 30
+
+        self.populate_dictionaries()
 
         # SETTING THE SCENE        
         leftbg = QtGui.QLabel(self)
@@ -149,9 +176,10 @@ class SPApp(QtGui.QMainWindow):
         genreinfo_slot = 5
         key_slot = 6
         mode_slot = 7
-        tempo_slot = 8
-        tsig_slot = 9
-        geninfo_slot = 10
+        prog_slot = 8
+        tempo_slot = 9
+        tsig_slot = 10
+        geninfo_slot = 11
 
         stitle = QtGui.QLabel(self)
         stitle.resize(window_w*0.68,boxheight)
@@ -211,9 +239,9 @@ class SPApp(QtGui.QMainWindow):
         self.mustypebox = QtGui.QComboBox(self)
         self.mustypebox.resize(window_w*0.5,boxheight)
         self.mustypebox.move(window_w*0.33 + window_w*0.16, (type_slot * boxheight) + 15)
-        self.mustypebox.addItem("Standard")
-        self.mustypebox.addItem("Sparse")
-
+        sorted_profile = collections.OrderedDict(self.infotexts)
+        for key, value in sorted_profile.iteritems():
+            self.mustypebox.addItem(key)
         self.mustypebox.activated[str].connect(lambda: self.switch_genre_box(self.mustypebox.currentText()))
         # self.genrebox.activated[str].connect(lambda: self.switch_genre_info_box(self.genrebox.currentText()))
 
@@ -258,9 +286,25 @@ class SPApp(QtGui.QMainWindow):
         self.modebox = QtGui.QComboBox(self)
         self.modebox.resize(window_w*0.5,boxheight)
         self.modebox.move(window_w*0.33 + window_w*0.16, (mode_slot * boxheight) + 15)
-        self.modebox.addItem("Major")
-        self.modebox.addItem("Minor")
+        sorted_modes = collections.OrderedDict(self.mode_types)
+        for key, value in sorted_modes.iteritems():
+            self.modebox.addItem(key)
         self.modebox.activated[str].connect(lambda: self.set_user_mode(self.modebox.currentText()))
+
+        # Key
+        prog = QtGui.QLabel(self)
+        prog.resize(window_w*0.16,boxheight)
+        prog.move(window_w*0.33, (prog_slot * boxheight) + 15)
+        prog.setText('Progression: ')
+        prog.setStyleSheet("QLabel { padding: 5px; font-size: 12px; text-align: center; color: #FFFFFF; }")
+        
+        self.progbox = QtGui.QComboBox(self)
+        self.progbox.resize(window_w*0.5,boxheight)
+        self.progbox.move(window_w*0.33 + window_w*0.16, (prog_slot * boxheight) + 15)
+        sorted_prog = collections.OrderedDict(self.prog_types)
+        for key, value in sorted_prog.iteritems():
+            self.progbox.addItem(key)
+        self.progbox.activated[str].connect(lambda: self.set_user_prog_type(self.progbox.currentText()))
 
         # Time sig
         sig = QtGui.QLabel(self)
@@ -572,6 +616,7 @@ class SPApp(QtGui.QMainWindow):
         # self.set_user_genre(self.genrebox.currentText())
         self.set_user_key(self.keysigbox.currentText())
         self.set_user_mode(self.modebox.currentText())
+        self.set_user_prog_type(self.progbox.currentText())
         self.set_user_tempo(self.tempobox.value())
         self.set_user_tempo_modifier("1.0")
         self.set_user_tsig(self.sigbox.currentText())
@@ -668,8 +713,12 @@ class SPApp(QtGui.QMainWindow):
         print "User set key:", self.user_key
 
     def set_user_mode(self, text):
-        self.user_mode = "+" if text == "Major" else "-"
+        self.user_mode = self.mode_types[text]
         print "User set mode:", self.user_mode
+
+    def set_user_prog_type(self, text):
+        self.user_prog_type = self.prog_types[text]
+        print "User set chord progression:", self.user_prog_type
 
     def set_user_tsig(self, text):
         self.user_tsig = text[:1]

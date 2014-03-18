@@ -35,6 +35,30 @@ lengths = {
     "S8" : 32.0
 }
 
+intervals = {
+    "major" : [0,2,4,5,7,9,11,12],
+    "minor" : [0,2,3,5,7,8,10,12],
+    "ionian" : [0,2,4,5,7,9,11,12],
+    "dorian" : [0,2,3,5,7,9,10,12],
+    "phrygian" : [0,1,3,5,7,8,10,12],
+    "lydian" : [0,2,4,6,7,9,11,12],
+    "mixolydian" : [0,2,4,5,7,9,10,12],
+    "aeolian" : [0,2,3,5,7,8,10,12],
+    "locrian" : [0,1,3,5,6,8,10,12]
+}
+
+note_modes = {
+    "major" : ["+", "-", "-", "-", "+", "+", "-", "-"],
+    "minor" : ["-", "-", "+", "-", "-", "+", "+", "-"],
+    "ionian" : ["+", "+", "+", "+", "+", "+", "+", "+"],
+    "dorian" : ["+", "+", "+", "+", "+", "+", "+", "+"],
+    "phrygian" : ["+", "+", "+", "+", "+", "+", "+", "+"],
+    "lydian" : ["+", "+", "+", "+", "+", "+", "+", "+"],
+    "mixolydian" : ["+", "+", "+", "+", "+", "+", "+", "+"],
+    "aeolian" : ["+", "+", "+", "+", "+", "+", "+", "+"],
+    "locrian" : ["+", "+", "+", "+", "+", "+", "+", "+"]  
+}
+
 def length_key_check(num):
     revlength = dict((v,k) for k,v in lengths.iteritems())
     return True if num in revlength else False
@@ -68,31 +92,29 @@ def midi_to_letter(scale, octave):
 
     return newscale
 
+def scale_intervals(root, mode):
+    intvals = intervals[mode]
+    for i in xrange(len(intvals)):
+        intvals[i] = root + intvals[i]
+
+    return intvals
+
 def make_chordscale(key, mode, octave):
     root = roots[key]
-    majscale = [root, root+2, root+4, root+5, root+7, root+9, root+11, root+12]
-    minscale = [root, root+2, root+3, root+5, root+7, root+8, root+10, root+12]
+    intervals = scale_intervals(root, mode)
+    notemodes = note_modes[mode]
 
-    majmode = ["+","-","-","-","+","+","-","-"]
-    minmode = ["-","-","+","-","-","+","+","-"]
-
-    if mode == "+":
-        return midi_to_chord(majscale, majmode, octave)
-    else:
-        return midi_to_chord(minscale, minmode, octave)
+    return midi_to_chord(intervals, notemodes, octave)
 
 def make_scale(key, mode, octave):
     root = roots[key]
-    majscale = [root, root+2, root+4, root+5, root+7, root+9, root+11, root+12]
-    minscale = [root, root+2, root+3, root+5, root+7, root+8, root+10, root+12]
+    intervals = scale_intervals(root, mode)
 
-    if mode == "+":
-        return midi_to_letter(majscale, octave)
-    else:
-        return midi_to_letter(minscale, octave)
+    return midi_to_letter(intervals, octave)
 
 def make_chord(key, mode, octave):
     chordname = key + str(octave) + mode
+
     return chordname
 
 def get_chord(chord):
@@ -148,3 +170,11 @@ def place_notes(i, template, notes):
             template[i + int(rounded * 4) + int(roundtwo * 4)] = chosen_scaleno + shorter_length
 
     return template
+
+def clamp(minval, maxval, val):
+    return max(min(maxval, minval + val), minval)
+
+def invlerp(minval, maxval, val):
+    bottomgap = abs(minval - val)
+    gap = abs(maxval - minval)
+    return clamp(0.0, 1.0, float(bottomgap / gap))
