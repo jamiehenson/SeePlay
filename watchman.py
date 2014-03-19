@@ -176,7 +176,7 @@ def start_watching(parent):
         lily.init()
 
     if parent.user_midioutput:
-        recorder.init()
+        recorder.init(parent)
 
     conductor.init_values(parent)
 

@@ -160,6 +160,8 @@ def enqueue_drums(parent):
 
     play_drums(mixer.get_channel("drums"), tempo_in_time, 0, beatarray)
 
+    if parent.user_midioutput: recorder.add_drums_bar(beatarray)
+
     drumlines.pop(0)
 
 def enqueue_bass(parent):

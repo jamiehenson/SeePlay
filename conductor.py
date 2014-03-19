@@ -22,9 +22,10 @@ def init_values(parent):
 
     if parent.user_prog_type == "random":
         temp_progs = parent.prog_types
-        del temp_progs["random"]
-        random_type = temp_progs[random.randrange(0,len(temp_progs))]
-        parent.set_user_prog_type(random_type)
+        del temp_progs["Random"]
+        random_type = temp_progs[random.choice(list(temp_progs.keys()))]
+        revprogs = dict((v,k) for k,v in temp_progs.iteritems())
+        parent.set_user_prog_type(revprogs[random_type])
 
 def gen_templates(inst):
     if inst == "bass":

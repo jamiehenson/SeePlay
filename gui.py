@@ -67,6 +67,7 @@ class SPApp(QtGui.QMainWindow):
         self.mode_types["Mixolydian"] = "mixolydian"
         self.mode_types["Aeolian"] = "aeolian"
         self.mode_types["Locrian"] = "locrian"
+        self.mode_types["Arabic"] = "arabic"
 
     def init_ui(self):
         self.center()
