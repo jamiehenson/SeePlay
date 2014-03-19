@@ -34,6 +34,10 @@ bass = instrumenttools.BassTrombone(
 )
 
 def lily_length(leng):
+
+    if leng == "r1":
+        return leng
+
     lenconv = {
         "se" : "16",
         "qu" : "8",
@@ -76,25 +80,26 @@ def lily_convert_chord(bar):
     lilybar = []
 
     for chord in sequence:
-        if chord == 'r1':
-            lilybar.append("r1")
-            break
-
         if chord != ".":
-            chordnotes = tools.get_chord(chord)
-            chordsize = 3
-            octave = lily_octave(int(chord[-4:-3]), 2)
             length = lily_length(str(chord[-2:]))
+            if chord.startswith("r") == False:
+                chordnotes = tools.get_chord(chord)
+                chordsize = 3
+                octave = lily_octave(int(chord[-4:-3]), 2)
 
-            lilychord = "<"
-            for i in xrange(chordsize):
-                note = chordnotes[i]
-                pitch = tools.midi_to_genletter(note)
-                
-                lilynote = str(lily_note(pitch) + octave + " ")
-                lilychord += lilynote
-            lilychord += ">" + length
-            lilybar.append(lilychord)
+                lilychord = "<"
+                for i in xrange(chordsize):
+                    note = chordnotes[i]
+                    pitch = tools.midi_to_genletter(note)
+                    
+                    lilynote = str(lily_note(pitch) + octave + " ")
+                    lilychord += lilynote
+                lilychord += ">" + length
+                lilybar.append(lilychord)
+            elif chord == "r1":
+                lilybar.append(chord)
+            else:
+                lilybar.append("r" + length)
 
     return " ".join(lilybar)
 
@@ -103,10 +108,6 @@ def lily_convert_single(bar):
     lilybar = []
 
     for note in sequence:
-        if note == 'r1':
-            lilybar.append("r1")
-            break
-        
         if note != ".":
             length = lily_length(str(note[-2:]))
             if note.startswith("r") == False:
@@ -119,6 +120,8 @@ def lily_convert_single(bar):
                 lilynote = str(lily_note(pitch) + octave + length + " ")
 
                 lilybar.append(lilynote)
+            elif note == "r1":
+                lilybar.append(note)
             else:
                 lilybar.append("r" + length)
 

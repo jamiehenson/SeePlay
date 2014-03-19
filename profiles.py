@@ -14,7 +14,7 @@ def standard_a(parent, img):
     # if performer.bar % 4 == 0:
         # facecount = watchman.get_facecount(img)
 
-    if motion > 10: 
+    if motion > 5: 
         watchman.activity_boost = 1
         stabs.multifire(motion)
         
@@ -25,18 +25,18 @@ def standard_a(parent, img):
         watchman.activity_boost = 0
         parent.set_user_tempo_modifier(1)
 
-    watchman.change_activity("bass", red_brightness, 8)
-    watchman.change_activity("drums", green_brightness, 16)
-    watchman.change_activity("melody", red_brightness, 8)
-    watchman.change_activity("chords", max(green_brightness, blue_brightness), 16)
+    watchman.change_activity("bass", red_brightness, 4)
+    watchman.change_activity("drums", green_brightness, 8)
+    watchman.change_activity("melody", red_brightness, 4)
+    watchman.change_activity("chords", max(green_brightness, blue_brightness), 4)
 
     if blue_brightness > 0.5: 
         if parent.user_mode == "major": parent.set_user_mode("Minor")
     else:
         if parent.user_mode == "minor": parent.set_user_mode("Major")
 
-    mixer.set_volume(parent, "bass", 80 * (1 - brightness))
-    mixer.set_volume(parent, "drums", 80 * (1 - brightness))
+    mixer.set_volume(parent, "bass", 127 * (1 - brightness))
+    mixer.set_volume(parent, "drums", 127 * (1 - brightness))
     mixer.set_volume(parent, "chords", 127 * brightness)
     mixer.set_volume(parent, "melody", 127 * brightness)
     mixer.set_volume(parent, "stabs", 127 * brightness)
