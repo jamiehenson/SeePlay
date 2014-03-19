@@ -64,20 +64,20 @@ def kill_chord(chord):
 
 def play_note(chan, note, length):
     velo = mixer.get_volume(mixer.get_channelname(chan))
-    midiout.send_message([chan, note, velo])
-    time.sleep(tempo_in_time * length)
-    midiout.send_message([chan, note, 0])
+    threading.Thread(target = midiout.send_message, args = [[chan, note, velo]]).start()
+    threading.Timer(tempo_in_time * length, midiout.send_message, [[chan, note, 0]]).start()
+    # midiout.send_message([chan, note, velo])
+    # time.sleep(tempo_in_time * 0.01)
+    # midiout.send_message([chan, note, 0])
 
 def play_notes(chan, chord, delay, length, chordsize):
     chord = chord[:chord[chordsize]]
     velo = mixer.get_volume("chords")
     for note in chord:
-        midiout.send_message([chan, note, velo])
-
-    time.sleep(tempo_in_time * tsig)
+        threading.Thread(target = midiout.send_message, args = [[chan, note, velo]])
 
     for note in chord:
-        midiout.send_message([chan, note, 0])
+        threading.Timer(tempo_in_time * length, midiout.send_message, [[chan, note, 0]])
 
 def play_chord(chan, speed, beat, pattern):
     while beat < (tsig * timing):        
@@ -85,16 +85,17 @@ def play_chord(chan, speed, beat, pattern):
         
         if noteinfo != "." and noteinfo.startswith("r") == False:
             chord = tools.get_chord(noteinfo)
-            length = noteinfo[-1:]
+            length = tools.lengths[str(noteinfo[-2:])]
             chordsize = 6
             # play_notes(midiout,chan,chord,0,length,chordsize)
-            threading.Timer(0,play_notes,[chan,chord,0,length,chordsize]).start()
+            threading.Thread(target = play_notes, args = [chan,chord,0,length,chordsize]).start()
 
         nextbeat = float(float(speed)/float(timing))
         time.sleep(nextbeat)
         beat += 1
 
-def play_bass(chan, speed, beat, pattern):
+def play_bass(chan, speed, pattern):
+    beat = 0
     while beat < (tsig * timing):
         noteinfo = pattern[beat]
         
@@ -108,25 +109,34 @@ def play_bass(chan, speed, beat, pattern):
             length = tools.lengths[str(noteinfo[-2:])]
             conv_note = tools.roots[pitch] + (octave*12) + 24
             # play_note(midiout,chan,conv_note,length)
-            threading.Timer(0,play_note,[chan,conv_note,length]).start()
+            threading.Thread(target = play_note, args = [chan,conv_note,length]).start()
 
         nextbeat = float(float(speed)/float(timing))
         time.sleep(nextbeat)
         beat += 1
 
-def play_drums(chan, speed, beat, pattern):
+def play_drums(chan, speed, pattern):
+    beat = 0
     while beat < (tsig * timing):
+        firelength = 0.02
+        notestoplay = []
+
         # HATS
         if pattern[0][beat] == "x":
-            play_note(chan,42,0.001)
+            notestoplay.append(42)
 
         # SNARE
         if pattern[1][beat] == "x":
-            play_note(chan,40,0.001)
+            notestoplay.append(40)
 
         # KICK
         if pattern[2][beat] == "x":
-            play_note(chan,36,0.001)
+            notestoplay.append(36)
+
+        for note in notestoplay:
+            threading.Thread(target = play_note, args = [chan, note, firelength]).start()
+
+        del notestoplay
         
         nextbeat = float(float(speed)/float(timing))
         time.sleep(nextbeat)
@@ -146,7 +156,7 @@ def play_melody(chan, speed, beat, pattern):
             length = tools.lengths[str(noteinfo[-2:])]
             conv_note = tools.roots[pitch] + (octave*12) + 24
             # play_note(midiout,chan,conv_note,length)
-            threading.Timer(0,play_note,[chan,conv_note,length]).start()
+            threading.Thread(target = play_note, args = [chan,conv_note,length]).start()
 
         nextbeat = float(float(speed)/float(timing))
         time.sleep(nextbeat)
@@ -158,7 +168,7 @@ def enqueue_drums(parent):
     current_bar = drumlines[0].split()
     beatarray = [list(current_bar[0][1:]),list(current_bar[1][1:]),list(current_bar[2][1:])]
 
-    play_drums(mixer.get_channel("drums"), tempo_in_time, 0, beatarray)
+    play_drums(mixer.get_channel("drums"), tempo_in_time, beatarray)
 
     if parent.user_midioutput: recorder.add_drums_bar(beatarray)
 
@@ -167,7 +177,7 @@ def enqueue_drums(parent):
 def enqueue_bass(parent):
     if len(basslines) < buff: add_bass(tacet)
 
-    play_bass(mixer.get_channel("bass"), tempo_in_time, 0, list(basslines[0].split()))
+    play_bass(mixer.get_channel("bass"), tempo_in_time, list(basslines[0].split()))
     
     if parent.user_sheetmusic: lily.add_bass_bar(basslines[0].split())
     if parent.user_midioutput: recorder.add_bass_bar(basslines[0].split())
@@ -223,8 +233,8 @@ def monitor_beat(parent):
     while watchman.active == True:
         global main_beat
         main_beat += 1
-
-        time.sleep(float(tempo_in_time))
+        threading.Thread(target=play_note, args=(mixer.get_channel("metronome"), 37, tempo_in_time)).start()
+        time.sleep(float(0.5))   
 
     write_things(parent)
 
@@ -261,6 +271,6 @@ def start(parent):
 
     print "Playing..."
 
-    threading.Timer(0,enqueue,[parent]).start()
-    threading.Timer(0,monitor_bar,[parent]).start()
-    threading.Timer(0,monitor_beat,[parent]).start()
+    threading.Thread(target = enqueue, args = [parent]).start()
+    threading.Thread(target = monitor_bar, args = [parent]).start()
+    threading.Thread(target = monitor_beat, args = [parent]).start()

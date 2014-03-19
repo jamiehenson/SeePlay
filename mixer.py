@@ -4,6 +4,7 @@ channels = {
     "chords" : 2,
     "melody" : 3,
     "stabs" : 4,
+    "metronome" : 5,
 }
 
 volume = {
@@ -11,7 +12,8 @@ volume = {
     "bass" : 100,
     "chords" : 100,
     "melody" : 100,
-    "stabs" : 127
+    "stabs" : 127,
+    "metronome" : 127
 }
 
 def set_channel(chan, val):

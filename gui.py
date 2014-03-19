@@ -372,7 +372,7 @@ class SPApp(QtGui.QMainWindow):
         mix_w = 400
         row_w = mix_w / 4
         row_h = 30
-        mix_h = row_h * 9
+        mix_h = row_h * 10
 
         firstcolx = 0
         secondcolx = row_w
@@ -386,7 +386,8 @@ class SPApp(QtGui.QMainWindow):
         chords_slot = 5
         melody_slot = 6
         stabs_slot = 7
-        info_slot = 8
+        metro_slot = 8
+        info_slot = 9
 
         self.mix = QtGui.QWidget()
 
@@ -540,6 +541,29 @@ class SPApp(QtGui.QMainWindow):
         self.mix.stabsvol.setMaximum(127)
         self.mix.stabsvol.setValue(100)
         self.mix.stabsvol.valueChanged[int].connect(lambda: mixer.set_volume(self, "stabs", self.mix.stabsvol.value()))
+
+        self.mix.metro = QtGui.QLabel("Metronome:", self.mix)
+        self.mix.metro.resize(row_w, row_h)
+        self.mix.metro.move(firstcolx, row_h * metro_slot)
+        self.mix.metro.setStyleSheet("QLabel { padding: 5px; font-size: 14px; font-weight: bold; text-align: center; color: #FFFFFF; }")
+
+        self.mix.metrobox = QtGui.QComboBox(self.mix)
+        self.mix.metrobox.resize(row_w, row_h)
+        self.mix.metrobox.move(secondcolx,row_h * metro_slot)
+        for i in xrange(16):
+            self.mix.metrobox.addItem(str(i))
+        self.mix.metrobox.addItem("Off")
+        self.mix.metrobox.setCurrentIndex(mixer.get_stdchannel("metronome"))
+        self.mix.metrobox.activated[str].connect(lambda: mixer.set_channel("metronome",int(self.mix.metrobox.currentText())))
+
+        self.mix.metrovol = QtGui.QSlider(QtCore.Qt.Horizontal, self.mix)
+        self.mix.metrovol.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.mix.metrovol.resize(row_w * 2, row_h)
+        self.mix.metrovol.move(thirdcolx, row_h * metro_slot)
+        self.mix.metrovol.setMinimum(0)
+        self.mix.metrovol.setMaximum(127)
+        self.mix.metrovol.setValue(100)
+        self.mix.metrovol.valueChanged[int].connect(lambda: mixer.set_volume(self, "metronome", self.mix.metrovol.value()))
 
         self.mix.info = QtGui.QLabel("Please use your connected DAW to control master volume.", self.mix)
         self.mix.info.resize(mix_w, row_h)

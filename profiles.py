@@ -19,7 +19,7 @@ def standard_a(parent, img):
         stabs.multifire(motion)
         
         #tempomod = tools.clamp(1, 1.5, (motion / 100))
-        tempomod = 1 + tools.invlerp(0, 0.5, (motion / 100))
+        tempomod = 1 + (tools.invlerp(0, 0.5, (motion / 100) / 2))
         parent.set_user_tempo_modifier(tempomod)
     else:
         watchman.activity_boost = 0
