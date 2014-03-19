@@ -84,3 +84,6 @@ tempout.png
 *.midi
 *.mid
 *.pdf
+
+demo/
+demo/Assets/

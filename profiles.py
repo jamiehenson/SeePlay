@@ -82,7 +82,7 @@ def standard_b(parent, img):
 
 # COPY OF A, BUT WITH LOWER SENSITIVITY
 def sparse(parent, img):
-        global motion
+    global motion
 
     brightness = watchman.get_brightness(img.histogram(250), 20)
     [red_brightness, green_brightness, blue_brightness] = watchman.count_colours(img)
