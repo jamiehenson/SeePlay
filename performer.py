@@ -9,6 +9,7 @@ import bass
 import lily
 import recorder
 import mixer
+import profiles
 
 midiout = None
 main_beat = 0
@@ -66,18 +67,13 @@ def play_note(chan, note, length):
     velo = mixer.get_volume(mixer.get_channelname(chan))
     threading.Thread(target = midiout.send_message, args = [[chan, note, velo]]).start()
     threading.Timer(tempo_in_time * length, midiout.send_message, [[chan, note, 0]]).start()
-    # midiout.send_message([chan, note, velo])
-    # time.sleep(tempo_in_time * 0.01)
-    # midiout.send_message([chan, note, 0])
 
 def play_notes(chan, chord, delay, length, chordsize):
     chord = chord[:chord[chordsize]]
     velo = mixer.get_volume("chords")
     for note in chord:
-        threading.Thread(target = midiout.send_message, args = [[chan, note, velo]])
-
-    for note in chord:
-        threading.Timer(tempo_in_time * length, midiout.send_message, [[chan, note, 0]])
+        threading.Thread(target = midiout.send_message, args = [[chan, note, velo]]).start()
+        threading.Timer(tempo_in_time * length, midiout.send_message, [[chan, note, 0]]).start()
 
 def play_chord(chan, speed, beat, pattern):
     while beat < (tsig * timing):        
@@ -86,8 +82,7 @@ def play_chord(chan, speed, beat, pattern):
         if noteinfo != "." and noteinfo.startswith("r") == False:
             chord = tools.get_chord(noteinfo)
             length = tools.lengths[str(noteinfo[-2:])]
-            chordsize = 6
-            # play_notes(midiout,chan,chord,0,length,chordsize)
+            chordsize = 6 * int(tools.invlerp(0, 100, profiles.motion))
             threading.Thread(target = play_notes, args = [chan,chord,0,length,chordsize]).start()
 
         nextbeat = float(float(speed)/float(timing))

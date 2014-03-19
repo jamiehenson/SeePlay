@@ -19,12 +19,13 @@ def make_phrase(template, scale):
 def gen_rhythm(template):
     # Rhythm
     # Borrow rhythm from the bass
-
     template = []
-    bassbar = bass.current_bass
-    bb_list = bassbar.split(" ")
-    for note in bb_list:
-        if note != "." and random.random() < watchman.activities["chords"]:
+
+    # bassbar = bass.current_bass
+    # bb_list = bassbar.split(" ")
+    # for note in bb_list:
+    for i in xrange(int(performer.tsig * performer.timing)):    
+        if random.random() < watchman.activities["chords"]:
             template.append("x")
         else:
             template.append(".")

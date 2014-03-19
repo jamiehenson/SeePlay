@@ -47,7 +47,7 @@ def prog_relative(parent):
         if relativemode == "major":
             relativekey = tools.midi_to_genletter((tools.roots[parent.user_key] - 3) % 12)
             relativemode = "minor"
-        else:
+        elif relativemode == "minor":
             relativekey = tools.midi_to_genletter((tools.roots[parent.user_key] + 3) % 12)
             relativemode = "major"
     elif modbar == cycle:
@@ -131,6 +131,8 @@ def progression(parent, prog_type):
         print "Incorrect progression call."
 
 def conduct(parent):
+    global relativemode
+
     if watchman.active == True:
         chords.play()
         bass.play()
@@ -138,6 +140,7 @@ def conduct(parent):
         melody.play()
 
         if performer.bar > 0:
+            relativemode = parent.user_mode
             progression(parent, parent.user_prog_type)
 
         threading.Timer(performer.tempo_in_time,conduct,[parent]).start()

@@ -34,7 +34,7 @@ imgscale = 0.5
 def change_activity(inst, val, sen):
     global activities
 
-    corrected_val = (val + activity_boost) / sen
+    corrected_val = float(val + activity_boost) / float(sen)
     # corrected_val = (val) / 4
 
     if abs(activities[inst] - corrected_val) > 0.1 or performer.bar < 4:
