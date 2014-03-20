@@ -2,6 +2,7 @@ import tools
 import performer
 import conductor
 import random
+import section
 import watchman
 
 current_bass = ". . . . . . . . . . . . . . . ."
@@ -17,15 +18,17 @@ def make_phrase(template, scale):
     return bar
 
 def gen_rhythm(template):
-    # Rhythm
-    # print performer.tsig, performer.timing
-    for i in xrange(int(performer.tsig * performer.timing)):
-        if random.random() < watchman.activities["bass"]:
-            template.append("x")
+    newtem = []
+    for note in template:
+        if (random.random() < watchman.activities["bass"]):
+            if note == ".":
+                newtem.append("x")
+            else:
+                newtem.append(".")
         else:
-            template.append(".")
+            newtem.append(note)
 
-    return template
+    return newtem
 
 def gen_notes(template):
     # Note lengths and pitch
@@ -45,7 +48,7 @@ def gen_notes(template):
 def gen():
     global current_bass
 
-    template = []
+    template = section.rhythm
     template = gen_rhythm(template)
     template = gen_notes(template)
 

@@ -3,6 +3,7 @@ import performer
 import conductor
 import random
 import watchman
+import section
 import bass
 
 current_chords = ". . . . . . . . . . . . . . . ."
@@ -17,18 +18,12 @@ def make_phrase(template, scale):
     return " ".join(bar)
 
 def gen_rhythm(template):
-    # Rhythm
-    # Borrow rhythm from the bass
-    template = []
-
-    # bassbar = bass.current_bass
-    # bb_list = bassbar.split(" ")
-    # for note in bb_list:
-    for i in xrange(int(performer.tsig * performer.timing)):    
-        if random.random() < watchman.activities["chords"]:
-            template.append("x")
-        else:
-            template.append(".")
+    for note in template:
+        if (random.random() < watchman.activities["chords"]):
+            if note == ".":
+                note = "x"
+            else:
+                note = "."
 
     return template
 
@@ -50,7 +45,7 @@ def gen_notes(template):
 def gen():
     global current_chords
 
-    template = []
+    template = section.rhythm
     template = gen_rhythm(template)
     template = gen_notes(template)
 

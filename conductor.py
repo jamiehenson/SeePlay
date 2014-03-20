@@ -6,6 +6,7 @@ import bass
 import chords
 import drum
 import melody
+import section
 import random
 
 relativekey = "C"
@@ -36,6 +37,8 @@ def gen_templates(inst):
         drum.gen()
     elif inst == "chords":
         chords.gen()
+    elif inst == "section":
+        section.gen()
 
 def prog_relative(parent):
     global relativekey
@@ -132,6 +135,7 @@ def progression(parent, prog_type):
 
 def conduct(parent):
     global relativemode
+    global relativekey
 
     if watchman.active == True:
         chords.play()
@@ -141,6 +145,7 @@ def conduct(parent):
 
         if performer.bar > 0:
             relativemode = parent.user_mode
+            relativekey = parent.user_key
             progression(parent, parent.user_prog_type)
 
         threading.Timer(performer.tempo_in_time,conduct,[parent]).start()

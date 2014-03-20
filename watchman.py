@@ -10,6 +10,7 @@ import recorder
 import mixer
 import tools
 import profiles
+import math
 from SimpleCV import *
 
 fps = 1
@@ -23,7 +24,8 @@ activities = {
     "bass" : 0,
     "chords" : 0,
     "melody" : 0,
-    "drums" : 0
+    "drums" : 0,
+    "section" : 0
 }
 
 home = os.path.join(os.path.expanduser('~'))
@@ -37,7 +39,7 @@ def change_activity(inst, val, sen):
     corrected_val = float(val + activity_boost) / float(sen)
     # corrected_val = (val) / 4
 
-    if abs(activities[inst] - corrected_val) > 0.1 or performer.bar < 4:
+    if abs(activities[inst] - corrected_val) > 0.01 or performer.bar < 4:
         activities[inst] = corrected_val
         activities["all"] = activities["bass"] + activities["drums"] + activities["chords"] + activities["melody"]
         conductor.gen_templates(inst)
@@ -47,6 +49,7 @@ def change_all_activity(val, sen):
     change_activity("drums", val, sen)
     change_activity("chords", val, sen)
     change_activity("melody", val, sen)
+    change_activity("section", val, sen)
 
 def take(parent): 
     intype = parent.user_inputsrc
@@ -110,6 +113,47 @@ def get_brightness(hist, detail):
     maxbin = [i for i, j in enumerate(vals) if j == maxval]
 
     return float(maxbin[0]) / float(detail)
+
+def get_brightness_grid(img, detail):
+    w = img.width / detail
+    h = img.height / detail
+
+    vals = []
+    for i in xrange(detail):
+        vals.append([])
+        for j in xrange(detail):
+            cropimg = img.crop(j * w, i * h, w, h)
+            vals[i].append(get_brightness(cropimg.histogram(255), 20))
+
+    return vals
+
+def get_brightness_totals(vals):
+    detail = int(len(vals))
+    totals = []
+    totalvals = []
+    centre = int(math.floor(detail / 2))
+    tiers = int(math.ceil((detail + 1) / 2))
+
+    for i in xrange(tiers + 1):
+        totals.append([])
+
+    for i in xrange(detail):
+        for j in xrange(detail):
+            tier = float(max(abs(i - centre), abs(j - centre)) + 1)
+            mult = 1 #float(1.0 - (0.1 * tier))
+            # if vals[i][j] != 0:
+            totals[0].append(vals[i][j] * mult)
+            totals[int(tier)].append(vals[i][j] * mult)
+
+    for i in xrange(len(totals)):
+        if len(totals[i]) != 0:
+            totalvals.append(float(sum(totals[i]) / len(totals[i])))
+        else:
+            totalvals.append(0)
+
+    # print totals
+
+    return totalvals
 
 def add_to_imgbank(img):
     global imgbank
