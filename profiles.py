@@ -39,10 +39,10 @@ def standard_a(parent, img):
         watchman.activity_boost = 0
         parent.set_user_tempo_modifier(1)
 
-    watchman.change_activity("bass", max(red_brightness, b_totals[len(b_totals) - 1]), 4)
-    watchman.change_activity("drums", b_totals[len(b_totals) - 1], 4)
-    watchman.change_activity("melody", max(red_brightness, b_totals[1]), 4)
-    watchman.change_activity("chords", max(green_brightness, blue_brightness, b_totals[0]), 4)
+    watchman.change_activity("bass", max(red_brightness, b_totals[len(b_totals) - 1]), 8)
+    watchman.change_activity("drums", b_totals[len(b_totals) - 1], 8)
+    watchman.change_activity("melody", max(red_brightness, b_totals[1]), 8)
+    watchman.change_activity("chords", max(green_brightness, blue_brightness, b_totals[0]), 8)
     watchman.change_activity("section", brightness, 4)
 
     if blue_brightness > 0.5: 

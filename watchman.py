@@ -39,7 +39,7 @@ def change_activity(inst, val, sen):
     corrected_val = float(val + activity_boost) / float(sen)
     # corrected_val = (val) / 4
 
-    if abs(activities[inst] - corrected_val) > 0.01 or performer.bar < 4:
+    if abs(activities[inst] - corrected_val) > 0.05 or performer.bar < 4:
         activities[inst] = corrected_val
         activities["all"] = activities["bass"] + activities["drums"] + activities["chords"] + activities["melody"]
         conductor.gen_templates(inst)

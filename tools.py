@@ -70,6 +70,8 @@ note_modes = {
     "arabic" : ["-", "-", "-", "-", "-", "-", "-", "-"]
 }
 
+note_choices = [(0,0.3), (1,0.05), (2,0.1), (3,0.2), (4,0.2), (5,0.05), (6,0.05), (7,0.05)]
+
 def length_key_check(num):
     revlength = dict((v,k) for k,v in lengths.iteritems())
     return True if num in revlength else False
@@ -105,10 +107,11 @@ def midi_to_letter(scale, octave):
 
 def scale_intervals(root, mode):
     intvals = intervals[mode]
+    newints = []
     for i in xrange(len(intvals)):
-        intvals[i] = root + intvals[i]
+        newints.append(root + intvals[i])
 
-    return intvals
+    return newints
 
 def make_chordscale(key, mode, octave):
     root = roots[key]
@@ -139,8 +142,8 @@ def get_chord(chord):
 
     pitch = letter_to_midi(pitch, 0)
     minoroffset = 3 if mode == "-" else 4
-    chord = [pitch+octave, pitch+minoroffset+octave, pitch+7+octave, pitch+12+octave, pitch+12+minoroffset+octave, pitch+19+octave, pitch+24+octave]
-    return chord
+    newchord = [pitch+octave, pitch+minoroffset+octave, pitch+7+octave, pitch+12+octave, pitch+12+minoroffset+octave, pitch+19+octave, pitch+24+octave]
+    return newchord
 
 def find_next_note(i, template):
     next_note = float(performer.tsig * performer.timing)
@@ -151,11 +154,20 @@ def find_next_note(i, template):
     
     return float((next_note - i) / performer.timing)
 
+def weighted_choice(choices):
+    total = sum(w for c, w in choices)
+    r = random.uniform(0, total)
+    upto = 0
+    for c, w in choices:
+        if upto + w > r:
+            return str(c)
+        upto += w
+
 def place_notes(i, template, notes):
     code = find_next_note(i, template)
     
     if notes:
-        chosen_scaleno = str(random.randrange(0,5))
+        chosen_scaleno = weighted_choice(note_choices)
     else:
         chosen_scaleno = "r"
 

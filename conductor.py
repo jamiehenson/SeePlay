@@ -7,6 +7,7 @@ import chords
 import drum
 import melody
 import section
+import math
 import random
 
 relativekey = "C"
@@ -57,79 +58,79 @@ def prog_relative(parent):
         relativekey = parent.user_key
         relativemode = parent.user_mode
 
-def prog_none(parent):
+def prog_none(parent, key, mode):
     return 0
 
-def prog_random(parent):
+def prog_random(parent, key, mode):
     return 0
 
-def prog_blues(parent):
+def prog_blues(parent, key, mode):
     global relativekey
     modbar = performer.bar % (3 * cycle)
 
     if modbar == 0 or modbar == cycle + (cycle / 2) or modbar == ((2 * cycle) + (cycle / 2)):
-        relativekey = tools.midi_to_genletter((tools.roots[parent.user_key]) % 12)
+        relativekey = tools.midi_to_genletter((tools.roots[key]) % 12)
     elif modbar == cycle or modbar == (2 * cycle) + (cycle / 4):
-        relativekey = tools.midi_to_genletter((tools.roots[parent.user_key] + 5) % 12)
+        relativekey = tools.midi_to_genletter((tools.roots[key] + 5) % 12)
     elif modbar == (2 * cycle):
-        relativekey = tools.midi_to_genletter((tools.roots[parent.user_key] + 7) % 12)
+        relativekey = tools.midi_to_genletter((tools.roots[key] + 7) % 12)
 
-def prog_fifth(parent):
+def prog_fifth(parent, key, mode):
     global relativekey
 
     modbar = performer.bar % (2 * cycle)
 
     if modbar == 0:
-        relativekey = tools.midi_to_genletter((tools.roots[parent.user_key] + 7) % 12)
+        relativekey = tools.midi_to_genletter((tools.roots[key] + 7) % 12)
     elif modbar == cycle:
-        relativekey = parent.user_key
+        relativekey = key
 
-def prog_50s(parent):
+def prog_50s(parent, key, mode):
     global relativekey
     modbar = performer.bar % (4 * cycle)
 
     if modbar == 0:
-        relativekey = tools.midi_to_genletter((tools.roots[parent.user_key]) % 12)
+        relativekey = tools.midi_to_genletter((tools.roots[key]) % 12)
     elif modbar == cycle:
-        relativekey = tools.midi_to_genletter((tools.roots[parent.user_key] + 9) % 12)
+        relativekey = tools.midi_to_genletter((tools.roots[key] + 9) % 12)
     elif modbar == (2 * cycle):
-        relativekey = tools.midi_to_genletter((tools.roots[parent.user_key] + 5) % 12)
+        relativekey = tools.midi_to_genletter((tools.roots[key] + 5) % 12)
     elif modbar == (3 * cycle):
-        relativekey = tools.midi_to_genletter((tools.roots[parent.user_key] + 7) % 12)
+        relativekey = tools.midi_to_genletter((tools.roots[key] + 7) % 12)
 
-def prog_circ5(parent):
+def prog_circ5(parent, key, mode):
     global circleno, relativekey
     modbar = performer.bar % cycle
 
     if modbar == 0:
-        relativekey = tools.midi_to_genletter((tools.roots[parent.user_key] + (7 * circleno)) % 12)
-        circleno += 1
+        relativekey = tools.midi_to_genletter((tools.roots[key] + (7 * math.ceil(circleno))) % 12)
+        circleno += (1 / performer.tsig)
 
-def prog_circ4(parent):
+def prog_circ4(parent, key, mode):
     global circleno, relativekey
     modbar = performer.bar % cycle
 
     if modbar == 0:
-        relativekey = tools.midi_to_genletter((tools.roots[parent.user_key] + (5 * circleno)) % 12)
-        circleno += 1
+        relativekey = tools.midi_to_genletter((tools.roots[key] + (5 * math.ceil(circleno))) % 12)
+        circleno += (1 / performer.tsig)
 
-def progression(parent, prog_type):
+def progression(parent, prog_type, key, mode):
     if prog_type == "none":
-        prog_none(parent)
+        prog_none(parent, key, mode)
     elif prog_type == "random":
-        prog_random(parent)
+        prog_random(parent, key, mode)
     elif prog_type == "blues":
-        prog_blues(parent)
+        prog_blues(parent, key, mode)
     elif prog_type == "relative":
-        prog_relative(parent)
+        prog_relative(parent, key, mode)
     elif prog_type == "fifth":
-        prog_fifth(parent)
+        prog_fifth(parent, key, mode)
     elif prog_type == "50s":
-        prog_50s(parent)
+        prog_50s(parent, key, mode)
     elif prog_type == "circ4":
-        prog_circ4(parent)
+        prog_circ4(parent, key, mode)
     elif prog_type == "circ5":
-        prog_circ5(parent)
+        prog_circ5(parent, key, mode)
     else:
         print "Incorrect progression call."
 
@@ -144,8 +145,6 @@ def conduct(parent):
         melody.play()
 
         if performer.bar > 0:
-            relativemode = parent.user_mode
-            relativekey = parent.user_key
-            progression(parent, parent.user_prog_type)
+            progression(parent, parent.user_prog_type, parent.user_key, parent.user_mode)
 
         threading.Timer(performer.tempo_in_time,conduct,[parent]).start()
