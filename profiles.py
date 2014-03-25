@@ -4,6 +4,7 @@ import mixer
 import stabs
 import threading
 import tools
+import extractor
 
 motion = None
 
@@ -16,7 +17,9 @@ def standard_a(parent, img):
     b_totals = watchman.get_brightness_totals(b_grid)
     brightness = watchman.get_brightness(img.histogram(250), 20)
     [red_brightness, green_brightness, blue_brightness] = watchman.count_colours(img)
-    motion = watchman.get_motion()
+    # motion = watchman.get_motion()
+    # motion = extractor.edge()
+    motion = extractor.hue() * 100000
 
     lower_vol = 20
     higher_vol = 120
@@ -31,19 +34,18 @@ def standard_a(parent, img):
     if motion > 5: 
         watchman.activity_boost = 0.5 # 1
         stabs.multifire(motion)
-        
-        #tempomod = tools.clamp(1, 1.5, (motion / 100))
+        # tempomod = tools.clamp(1, 1.5, (motion / 100))
         tempomod = 1 #+ (tools.invlerp(0, 0.1, (motion / 100) / 2))
-        parent.set_user_tempo_modifier(tempomod)
+        # parent.set_user_tempo_modifier(tempomod)
     else:
         watchman.activity_boost = 0
-        parent.set_user_tempo_modifier(1)
+        # parent.set_user_tempo_modifier(1)
 
-    watchman.change_activity("bass", max(red_brightness, b_totals[len(b_totals) - 1]), 8)
-    watchman.change_activity("drums", b_totals[len(b_totals) - 1], 8)
-    watchman.change_activity("melody", max(red_brightness, b_totals[1]), 8)
-    watchman.change_activity("chords", max(green_brightness, blue_brightness, b_totals[0]), 8)
-    watchman.change_activity("section", brightness, 4)
+    watchman.change_activity("bass", max(blue_brightness, b_totals[len(b_totals) - 1]), 4)
+    watchman.change_activity("drums", b_totals[len(b_totals) - 1], 4)
+    watchman.change_activity("melody", max(red_brightness, b_totals[1]), 4)
+    watchman.change_activity("chords", max(red_brightness, green_brightness, b_totals[0]), 4)
+    watchman.change_activity("section", brightness, 32)
 
     if blue_brightness > 0.5: 
         if parent.user_mode == "major": parent.set_user_mode("Minor")

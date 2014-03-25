@@ -30,7 +30,7 @@ activities = {
 
 home = os.path.join(os.path.expanduser('~'))
 imgbank = []
-imglimit = 5
+imglimit = 3
 imgscale = 0.5
 
 def change_activity(inst, val, sen):
@@ -52,39 +52,7 @@ def change_all_activity(val, sen):
     change_activity("section", val, sen)
 
 def take(parent): 
-    intype = parent.user_inputsrc
-    os.system("screencapture -xdaro " + home + "/sp_0.tiff")
-
-def get_dominant_colour():
-    current = imgbank[0]
-    
-    if len(imgbank) > 1:
-        older = imgbank[1]
-    else:
-        older = current
-
-    newpeak = current.huePeaks()[0]
-    oldpeak = older.huePeaks()[0]
-    #print newpeak, oldpeak
-
-    #avgpeak = (newpeak + oldpeak) / 2
-    #print avgpeak
-    return newpeak
-
-def get_motion():
-    current = imgbank[0]
-    
-    if len(imgbank) > 1:
-        older = imgbank[1]
-    else:
-        older = current
-
-    diff = current - older
-
-    matrix = diff.getNumpy()
-    mean = matrix.mean()
-
-    return mean
+    os.system("screencapture -xdaro " + home + "/sp_0.png")
 
 def get_histograms():
     for img in imgbank:
@@ -196,7 +164,7 @@ def watch(parent):
     if active == True:
         take(parent)
 
-        img = Image(home + "/sp_0.tiff").scale(int(parent.screen_x * imgscale), int(parent.screen_y * imgscale))
+        img = Image(home + "/sp_0.png").scale(int(parent.screen_x * imgscale), int(parent.screen_y * imgscale))
 
         if parent.user_inputsrc == "manual":
             [x,y,w,h] = parent.user_inputregion
@@ -211,7 +179,7 @@ def watch(parent):
         elif parent.user_type == "Sparse":
             threading.Timer(0, profiles.sparse, [parent, img]).start()
 
-        threading.Timer(performer.tempo_in_time, watch, [parent]).start()
+        threading.Timer(performer.tempo_in_time / 4, watch, [parent]).start()
 
 def start_watching(parent):
     threading.Timer(0,performer.start,[parent]).start()

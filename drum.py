@@ -3,10 +3,20 @@ import performer
 import conductor
 import random
 import watchman
+import section
 
 current_drums = "H................ S................ K................"
 
 # AMBIENT
+# def gen_drum():
+#     template = section.blank
+
+#     for i in xrange(int(performer.tsig * performer.timing)):
+#         if random.random() < watchman.activities["drums"] / 4:
+#             template = section.place_note(template)
+
+#     return "".join(template)
+
 def gen_drumline(type):
     # Rhythm
     template = []

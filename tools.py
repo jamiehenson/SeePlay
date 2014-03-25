@@ -71,6 +71,24 @@ note_modes = {
 }
 
 note_choices = [(0,0.3), (1,0.05), (2,0.1), (3,0.2), (4,0.2), (5,0.05), (6,0.05), (7,0.05)]
+rhythm_choices = [
+    (0, float(4.0 / 16.0)), 
+    (1, float(0.25 / 16.0)), 
+    (2, float(1.0 / 16.0)), 
+    (3, float(0.5 / 16.0)), 
+    (4, float(2.0 / 16.0)), 
+    (5, float(0.5 / 16.0)), 
+    (6, float(1.0 / 16.0)), 
+    (7, float(0.5 / 16.0)), 
+    (8, float(2.0 / 16.0)), 
+    (9, float(0.25 / 16.0)), 
+    (10, float(1 / 16.0)), 
+    (11, float(0.5 / 16.0)), 
+    (12, float(2.0 / 16.0)), 
+    (13, float(0.5 / 16.0)), 
+    (14, float(1.0 / 16.0)), 
+    (15, float(0.25 / 16.0))
+]
 
 def length_key_check(num):
     revlength = dict((v,k) for k,v in lengths.iteritems())

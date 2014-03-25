@@ -41,7 +41,7 @@ def gen_templates(inst):
     elif inst == "section":
         section.gen()
 
-def prog_relative(parent):
+def prog_relative(parent, key, mode):
     global relativekey
     global relativemode
 
@@ -49,14 +49,14 @@ def prog_relative(parent):
 
     if modbar == 0:
         if relativemode == "major":
-            relativekey = tools.midi_to_genletter((tools.roots[parent.user_key] - 3) % 12)
+            relativekey = tools.midi_to_genletter((tools.roots[key] - 3) % 12)
             relativemode = "minor"
         elif relativemode == "minor":
-            relativekey = tools.midi_to_genletter((tools.roots[parent.user_key] + 3) % 12)
+            relativekey = tools.midi_to_genletter((tools.roots[key] + 3) % 12)
             relativemode = "major"
     elif modbar == cycle:
-        relativekey = parent.user_key
-        relativemode = parent.user_mode
+        relativekey = key
+        relativemode = mode
 
 def prog_none(parent, key, mode):
     return 0
