@@ -6,20 +6,18 @@ import tools
 blank = [".",".",".",".",".",".",".",".",".",".",".",".",".",".",".","."]
 rhythm = [".",".",".",".",".",".",".",".",".",".",".",".",".",".",".","."]
 
-def place_note(template):
-    newtem = template
-    chosen = int(tools.weighted_choice(tools.rhythm_choices))
-    newtem[chosen] = "x"
-    return newtem
+def note_no():
+    chosen = tools.weighted_choice(tools.rhythm_choices)
+    return int(chosen)
 
 def gen_rhythm():
     global rhythm
-    template = blank
-    for i in xrange(int(performer.tsig * performer.timing)):
+    tem = [".",".",".",".",".",".",".",".",".",".",".",".",".",".",".","."]
+    for i in xrange(int(performer.tsig * performer.timing) / 4):
         if random.random() < watchman.activities["section"]:
-            place_note(template)
+            tem[note_no()] = "x"
 
-    rhythm = template
+    rhythm = tem
 
 def gen():
     gen_rhythm()

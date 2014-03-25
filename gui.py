@@ -317,10 +317,10 @@ class SPApp(QtGui.QMainWindow):
         self.sigbox = QtGui.QComboBox(self)
         self.sigbox.resize(window_w*0.5,boxheight)
         self.sigbox.move(window_w*0.33 + window_w*0.16, (tsig_slot * boxheight) + 15)
-        self.sigbox.addItem("3/4")
+        # self.sigbox.addItem("3/4")
         self.sigbox.addItem("4/4")
-        self.sigbox.addItem("5/4")
-        self.sigbox.setCurrentIndex(1)
+        # self.sigbox.addItem("5/4")
+        self.sigbox.setCurrentIndex(0)
         self.sigbox.activated[str].connect(lambda: self.set_user_tsig(self.sigbox.currentText()))
         
         # Tempo

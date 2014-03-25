@@ -38,7 +38,7 @@ def init_features(parent):
     global timing, buff, bar
 
     timing = 4
-    buff = 1
+    buff = 2
     bar = -buff
     update_features(parent)
 

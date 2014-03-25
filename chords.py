@@ -18,29 +18,32 @@ def make_phrase(template, scale):
     return " ".join(bar)
 
 def gen_rhythm(template):
-    for note in template:
+    newtem = template
+    for i in xrange(len(template)):
         if (random.random() < watchman.activities["chords"]):
-            if note == ".":
-                note = "x"
+            if template[i] == ".":
+                newtem[i] = "x"
             else:
-                note = "."
+                newtem[i] = "."
 
-    return template
+    return newtem
 
 def gen_notes(template):
     # Note lengths and pitch
+    newtem = template
+
     if "x" in template:
         for i in xrange(int(performer.tsig * performer.timing)):
             if template[i] != ".":
-                template = tools.place_notes(i, template, True)
+                newtem = tools.place_notes(i, template, True)
     else:
-        template[0] = "r1"
+        newtem[0] = "r1"
 
     # Starting rest
     if template[0] == '.':
-        template = tools.place_notes(0, template, False)
+        newtem = tools.place_notes(0, template, False)
 
-    return template
+    return newtem
 
 def gen():
     global current_chords

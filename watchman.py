@@ -16,6 +16,7 @@ from SimpleCV import *
 fps = 1
 scale = 0.5
 active = False
+processing_rate = 4
 
 activity_boost = 0
 
@@ -179,7 +180,7 @@ def watch(parent):
         elif parent.user_type == "Sparse":
             threading.Timer(0, profiles.sparse, [parent, img]).start()
 
-        threading.Timer(performer.tempo_in_time / 4, watch, [parent]).start()
+        threading.Timer(performer.tempo_in_time / processing_rate, watch, [parent]).start()
 
 def start_watching(parent):
     threading.Timer(0,performer.start,[parent]).start()

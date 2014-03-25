@@ -19,7 +19,12 @@ def diff():
 def hue():
     hue = HueHistogramFeatureExtractor()
     a = np.array(hue.extract(watchman.imgbank[0])) 
-    b = np.array(hue.extract(watchman.imgbank[1])) 
+
+    if len(watchman.imgbank) > 1:
+        b = np.array(hue.extract(watchman.imgbank[1])) 
+    else:
+        b = np.array(hue.extract(watchman.imgbank[0]))
+
     AandB = np.sum(np.square(a-b)) 
     return AandB
 
@@ -30,14 +35,24 @@ def morph():
     mf = MorphologyFeatureExtractor() 
     mf.setThresholdOperation(myBinaryFunc)
     a = np.array(mf.extract(watchman.imgbank[0])) 
-    b = np.array(mf.extract(watchman.imgbank[1])) 
+
+    if len(watchman.imgbank) > 1:
+        b = np.array(mf.extract(watchman.imgbank[1])) 
+    else:
+        b = np.array(mf.extract(watchman.imgbank[1])) 
+
     AandB = np.sum(np.square(a-b)) 
     return AandB
 
 def edge():
     edgeFeats = EdgeHistogramFeatureExtractor()
     a = np.array(edgeFeats.extract(watchman.imgbank[0])) 
-    b = np.array(edgeFeats.extract(watchman.imgbank[1]))
+
+    if len(watchman.imgbank) > 1:
+        b = np.array(edgeFeats.extract(watchman.imgbank[1]))
+    else:
+        b = np.array(edgeFeats.extract(watchman.imgbank[0]))
+        
     AandB = np.sum(np.square((a-b))) 
     return AandB
 
