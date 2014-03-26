@@ -439,7 +439,7 @@ class SPApp(QtGui.QMainWindow):
             self.mix.drumbox.addItem(str(i))
         self.mix.drumbox.addItem("Off")
         self.mix.drumbox.setCurrentIndex(mixer.get_stdchannel("drums"))
-        self.mix.drumbox.activated[str].connect(lambda: mixer.set_channel("drums",int(self.mix.drumbox.currentText())))
+        self.mix.drumbox.activated[str].connect(lambda: mixer.set_channel("drums", self.mix.drumbox.currentText()))
 
         self.mix.drumvol = QtGui.QSlider(QtCore.Qt.Horizontal, self.mix)
         self.mix.drumvol.setFocusPolicy(QtCore.Qt.NoFocus)
@@ -462,7 +462,7 @@ class SPApp(QtGui.QMainWindow):
             self.mix.bassbox.addItem(str(i))
         self.mix.bassbox.addItem("Off")
         self.mix.bassbox.setCurrentIndex(mixer.get_stdchannel("bass"))
-        self.mix.bassbox.activated[str].connect(lambda: mixer.set_channel("bass",int(self.mix.bassbox.currentText())))
+        self.mix.bassbox.activated[str].connect(lambda: mixer.set_channel("bass", self.mix.bassbox.currentText()))
 
         self.mix.bassvol = QtGui.QSlider(QtCore.Qt.Horizontal, self.mix)
         self.mix.bassvol.setFocusPolicy(QtCore.Qt.NoFocus)
@@ -485,7 +485,7 @@ class SPApp(QtGui.QMainWindow):
             self.mix.chordsbox.addItem(str(i))
         self.mix.chordsbox.addItem("Off")
         self.mix.chordsbox.setCurrentIndex(mixer.get_stdchannel("chords"))
-        self.mix.chordsbox.activated[str].connect(lambda: mixer.set_channel("chords",int(self.mix.chordsbox.currentText())))
+        self.mix.chordsbox.activated[str].connect(lambda: mixer.set_channel("chords", self.mix.chordsbox.currentText()))
 
         self.mix.chordsvol = QtGui.QSlider(QtCore.Qt.Horizontal, self.mix)
         self.mix.chordsvol.setFocusPolicy(QtCore.Qt.NoFocus)
@@ -508,7 +508,7 @@ class SPApp(QtGui.QMainWindow):
             self.mix.melodybox.addItem(str(i))
         self.mix.melodybox.addItem("Off")
         self.mix.melodybox.setCurrentIndex(mixer.get_stdchannel("melody"))
-        self.mix.melodybox.activated[str].connect(lambda: mixer.set_channel("melody",int(self.mix.melodybox.currentText())))
+        self.mix.melodybox.activated[str].connect(lambda: mixer.set_channel("melody", self.mix.melodybox.currentText()))
 
         self.mix.melodyvol = QtGui.QSlider(QtCore.Qt.Horizontal, self.mix)
         self.mix.melodyvol.setFocusPolicy(QtCore.Qt.NoFocus)
@@ -531,7 +531,7 @@ class SPApp(QtGui.QMainWindow):
             self.mix.stabsbox.addItem(str(i))
         self.mix.stabsbox.addItem("Off")
         self.mix.stabsbox.setCurrentIndex(mixer.get_stdchannel("stabs"))
-        self.mix.stabsbox.activated[str].connect(lambda: mixer.set_channel("stabs",int(self.mix.stabsbox.currentText())))
+        self.mix.stabsbox.activated[str].connect(lambda: mixer.set_channel("stabs", self.mix.stabsbox.currentText()))
 
         self.mix.stabsvol = QtGui.QSlider(QtCore.Qt.Horizontal, self.mix)
         self.mix.stabsvol.setFocusPolicy(QtCore.Qt.NoFocus)
@@ -554,7 +554,7 @@ class SPApp(QtGui.QMainWindow):
             self.mix.metrobox.addItem(str(i))
         self.mix.metrobox.addItem("Off")
         self.mix.metrobox.setCurrentIndex(mixer.get_stdchannel("metronome"))
-        self.mix.metrobox.activated[str].connect(lambda: mixer.set_channel("metronome",int(self.mix.metrobox.currentText())))
+        self.mix.metrobox.activated[str].connect(lambda: mixer.set_channel("metronome", self.mix.metrobox.currentText()))
 
         self.mix.metrovol = QtGui.QSlider(QtCore.Qt.Horizontal, self.mix)
         self.mix.metrovol.setFocusPolicy(QtCore.Qt.NoFocus)
@@ -679,9 +679,9 @@ class SPApp(QtGui.QMainWindow):
         return mouse_pos
 
     def grab_region(self):
-        topleft = self.grab_region_point(2, True)
+        topleft = self.grab_region_point(3, True)
         print topleft
-        bottomright = self.grab_region_point(2, False)
+        bottomright = self.grab_region_point(3, False)
         print bottomright
 
         x = topleft[0]
@@ -691,7 +691,7 @@ class SPApp(QtGui.QMainWindow):
 
         self.user_inputregion = [int(x), int(y), int(w), int(h)]
         print self.user_inputregion
-        self.inputsrcinfo.setText("Thanks! Selected region: (" + str(self.user_inputregion)) + ")"
+        self.inputsrcinfo.setText("Thanks! Selected region: (" + str(self.user_inputregion) + ")")
 
     def set_user_inputsrc(self, text, region):
         self.user_inputsrc = text

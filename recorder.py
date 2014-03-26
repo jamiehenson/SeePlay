@@ -135,3 +135,5 @@ def make(parent):
     binfile = open(filename, 'wb')
     sp_midi.writeFile(binfile)
     binfile.close()
+
+    print "MIDI file written."

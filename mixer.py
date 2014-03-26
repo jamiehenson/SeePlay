@@ -20,7 +20,10 @@ def set_channel(chan, val):
     global channels
 
     print "Channel", chan.upper(), "set to", val
-    channels[chan] = val
+    if val == "Off":
+        channels[chan] = 99
+    else:
+        channels[chan] = int(val)
 
 def get_channel(chan):
     return channels[chan] + 144

@@ -171,3 +171,5 @@ def make(parent):
     lily.global_staff_size = 16
     lily.default_paper_size = 'A4', 'portrait'
     show(lily)
+
+    print "Sheet music compiled."
