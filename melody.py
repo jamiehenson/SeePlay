@@ -6,6 +6,7 @@ import section
 import watchman
 
 current_melody = ". . . . . . . . . . . . . . . ."
+rhythm = [".",".",".",".",".",".",".",".",".",".",".",".",".",".",".","."]
 
 def make_phrase(template, scale):
     bar = []
@@ -30,11 +31,14 @@ def gen_rhythm(template):
 def gen_notes(template):
     # Note lengths and pitch
     newtem = template
-    if "x" in template:
-        for i in xrange(int(performer.tsig * performer.timing)):
-            if template[i] != ".":
-                newtem = tools.place_notes(i, template, True)
-    else:
+    edited = False
+
+    for i in xrange(int(performer.tsig * performer.timing)):
+        if template[i] != ".":
+            newtem = tools.place_notes(i, template, True)
+            edited = True
+    
+    if edited == False:
         newtem[0] = "r1"
 
     # Starting rest
@@ -46,7 +50,7 @@ def gen_notes(template):
 def gen():
     global current_melody
 
-    template = section.rhythm
+    template = rhythm
     template = gen_rhythm(template)
     template = gen_notes(template)
 

@@ -7,6 +7,7 @@ import section
 import bass
 
 current_chords = ". . . . . . . . . . . . . . . ."
+rhythm = [".",".",".",".",".",".",".",".",".",".",".",".",".",".",".","."]
 
 def make_phrase(template, scale):
     bar = []
@@ -31,12 +32,14 @@ def gen_rhythm(template):
 def gen_notes(template):
     # Note lengths and pitch
     newtem = template
+    edited = False
 
-    if "x" in template:
-        for i in xrange(int(performer.tsig * performer.timing)):
-            if template[i] != ".":
-                newtem = tools.place_notes(i, template, True)
-    else:
+    for i in xrange(int(performer.tsig * performer.timing)):
+        if template[i] != ".":
+            newtem = tools.place_notes(i, template, True)
+            edited = True
+    
+    if edited == False:
         newtem[0] = "r1"
 
     # Starting rest
@@ -47,14 +50,13 @@ def gen_notes(template):
 
 def gen():
     global current_chords
-
-    template = section.rhythm
+    template = rhythm
     template = gen_rhythm(template)
     template = gen_notes(template)
-
     current_chords = " ".join(template)
 
 def play():
+    global current_chords
     key = conductor.relativekey
     mode = conductor.relativemode
     octave = str(2)

@@ -10,6 +10,7 @@ import lily
 import recorder
 import mixer
 import profiles
+import section
 
 midiout = None
 main_beat = 0
@@ -38,7 +39,7 @@ def init_features(parent):
     global timing, buff, bar
 
     timing = 4
-    buff = 2
+    buff = 1
     bar = -buff
     update_features(parent)
 
@@ -165,39 +166,39 @@ def enqueue_drums(parent):
 
     play_drums(mixer.get_channel("drums"), tempo_in_time, beatarray)
 
-    if parent.user_midioutput: recorder.add_drums_bar(beatarray)
-
-    drumlines.pop(0)
+    if len(drumlines) > 0:
+        if parent.user_midioutput: recorder.add_drums_bar(beatarray)
+        drumlines.pop(0)
 
 def enqueue_bass(parent):
     if len(basslines) < buff: add_bass(tacet)
 
     play_bass(mixer.get_channel("bass"), tempo_in_time, list(basslines[0].split()))
     
-    if parent.user_sheetmusic: lily.add_bass_bar(basslines[0].split())
-    if parent.user_midioutput: recorder.add_bass_bar(basslines[0].split())
-
-    basslines.pop(0)
+    if len(basslines) > 0:
+        if parent.user_sheetmusic: lily.add_bass_bar(basslines[0].split())
+        if parent.user_midioutput: recorder.add_bass_bar(basslines[0].split())
+        basslines.pop(0)
 
 def enqueue_chords(parent):
     if len(chords) < buff: add_chords(tacet)
 
     play_chord(mixer.get_channel("chords"), tempo_in_time, 0, list(chords[0].split()))
     
-    if parent.user_sheetmusic: lily.add_chords_bar(chords[0].split())
-    if parent.user_midioutput: recorder.add_chords_bar(chords[0].split())
-    
-    chords.pop(0)
+    if len(chords) > 0:
+        if parent.user_sheetmusic: lily.add_chords_bar(chords[0].split())
+        if parent.user_midioutput: recorder.add_chords_bar(chords[0].split())
+        chords.pop(0)
 
 def enqueue_melody(parent):
     if len(melodylines) < buff: add_melody(tacet)
 
     play_melody(mixer.get_channel("melody"), tempo_in_time, 0, list(melodylines[0].split()))
     
-    if parent.user_sheetmusic: lily.add_melody_bar(melodylines[0].split())
-    if parent.user_midioutput: recorder.add_melody_bar(melodylines[0].split())
-
-    melodylines.pop(0)
+    if len(melodylines) > 0:
+        if parent.user_sheetmusic: lily.add_melody_bar(melodylines[0].split())
+        if parent.user_midioutput: recorder.add_melody_bar(melodylines[0].split())
+        melodylines.pop(0)
 
 def enqueue(parent):
     while watchman.active == True:
@@ -240,11 +241,12 @@ def monitor_bar(parent):
         global bar
 
         print "Bar: \t", bar
-        print "Key: \t", conductor.relativekey, conductor.relativemode
-        print "Melo: \t", "(" + str(watchman.activities["melody"]) + ")\t\t", melodylines
-        print "Chor: \t", "(" + str(watchman.activities["chords"]) + ")\t\t", chords 
-        print "Bass: \t", "(" + str(watchman.activities["bass"]) + ")\t\t", basslines 
-        print "Drum: \t", "(" + str(watchman.activities["drums"]) + ")\t\t", drumlines 
+        print "Key (rel.): \t", conductor.relativekey, conductor.relativemode
+        print "Melo: \t", "(" + str(watchman.activities["melody"]) + ")\t", melodylines
+        print "Chor: \t", "(" + str(watchman.activities["chords"]) + ")\t", chords 
+        print "Bass: \t", "(" + str(watchman.activities["bass"]) + ")\t", basslines 
+        print "Drum: \t", "(" + str(watchman.activities["drums"]) + ")\t", drumlines 
+        print "Sect: \t", "(" + str(watchman.activities["section"]) + ")\t", section.rhythm
         print ""
 
         bar += 1

@@ -19,7 +19,7 @@ melody = instrumenttools.Piano(
     short_instrument_name="M."
 )
 chords = instrumenttools.Piano(
-    instrument_name="Lead",
+    instrument_name="Chords",
     short_instrument_name="C."
 )
 stabs = instrumenttools.Piano(

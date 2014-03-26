@@ -37,12 +37,11 @@ imgscale = 0.5
 def change_activity(inst, val, sen):
     global activities
 
-    corrected_val = float(val + activity_boost) / float(sen)
+    corrected_val = round(float(val + activity_boost) / float(sen), 3)
     # corrected_val = (val) / 4
 
     if abs(activities[inst] - corrected_val) > 0.05 or performer.bar < 4:
         activities[inst] = corrected_val
-        activities["all"] = activities["bass"] + activities["drums"] + activities["chords"] + activities["melody"]
         conductor.gen_templates(inst)
 
 def change_all_activity(val, sen):
@@ -83,6 +82,22 @@ def get_brightness(hist, detail):
 
     return float(maxbin[0]) / float(detail)
 
+def get_hist_brightness(hist, detail):
+    vals = []
+    for i in xrange(detail):
+        vals.append(0)
+
+    for j in xrange(detail):
+        lower_bound = j * (len(hist) / detail)
+        upper_bound = (j+1) * (len(hist) / detail)
+        for k in xrange(lower_bound, upper_bound):
+            vals[j] += hist[k]
+
+    maxval = max(vals)
+    maxbin = [i for i, j in enumerate(vals) if j == maxval]
+
+    return float(maxbin[0]) / float(detail)
+
 def get_brightness_grid(img, detail):
     w = img.width / detail
     h = img.height / detail
@@ -92,7 +107,7 @@ def get_brightness_grid(img, detail):
         vals.append([])
         for j in xrange(detail):
             cropimg = img.crop(j * w, i * h, w, h)
-            vals[i].append(get_brightness(cropimg.histogram(255), 20))
+            vals[i].append(get_hist_brightness(cropimg.histogram(255), 20))
 
     return vals
 
@@ -138,14 +153,13 @@ def get_facecount(img):
             f += 1
     return f
 
-def count_colours(img):
+def count_colour_totals(img):
     r = g = b = 1
 
     w = img.width
     h = img.height
     step = 2
-    rounder = 2
-
+    
     for i in xrange(0, w, step):
         for j in xrange(0, h, step):
             (r2, g2, b2) = img.getPixel(i, j)
@@ -153,13 +167,69 @@ def count_colours(img):
             g += g2
             b += b2
     
+    return [r, g, b]
+
+def count_colour_maxtotals(img):
+    p = 1
+
+    w = img.width
+    h = img.height
+    step = 2
+    
+    for i in xrange(0, w, step):
+        for j in xrange(0, h, step):
+            p += 255
+    
+    return p
+
+def count_colours(img):
+    [r, g, b] = count_colour_totals(img)
     pixtotal = r + g + b
+    rounder = 2
 
     r_val = round(float(r/pixtotal), rounder)
     g_val = round(float(g/pixtotal), rounder)
     b_val = round(float(b/pixtotal), rounder)
 
     return [r_val, g_val, b_val]
+
+def get_avg_brightness(img):
+    [r, g, b] = count_colour_totals(img)
+    total = count_colour_maxtotals(img)
+
+    st = time.time()
+    avg = (r + g + b) / 3
+    total2 = (total + total + total) / 3
+    # print "AVG: ", avg / total2, time.time() - st
+    return avg / total2
+
+def get_luminosity(img, lumtype):
+    [r, g, b] = count_colour_totals(img)
+    total = count_colour_maxtotals(img)
+
+    #Standard
+    if lumtype == "a":
+        st = time.time()
+        lum = (0.2126 * r) + (0.7152 * g) + (0.0722 * b)
+        lum_max = (0.2126 * total) + (0.7152 * total) + (0.0722 * total)
+        # print "LUMA: ", lum / lum_max, time.time() - st
+        return lum / lum_max
+
+    #Percieved A
+    elif lumtype == "b":
+        st = time.time()
+        lum = (0.299 * r) + (0.587 * g) + (0.114 * b)
+        lum_max = (0.299 * total) + (0.587 * total) + (0.114 * total)
+        # print "LUMB: ", lum / lum_max, time.time() - st
+        return lum / lum_max
+
+    #Perceived B, slower to calculate
+    elif lumtype == "c":
+        st = time.time()
+        lum = math.sqrt(math.pow(0.241 * r, 2) + math.pow(0.691 * g, 2) + math.pow(0.068 * b, 2))
+        lum_max = math.sqrt(math.pow(0.241 * total, 2) + math.pow(0.691 * total, 2) + math.pow(0.068 * total, 2))
+        # print "LUMC: ", lum / lum_max, time.time() - st
+        return lum / lum_max
 
 def watch(parent):
     if active == True:

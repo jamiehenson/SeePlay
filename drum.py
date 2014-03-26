@@ -9,7 +9,7 @@ current_drums = "H................ S................ K................"
 
 # AMBIENT
 # def gen_drum():
-#     template = section.blank
+#     template = [".",".",".",".",".",".",".",".",".",".",".",".",".",".",".","."]
 
 #     for i in xrange(int(performer.tsig * performer.timing)):
 #         if random.random() < watchman.activities["drums"] / 4:

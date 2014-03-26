@@ -2,8 +2,10 @@ import performer
 import watchman
 import random
 import tools
+import bass
+import chords
+import melody
 
-blank = [".",".",".",".",".",".",".",".",".",".",".",".",".",".",".","."]
 rhythm = [".",".",".",".",".",".",".",".",".",".",".",".",".",".",".","."]
 
 def note_no():
@@ -13,10 +15,13 @@ def note_no():
 def gen_rhythm():
     global rhythm
     tem = [".",".",".",".",".",".",".",".",".",".",".",".",".",".",".","."]
-    for i in xrange(int(performer.tsig * performer.timing) / 4):
-        if random.random() < watchman.activities["section"]:
+    for i in xrange(int(performer.tsig * performer.timing)):
+        if random.random() < float(watchman.activities["section"]):
             tem[note_no()] = "x"
 
+    bass.rhythm = tem
+    chords.rhythm = tem
+    melody.rhythm = tem
     rhythm = tem
 
 def gen():

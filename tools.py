@@ -1,6 +1,7 @@
 import performer
 import math
 import random
+import conductor
 
 # UTILITIES
 
@@ -89,6 +90,30 @@ rhythm_choices = [
     (14, float(1.0 / 16.0)), 
     (15, float(0.25 / 16.0))
 ]
+
+def adjust_mode(parent, activity):
+    mode = conductor.relativemode
+    mode_type = ""
+
+    minorlim = 0.4
+    majorlim = 0.6
+
+    major = ["ionian", "lydian", "mixolydian"]
+    minor = ["dorian", "phrygian", "aeolian"]
+
+    if mode in major:
+        mode_type = "major"
+    elif mode in minor:
+        mode_type = "minor"
+    else:
+        mode_type = "diminished"
+
+    if activity <= minorlim and mode_type != "minor":
+        conductor.relativemode = minor[random.randrange(3)]
+    elif activity > minorlim and activity < majorlim and mode_type != "diminished":
+        conductor.relativemode = "locrian"
+    elif activity >= majorlim and mode_type != "major":
+        conductor.relativemode = major[random.randrange(3)]
 
 def length_key_check(num):
     revlength = dict((v,k) for k,v in lengths.iteritems())

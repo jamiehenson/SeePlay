@@ -6,6 +6,7 @@ import section
 import watchman
 
 current_bass = ". . . . . . . . . . . . . . . ."
+rhythm = [".",".",".",".",".",".",".",".",".",".",".",".",".",".",".","."]
 
 def make_phrase(template, scale):
     bar = ""
@@ -20,7 +21,7 @@ def gen_rhythm(template):
     newtem = template
     for i in xrange(len(template)):
         if (random.random() < watchman.activities["bass"]):
-            if newtem[i] == ".":
+            if template[i] == ".":
                 newtem[i] = "x"
             else:
                 newtem[i] = "."
@@ -30,11 +31,14 @@ def gen_rhythm(template):
 def gen_notes(template):
     # Note lengths and pitch
     newtem = template
-    if "x" in template:
-        for i in xrange(int(performer.tsig * performer.timing)):
-            if template[i] != ".":
-                newtem = tools.place_notes(i, template, True)
-    else:
+    edited = False
+
+    for i in xrange(int(performer.tsig * performer.timing)):
+        if template[i] != ".":
+            newtem = tools.place_notes(i, template, True)
+            edited = True
+
+    if edited == False:
         newtem[0] = "r1"
 
     # Starting rest
@@ -46,14 +50,11 @@ def gen_notes(template):
 def gen():
     global current_bass
 
-    template = section.rhythm
-    # print "TT", template
-    rtemplate = gen_rhythm(template)
-    # print "RT", rtemplate
-    ntemplate = gen_notes(rtemplate)
-    # print "NT", ntemplate
+    template = rhythm
+    template = gen_rhythm(template)
+    template = gen_notes(template)
 
-    current_bass = " ".join(ntemplate)
+    current_bass = " ".join(template)
 
 def play():
     key = conductor.relativekey
@@ -64,8 +65,5 @@ def play():
 
     bar = make_phrase(current_bass, scale)
 
-    # print current_bass
-
-    # print "COW", len(performer.basslines), bar, performer.basslines
     while len(performer.basslines) <= performer.buff: 
         performer.add_bass(bar)
