@@ -7,6 +7,7 @@ import watchman
 
 current_melody = ". . . . . . . . . . . . . . . ."
 rhythm = [".",".",".",".",".",".",".",".",".",".",".",".",".",".",".","."]
+m_lock = False
 
 def make_phrase(template, scale):
     bar = []
@@ -48,13 +49,10 @@ def gen_notes(template):
     return newtem
 
 def gen():
-    global current_melody
-
-    template = rhythm
-    template = gen_rhythm(template)
-    template = gen_notes(template)
-
-    current_melody = " ".join(template)
+    global current_melody, m_lock
+    if m_lock == False:
+        current_melody = " ".join(gen_notes(gen_rhythm(rhythm)))
+        m_lock = True
 
 def play():
     key = conductor.relativekey

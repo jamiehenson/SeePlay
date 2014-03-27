@@ -8,6 +8,7 @@ import bass
 
 current_chords = ". . . . . . . . . . . . . . . ."
 rhythm = [".",".",".",".",".",".",".",".",".",".",".",".",".",".",".","."]
+c_lock = False
 
 def make_phrase(template, scale):
     bar = []
@@ -49,11 +50,11 @@ def gen_notes(template):
     return newtem
 
 def gen():
-    global current_chords
-    template = rhythm
-    template = gen_rhythm(template)
-    template = gen_notes(template)
-    current_chords = " ".join(template)
+    global current_chords, c_lock
+    if c_lock == False: 
+        current_chords = " ".join(gen_notes(gen_rhythm(rhythm)))
+        c_lock = True
+
 
 def play():
     global current_chords
@@ -64,6 +65,6 @@ def play():
     scale = tools.make_chordscale(key, mode, octave)
     bar = make_phrase(current_chords, scale)
 
-    while len(performer.chords) <= performer.buff:
+    while len(performer.chordlines) <= performer.buff:
         performer.add_chords(bar)
 

@@ -28,7 +28,7 @@ def standard_a(parent, img):
     # watchman.get_luminosity(img, "b")
     # watchman.get_luminosity(img, "c")
 
-    lower_vol = 20
+    lower_vol = 0
     higher_vol = 120
     old_faces = 0
 
@@ -40,15 +40,15 @@ def standard_a(parent, img):
 
     if motion > 5: 
         watchman.activity_boost = 0.5 # 1
-        stabs.multifire(motion)
+        stabs.multifire(motion / 2)
     else:
         watchman.activity_boost = 0
 
-    watchman.change_activity("bass", max(blue_brightness, b_totals[len(b_totals) - 1]), 8)
+    watchman.change_activity("bass", blue_brightness, 8)
     watchman.change_activity("drums", b_totals[len(b_totals) - 1], 8)
-    watchman.change_activity("melody", max(red_brightness, b_totals[1]), 8)
-    watchman.change_activity("chords", max(red_brightness, green_brightness, b_totals[0]), 8)
-    watchman.change_activity("section", brightness, 8)
+    watchman.change_activity("melody", red_brightness, 8)
+    watchman.change_activity("chords", green_brightness, 8)
+    watchman.change_activity("section", brightness, 16)
 
     tools.adjust_mode(parent, brightness)
 
