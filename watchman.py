@@ -40,7 +40,7 @@ def change_activity(inst, val, sen):
     corrected_val = round(float(val + activity_boost) / float(sen), 3)
     # corrected_val = (val) / 4
 
-    if abs(activities[inst] - corrected_val) > 0.05 or performer.bar < 4:
+    if abs(activities[inst] - corrected_val) > 0.01 or performer.bar < 4:
         activities[inst] = corrected_val
         conductor.gen_templates(inst)
 

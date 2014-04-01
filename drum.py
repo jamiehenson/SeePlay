@@ -19,34 +19,28 @@ current_drums = "H................ S................ K................"
 
 def gen_drumline(type):
     # Rhythm
-    template = []
+    template = [".",".",".",".",".",".",".",".",".",".",".",".",".",".",".","."]
 
     if type == "hats":
         for i in xrange(int(performer.tsig * performer.timing)):
             if i % (performer.timing) == 0:
-                template.append ("x")
+                template[i] = "x"
             elif random.random() < watchman.activities["drums"]:
-                template.append("x")
-            else:
-                template.append(".")
+                template[section.note_no()] = "x"
 
     elif type == "snare":
         for i in xrange(int(performer.tsig * performer.timing)):
             if i % (performer.timing * 2) == 4:
-                template.append ("x")
+                template[i] = "x"
             elif random.random() < watchman.activities["drums"]:
-                template.append("x")
-            else:
-                template.append(".")
+                template[section.note_no()] = "x"
 
     elif type == "kick":
         for i in xrange(int(performer.tsig * performer.timing)):
             if i % (performer.timing * 2) == 0:
-                template.append ("x")
+                template[i] = "x"
             elif random.random() < watchman.activities["drums"]:
-                template.append("x")
-            else:
-                template.append(".")
+                template[section.note_no()] = "x"
 
     return "".join(template)
 

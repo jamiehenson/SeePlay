@@ -148,7 +148,14 @@ def add_bass_bar(bar):
     bass_staff.extend(bar)
 
 def init():
-    global piano_staff, bass_staff
+    global piano_staff, bass_staff, score, lower_staff, upper_staff
+
+    score = Score([])
+    piano_staff = scoretools.PianoStaff([])
+    upper_staff = Staff([])
+    lower_staff = Staff([])
+    bass_staff = Staff([])
+
     attach(Clef('bass'), lower_staff)
     attach(melody, upper_staff)
     attach(chords, lower_staff)
@@ -166,6 +173,7 @@ def make(parent):
     print "Compiling sheet music..."
 
     lily = lilypondfiletools.make_basic_lilypond_file(score)
+
     lily.header_block.title = markuptools.Markup(parent.user_score_title)
     lily.header_block.composer = markuptools.Markup('SeePlay')
     lily.global_staff_size = 16
@@ -173,3 +181,4 @@ def make(parent):
     show(lily)
 
     print "Sheet music compiled."
+

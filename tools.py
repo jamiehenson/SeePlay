@@ -95,8 +95,8 @@ def adjust_mode(parent, activity):
     mode = conductor.relativemode
     mode_type = ""
 
-    minorlim = 0.4
-    majorlim = 0.6
+    minorlim = 0.45
+    majorlim = 0.55
 
     major = ["ionian", "lydian", "mixolydian"]
     minor = ["dorian", "phrygian", "aeolian"]

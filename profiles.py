@@ -21,7 +21,7 @@ def standard_a(parent, img):
     [red_brightness, green_brightness, blue_brightness] = watchman.count_colours(img)
     # motion = watchman.get_motion()
     # motion = extractor.edge()
-    motion = extractor.hue() * 50000
+    motion = tools.clamp(0, 100, extractor.hue() * 50000)
 
     # watchman.get_avg_brightness(img)
     # watchman.get_luminosity(img, "a")
@@ -44,18 +44,18 @@ def standard_a(parent, img):
     else:
         watchman.activity_boost = 0
 
-    watchman.change_activity("bass", blue_brightness, 8)
-    watchman.change_activity("drums", b_totals[len(b_totals) - 1], 8)
-    watchman.change_activity("melody", red_brightness, 8)
-    watchman.change_activity("chords", green_brightness, 8)
-    watchman.change_activity("section", brightness, 16)
+    watchman.change_activity("bass", blue_brightness * brightness, 4)
+    watchman.change_activity("drums", brightness * brightness, 16)
+    watchman.change_activity("melody", red_brightness * brightness, 4)
+    watchman.change_activity("chords", green_brightness * brightness, 16)
+    watchman.change_activity("section", brightness * brightness, 16)
 
     tools.adjust_mode(parent, brightness)
 
     mixer.set_volume(parent, "bass", tools.clamp(lower_vol, higher_vol - 20, 100 * (1 - brightness)))
     mixer.set_volume(parent, "drums", tools.clamp(lower_vol, higher_vol - 20, 100 * brightness))
     mixer.set_volume(parent, "chords", tools.clamp(lower_vol, higher_vol, 100 * brightness))
-    mixer.set_volume(parent, "melody", tools.clamp(lower_vol, higher_vol, 127 * (1 - brightness)))
+    mixer.set_volume(parent, "melody", tools.clamp(lower_vol, higher_vol, 127 * brightness))
     mixer.set_volume(parent, "stabs", tools.clamp(lower_vol, higher_vol, 80 * brightness))
 
 # Alternate profile (motion drives volume)
