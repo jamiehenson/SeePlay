@@ -8,6 +8,7 @@ import watchman
 current_bass = ". . . . . . . . . . . . . . . ."
 rhythm = [".",".",".",".",".",".",".",".",".",".",".",".",".",".",".","."]
 b_lock = False
+prev_degree = 0
 degree = 0 # The tonic by default
 
 def make_phrase(template, scale):

@@ -8,6 +8,7 @@ import watchman
 current_melody = ". . . . . . . . . . . . . . . ."
 rhythm = [".",".",".",".",".",".",".",".",".",".",".",".",".",".",".","."]
 m_lock = False
+prev_degree = 0
 degree = 0
 
 def make_phrase(template, scale):

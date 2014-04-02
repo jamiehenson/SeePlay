@@ -9,6 +9,7 @@ import bass
 current_chords = ". . . . . . . . . . . . . . . ."
 rhythm = [".",".",".",".",".",".",".",".",".",".",".",".",".",".",".","."]
 c_lock = False
+prev_degree = 0
 degree = 0
 
 def make_phrase(template, scale):
