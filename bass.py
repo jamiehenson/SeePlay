@@ -32,28 +32,29 @@ def gen_rhythm(template):
     return newtem
 
 def gen_notes(template):
-    global degree
+    global degree, prev_degree
     # Note lengths and pitch
     newtem = template
     edited = False
+    newdeg = 0
 
     # print "B", newtem
     for i in xrange(int(performer.tsig * performer.timing)):
         if template[i] != ".":
-            # print "Before", degree
-            degree, newtem = tools.place_notes(i, template, True, degree)
+            # print "Before", degree, prev_degree
+            newdeg, newtem = tools.place_notes(i, template, True, degree, prev_degree)
+            prev_degree = degree
+            degree = newdeg
             edited = True
-            # print "After", degree
+            # print "After", degree, prev_degree
     # print "A", newtem
-
-    degree = 0
 
     if edited == False:
         newtem[0] = "r1"
 
     # Starting rest
     if template[0] == '.':
-        degree, newtem = tools.place_notes(0, template, False, degree)
+        newdeg, newtem = tools.place_notes(0, template, False, degree, prev_degree)
 
     return newtem
 

@@ -208,13 +208,13 @@ def weighted_choice(choices):
             return str(c)
         upto += w
 
-def place_notes(i, template, notes, degree):
+def place_notes(i, template, notes, degree, prev):
     code = find_next_note(i, template)
 
     outdegree = degree
 
     if notes != False:
-        chosen_scaleno = markov.get(degree)
+        chosen_scaleno = markov.get_second(prev, degree)
         outdegree = chosen_scaleno
     else:
         chosen_scaleno = "r"
