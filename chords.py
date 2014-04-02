@@ -24,8 +24,8 @@ def make_phrase(template, scale):
 def gen_rhythm(template):
     newtem = template
     for i in xrange(len(template)):
-        if (random.random() < watchman.activities["chords"]):
-            if template[i] == ".":
+        if (random.random() < float(watchman.activities["chords"])):
+            if template[i] == "." and newtem.count("x") <= section.xlim:
                 newtem[i] = "x"
             else:
                 newtem[i] = "."
@@ -39,13 +39,17 @@ def gen_notes(template):
     edited = False
     newdeg = 0
 
+    # print "A", newtem
     for i in xrange(int(performer.tsig * performer.timing)):
-        if template[i] != ".":
+        if template[i] == "x":
             newdeg, newtem = tools.place_notes(i, template, True, degree, prev_degree)
             prev_degree = degree
             degree = newdeg
             edited = True
-    
+        else:
+            newtem[i] = "."
+    # print "B", newtem
+
     if edited == False:
         newtem[0] = "r1"
 
@@ -61,7 +65,6 @@ def gen():
         current_chords = " ".join(gen_notes(gen_rhythm(rhythm)))
         c_lock = True
 
-
 def play():
     global current_chords
     key = conductor.relativekey
@@ -73,4 +76,3 @@ def play():
 
     while len(performer.chordlines) <= performer.buff:
         performer.add_chords(bar)
-

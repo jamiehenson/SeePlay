@@ -7,6 +7,7 @@ import chords
 import melody
 
 rhythm = [".",".",".",".",".",".",".",".",".",".",".",".",".",".",".","."]
+xlim = 6
 
 def note_no():
     chosen = tools.weighted_choice(tools.rhythm_choices)
@@ -17,7 +18,8 @@ def gen_rhythm():
     tem = [".",".",".",".",".",".",".",".",".",".",".",".",".",".",".","."]
     for i in xrange(int(performer.tsig * performer.timing)):
         if random.random() < float(watchman.activities["section"]):
-            tem[note_no()] = "x"
+            if tem.count("x") <= xlim:
+                tem[note_no()] = "x"
 
     bass.rhythm = tem
     chords.rhythm = tem

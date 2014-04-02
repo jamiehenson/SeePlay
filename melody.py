@@ -23,8 +23,8 @@ def make_phrase(template, scale):
 def gen_rhythm(template):
     newtem = template
     for i in xrange(len(template)):
-        if (random.random() < watchman.activities["melody"]):
-            if template[i] == ".":
+        if (random.random() < float(watchman.activities["melody"])):
+            if template[i] == "." and newtem.count("x") <= section.xlim:
                 newtem[i] = "x"
             else:
                 newtem[i] = "."
@@ -39,11 +39,13 @@ def gen_notes(template):
     newdeg = 0
 
     for i in xrange(int(performer.tsig * performer.timing)):
-        if template[i] != ".":
+        if template[i] == "x":
             newdeg, newtem = tools.place_notes(i, template, True, degree, prev_degree)
             prev_degree = degree
             degree = newdeg
             edited = True
+        else:
+            newtem[i] = "."
     
     if edited == False:
         newtem[0] = "r1"

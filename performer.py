@@ -54,11 +54,11 @@ def update_features(parent):
 def kill_all():
     for i in xrange(len(mixer.channels)):
         chan = i + 144
-        for note in xrange(1,127):
+        for note in xrange(0,127):
             midiout.send_message([chan, note, 0])
 
 def kill_channel(chan):
-    for note in xrange(1,127):
+    for note in xrange(0,127):
         midiout.send_message([chan, note, 0])
 
 def kill_chord(chord):
@@ -77,7 +77,8 @@ def play_notes(chan, chord, delay, length, chordsize):
         threading.Thread(target = midiout.send_message, args = [[chan, note, velo]]).start()
         threading.Timer(tempo_in_time * length, midiout.send_message, [[chan, note, 0]]).start()
 
-def play_chord(chan, speed, beat, pattern):
+def play_chord(chan, speed, pattern):
+    beat = 0
     while beat < (tsig * timing):        
         noteinfo = pattern[beat]
         
@@ -139,7 +140,8 @@ def play_drums(chan, speed, pattern):
         time.sleep(nextbeat)
         beat += 1
 
-def play_melody(chan, speed, beat, pattern):
+def play_melody(chan, speed, pattern):
+    beat = 0
     while beat < (tsig * timing):
         noteinfo = pattern[beat]
         
@@ -160,46 +162,48 @@ def play_melody(chan, speed, beat, pattern):
         beat += 1
 
 def enqueue_drums(parent):
-    if len(drumlines) < buff: add_drums(drumtacet) 
+    if watchman.active == True:
+        if len(drumlines) < buff: add_drums(drumtacet) 
 
-    current_bar = drumlines[0].split()
-    beatarray = [list(current_bar[0][1:]),list(current_bar[1][1:]),list(current_bar[2][1:])]
-
-    play_drums(mixer.get_channel("drums"), tempo_in_time, beatarray)
-
-    if len(drumlines) > 0 and watchman.active == True:
-        if parent.user_midioutput: recorder.add_drums_bar(beatarray)
-        drumlines.pop(0)
+        if len(drumlines) > 0:
+            current_bar = drumlines[0].split()
+            beatarray = [list(current_bar[0][1:]),list(current_bar[1][1:]),list(current_bar[2][1:])]
+            play_drums(mixer.get_channel("drums"), tempo_in_time, beatarray)
+            if parent.user_midioutput: recorder.add_drums_bar(beatarray)
+            drumlines.pop(0)
 
 def enqueue_bass(parent):
-    if len(basslines) < buff: add_bass(tacet)
-
-    play_bass(mixer.get_channel("bass"), tempo_in_time, list(basslines[0].split()))
-    
-    if len(basslines) > 0 and watchman.active == True:
-        if parent.user_sheetmusic: lily.add_bass_bar(basslines[0].split())
-        if parent.user_midioutput: recorder.add_bass_bar(basslines[0].split())
-        basslines.pop(0)
+    if watchman.active == True:
+        if len(basslines) < buff: add_bass(tacet)
+        
+        if len(basslines) > 0:
+            thisone = basslines[0].split()
+            play_bass(mixer.get_channel("bass"), tempo_in_time, list(thisone))
+            if parent.user_sheetmusic: lily.add_bass_bar(thisone)
+            if parent.user_midioutput: recorder.add_bass_bar(thisone)
+            basslines.pop(0)
 
 def enqueue_chords(parent):
-    if len(chordlines) < buff: add_chords(tacet)
+    if watchman.active == True:
+        if len(chordlines) < buff: add_chords(tacet)
 
-    play_chord(mixer.get_channel("chords"), tempo_in_time, 0, list(chordlines[0].split()))
-    
-    if len(chordlines) > 0 and watchman.active == True:
-        if parent.user_sheetmusic: lily.add_chords_bar(chordlines[0].split())
-        if parent.user_midioutput: recorder.add_chords_bar(chordlines[0].split())
-        chordlines.pop(0)
+        if len(chordlines) > 0:
+            thisone = chordlines[0].split()
+            play_chord(mixer.get_channel("chords"), tempo_in_time, list(thisone))
+            if parent.user_sheetmusic: lily.add_chords_bar(thisone)
+            if parent.user_midioutput: recorder.add_chords_bar(thisone)
+            chordlines.pop(0)
 
 def enqueue_melody(parent):
-    if len(melodylines) < buff: add_melody(tacet)
+    if watchman.active == True:
+        if len(melodylines) < buff: add_melody(tacet)
 
-    play_melody(mixer.get_channel("melody"), tempo_in_time, 0, list(melodylines[0].split()))
-    
-    if len(melodylines) > 0 and watchman.active == True:
-        if parent.user_sheetmusic: lily.add_melody_bar(melodylines[0].split())
-        if parent.user_midioutput: recorder.add_melody_bar(melodylines[0].split())
-        melodylines.pop(0)
+        if len(melodylines) > 0:
+            thisone = melodylines[0].split()
+            play_melody(mixer.get_channel("melody"), tempo_in_time, list(thisone))
+            if parent.user_sheetmusic: lily.add_melody_bar(thisone)
+            if parent.user_midioutput: recorder.add_melody_bar(thisone)
+            melodylines.pop(0)
 
 def enqueue(parent):
     while watchman.active == True:

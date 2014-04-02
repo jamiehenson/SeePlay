@@ -28,6 +28,7 @@ import random
 #     [0.4, 0.05, 0.05, 0.05, 0.1, 0.25, 0.1],  # Leading
 # ]
 
+# SECOND ORDER
 markov_choices = [
     # Prev: tonic
     [

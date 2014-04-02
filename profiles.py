@@ -38,17 +38,17 @@ def standard_a(parent, img):
             stabs.multifire(100)
         old_faces = facecount
 
-    if motion > 5: 
+    if motion > 10: 
         watchman.activity_boost = 0.5 # 1
         stabs.multifire(motion / 2)
     else:
         watchman.activity_boost = 0
 
-    watchman.change_activity("bass", blue_brightness * brightness, 4)
-    watchman.change_activity("drums", brightness * brightness, 16)
-    watchman.change_activity("melody", red_brightness * brightness, 4)
-    watchman.change_activity("chords", green_brightness * brightness, 16)
-    watchman.change_activity("section", brightness * brightness, 16)
+    watchman.change_activity("bass", blue_brightness * brightness, 1)
+    watchman.change_activity("drums", brightness * brightness, 4)
+    watchman.change_activity("melody", red_brightness * brightness, 1)
+    watchman.change_activity("chords", green_brightness * brightness, 1)
+    watchman.change_activity("section", brightness * brightness, 1)
 
     tools.adjust_mode(parent, brightness)
 
