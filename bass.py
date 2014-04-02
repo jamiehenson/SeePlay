@@ -8,6 +8,7 @@ import watchman
 current_bass = ". . . . . . . . . . . . . . . ."
 rhythm = [".",".",".",".",".",".",".",".",".",".",".",".",".",".",".","."]
 b_lock = False
+degree = 0 # The tonic by default
 
 def make_phrase(template, scale):
     bar = ""
@@ -30,21 +31,28 @@ def gen_rhythm(template):
     return newtem
 
 def gen_notes(template):
+    global degree
     # Note lengths and pitch
     newtem = template
     edited = False
 
+    # print "B", newtem
     for i in xrange(int(performer.tsig * performer.timing)):
         if template[i] != ".":
-            newtem = tools.place_notes(i, template, True)
+            # print "Before", degree
+            degree, newtem = tools.place_notes(i, template, True, degree)
             edited = True
+            # print "After", degree
+    # print "A", newtem
+
+    degree = 0
 
     if edited == False:
         newtem[0] = "r1"
 
     # Starting rest
     if template[0] == '.':
-        newtem = tools.place_notes(0, template, False)
+        degree, newtem = tools.place_notes(0, template, False, degree)
 
     return newtem
 

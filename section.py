@@ -18,7 +18,6 @@ def gen_rhythm():
     for i in xrange(int(performer.tsig * performer.timing)):
         if random.random() < float(watchman.activities["section"]):
             tem[note_no()] = "x"
-            # tem[i] = "x"
 
     bass.rhythm = tem
     chords.rhythm = tem

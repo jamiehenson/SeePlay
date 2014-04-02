@@ -2,6 +2,7 @@ import performer
 import math
 import random
 import conductor
+import markov
 
 # UTILITIES
 
@@ -72,6 +73,7 @@ note_modes = {
 }
 
 note_choices = [(0,0.3), (1,0.05), (2,0.1), (3,0.2), (4,0.2), (5,0.05), (6,0.05), (7,0.05)]
+
 rhythm_choices = [
     (0, float(4.0 / 16.0)), 
     (1, float(0.25 / 16.0)), 
@@ -206,11 +208,14 @@ def weighted_choice(choices):
             return str(c)
         upto += w
 
-def place_notes(i, template, notes):
+def place_notes(i, template, notes, degree):
     code = find_next_note(i, template)
-    
-    if notes:
-        chosen_scaleno = weighted_choice(note_choices)
+
+    outdegree = degree
+
+    if notes != False:
+        chosen_scaleno = markov.get(degree)
+        outdegree = chosen_scaleno
     else:
         chosen_scaleno = "r"
 
@@ -235,7 +240,7 @@ def place_notes(i, template, notes):
             shorter_length = str(length_num_to_code(difftwo))
             template[i + int(rounded * 4) + int(roundtwo * 4)] = chosen_scaleno + shorter_length
 
-    return template
+    return outdegree, template
 
 def clamp(minval, maxval, val):
     return max(min(maxval, minval + val), minval)

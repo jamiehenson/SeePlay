@@ -8,6 +8,7 @@ import watchman
 current_melody = ". . . . . . . . . . . . . . . ."
 rhythm = [".",".",".",".",".",".",".",".",".",".",".",".",".",".",".","."]
 m_lock = False
+degree = 0
 
 def make_phrase(template, scale):
     bar = []
@@ -30,13 +31,14 @@ def gen_rhythm(template):
     return newtem
 
 def gen_notes(template):
+    global degree
     # Note lengths and pitch
     newtem = template
     edited = False
 
     for i in xrange(int(performer.tsig * performer.timing)):
         if template[i] != ".":
-            newtem = tools.place_notes(i, template, True)
+            degree, newtem = tools.place_notes(i, template, True, degree)
             edited = True
     
     if edited == False:
@@ -44,7 +46,7 @@ def gen_notes(template):
 
     # Starting rest
     if template[0] == '.':
-        newtem = tools.place_notes(0, template, False)
+        degree, newtem = tools.place_notes(0, template, False, degree)
 
     return newtem
 
