@@ -84,28 +84,27 @@ def lily_convert_chord(bar):
     sequence = list(bar)
     lilybar = []
 
-    if watchman.active == True:
-        for chord in sequence:
-            if chord != ".":
-                length = lily_length(str(chord[-2:]))
-                if chord.startswith("r") == False:
-                    chordnotes = tools.get_chord(chord)
-                    chordsize = 3
-                    octave = lily_octave(int(chord[-4:-3]), 2)
+    for chord in sequence:
+        if chord != ".":
+            length = lily_length(str(chord[-2:]))
+            if chord.startswith("r") == False:
+                chordnotes = tools.get_chord(chord)
+                chordsize = 3
+                octave = lily_octave(int(chord[-4:-3]), 2)
 
-                    lilychord = "<"
-                    for i in xrange(chordsize):
-                        note = chordnotes[i]
-                        pitch = tools.midi_to_genletter(note)
-                        
-                        lilynote = str(lily_note(pitch) + octave + " ")
-                        lilychord += lilynote
-                    lilychord += ">" + length
-                    lilybar.append(lilychord)
-                elif chord == "r1":
-                    lilybar.append(chord + " ")
-                else:
-                    lilybar.append("r" + length + " ")
+                lilychord = "<"
+                for i in xrange(chordsize):
+                    note = chordnotes[i]
+                    pitch = tools.midi_to_genletter(note)
+                    
+                    lilynote = str(lily_note(pitch) + octave + " ")
+                    lilychord += lilynote
+                lilychord += ">" + length
+                lilybar.append(lilychord)
+            elif chord == "r1":
+                lilybar.append(chord + " ")
+            else:
+                lilybar.append("r" + length + " ")
 
     return " ".join(lilybar)
 
@@ -113,24 +112,23 @@ def lily_convert_single(bar):
     sequence = list(bar)
     lilybar = []
 
-    if watchman.active == True:
-        for note in sequence:
-            if note != ".":
-                length = lily_length(str(note[-2:]))
-                if note.startswith("r") == False:
-                    if len(note) == 5:
-                        pitch = note[:2]
-                    else:
-                        pitch = note[:1]
-
-                    octave = lily_octave(int(note[-3:-2]), 1)
-                    lilynote = str(lily_note(pitch) + octave + length + " ")
-
-                    lilybar.append(lilynote)
-                elif note == "r1":
-                    lilybar.append(note + " ")
+    for note in sequence:
+        if note != ".":
+            length = lily_length(str(note[-2:]))
+            if note.startswith("r") == False:
+                if len(note) == 5:
+                    pitch = note[:2]
                 else:
-                    lilybar.append("r" + length + " ")
+                    pitch = note[:1]
+
+                octave = lily_octave(int(note[-3:-2]), 1)
+                lilynote = str(lily_note(pitch) + octave + length + " ")
+
+                lilybar.append(lilynote)
+            elif note == "r1":
+                lilybar.append(note + " ")
+            else:
+                lilybar.append("r" + length + " ")
 
     # print "Bar test:", str(sequence) + " | " + str(lilybar)
 
@@ -143,21 +141,27 @@ def change_tsig():
 
 def add_melody_bar(bar):
     global upper_staff, melody_count
-    bar = lily_convert_single(bar)
-    upper_staff.extend(bar)
-    melody_count += 1
+
+    if watchman.active == True and len(performer.melodylines) > 0:
+        bar = lily_convert_single(bar)
+        upper_staff.extend(bar)
+        melody_count += 1
 
 def add_chords_bar(bar):
     global lower_staff, chords_count
-    bar = lily_convert_chord(bar)
-    lower_staff.extend(bar)
-    chords_count += 1
+    
+    if watchman.active == True and len(performer.chordlines) > 0:
+        bar = lily_convert_chord(bar)
+        lower_staff.extend(bar)
+        chords_count += 1
 
 def add_bass_bar(bar):
     global bass_staff, bass_count
-    bar = lily_convert_single(bar)
-    bass_staff.extend(bar)
-    bass_count += 1
+
+    if watchman.active == True and len(performer.basslines) > 0:
+        bar = lily_convert_single(bar)
+        bass_staff.extend(bar)
+        bass_count += 1
 
 def init():
     global piano_staff, bass_staff, score, lower_staff, upper_staff

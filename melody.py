@@ -53,12 +53,9 @@ def gen_notes(template):
         newtem[0] = "r1"
     else:
         if abs(int(icount) - int(performer.tsig * performer.timing)) > (tools.lengths[newtem[icount][-2:]] * performer.timing):
-            for j in xrange(int(icount+1), int(performer.tsig * performer.timing)):
-                newtem[j] = "rse"
-
-    # Starting rest
-    if template[0] == '.':
-        newdeg, newtem = tools.place_notes(0, template, False, degree, prev_degree)
+            newdeg, newtem[icount+1] = tools.place_notes(icount, newtem, False, degree, prev_degree)
+        if newtem[0] == '.':
+            newdeg, newtem = tools.place_notes(0, newtem, False, degree, prev_degree)
 
     return newtem
 

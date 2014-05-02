@@ -191,13 +191,14 @@ def get_chord(chord):
     return newchord
 
 def find_next_note(i, template):
-    next_note = float(performer.tsig * performer.timing)
+    next_note = performer.tsig * performer.timing
+
     for j in xrange(i+1, int(performer.tsig * performer.timing)):
         if template[j] != ".":
-            next_note = float(j)
+            next_note = j
             break
-    
-    return float((next_note - i) / performer.timing)
+
+    return (next_note - i)
 
 def weighted_choice(choices):
     total = sum(w for c, w in choices)
@@ -219,38 +220,61 @@ def place_notes(i, template, notes, degree, prev):
     else:
         chosen_scaleno = "r"
 
-    if length_key_check(code):
-        chosen_length = str(length_num_to_code(code))
-        template[i] = chosen_scaleno + chosen_length
-    else:
-        upcode = code * performer.timing
+    if code == 1:
+        template[i] = chosen_scaleno + "se"
 
-        if upcode == 5:
-            template[i] = chosen_scaleno + "cr"
-            template[i+4] = "rse"
-        elif upcode == 7:
-            template[i] = chosen_scaleno + "dc"
-            template[i+6] = "rse"
-        elif upcode == 9:
-            template[i] = chosen_scaleno + "mi"
-            template[i+8] = "rse"
-        elif upcode == 10:
-            template[i] = chosen_scaleno + "mi"
-            template[i+9] = "rqu"
-        elif upcode == 11:
-            template[i] = chosen_scaleno + "mi"
-            template[i+10] = "rdq"
-        elif upcode == 13:
-            template[i] = chosen_scaleno + "dm"
-            template[i+12] = "rse"
-        elif upcode == 14:
-            template[i] = chosen_scaleno + "dm"
-            template[i+13] = "rqu"
-        elif upcode == 15:
-            template[i] = chosen_scaleno + "dm"
-            template[i+14] = "rdq"
-        else:
-            print upcode, "OOPS"
+    elif code == 2:
+        template[i] = chosen_scaleno + "qu"
+
+    elif code == 3:
+        template[i] = chosen_scaleno + "dq"
+
+    elif code == 4:
+        template[i] = chosen_scaleno + "cr"
+
+    elif code == 5:
+        template[i] = chosen_scaleno + "cr"
+        template[i+4] = "rse"
+
+    elif code == 6:
+        template[i] = chosen_scaleno + "dc"
+
+    elif code == 7:
+        template[i] = chosen_scaleno + "dc"
+        template[i+6] = "rse"
+
+    elif code == 8:
+        template[i] = chosen_scaleno + "mi"
+
+    elif code == 9:
+        template[i] = chosen_scaleno + "mi"
+        template[i+8] = "rse"
+
+    elif code == 10:
+        template[i] = chosen_scaleno + "mi"
+        template[i+9] = "rqu"
+
+    elif code == 11:
+        template[i] = chosen_scaleno + "mi"
+        template[i+10] = "rdq"
+
+    elif code == 12:
+        template[i] = chosen_scaleno + "dm"
+
+    elif code == 13:
+        template[i] = chosen_scaleno + "dm"
+        template[i+12] = "rse"
+
+    elif code == 14:
+        template[i] = chosen_scaleno + "dm"
+        template[i+13] = "rqu"
+
+    elif code == 15:
+        template[i] = chosen_scaleno + "dm"
+        template[i+14] = "rdq"
+
+    else:
+        print code, "- Unknown time difference (error)."
 
     #     if code
     #     rounded = float(pow(2, math.floor(math.log(code, 2))))
