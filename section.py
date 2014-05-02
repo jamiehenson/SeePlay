@@ -16,7 +16,7 @@ def note_no():
 def gen_rhythm():
     global rhythm
     tem = [".",".",".",".",".",".",".",".",".",".",".",".",".",".",".","."]
-    for i in xrange(int(performer.tsig * performer.timing)):
+    for i in xrange(0, int(performer.tsig * performer.timing), 2):
         if random.random() < float(watchman.activities["section"]):
             if tem.count("x") <= xlim:
                 tem[note_no()] = "x"

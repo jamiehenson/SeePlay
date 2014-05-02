@@ -16,7 +16,7 @@ from SimpleCV import *
 fps = 1
 scale = 0.5
 active = False
-processing_rate = 4
+processing_rate = 0.25
 
 activity_boost = 0
 

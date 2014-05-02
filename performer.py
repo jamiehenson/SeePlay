@@ -67,15 +67,18 @@ def kill_chord(chord):
 
 def play_note(chan, note, length):
     velo = mixer.get_volume(mixer.get_channelname(chan))
+    # midiout.send_message([chan, note, velo])
+    # time.sleep(tempo_in_time * length)
     threading.Thread(target = midiout.send_message, args = [[chan, note, velo]]).start()
     threading.Timer(tempo_in_time * length, midiout.send_message, [[chan, note, 0]]).start()
+    # midiout.send_message([chan - 16, note, 0])
 
 def play_notes(chan, chord, delay, length, chordsize):
     chord = chord[:chord[chordsize]]
     velo = mixer.get_volume("chords")
     for note in chord:
-        threading.Thread(target = midiout.send_message, args = [[chan, note, velo]]).start()
-        threading.Timer(tempo_in_time * length, midiout.send_message, [[chan, note, 0]]).start()
+        midiout.send_message([chan, note, velo])
+        threading.Timer(tempo_in_time * length, midiout.send_message, [[chan - 16, note, 0]]).start()
 
 def play_chord(chan, speed, pattern):
     beat = 0
@@ -237,8 +240,6 @@ def monitor_beat(parent):
         threading.Thread(target=play_note, args=(mixer.get_channel("metronome"), 37, tempo_in_time)).start()
         time.sleep(float(0.5))   
 
-    write_things(parent)
-
 def monitor_bar(parent):
     while watchman.active == True:
         update_features(parent)
@@ -261,6 +262,8 @@ def monitor_bar(parent):
         chords.c_lock = False
 
         time.sleep(float(tempo_in_time) * float(tsig))
+
+    write_things(parent)
 
 def start(parent):
     global midiout

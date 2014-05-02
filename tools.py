@@ -78,17 +78,17 @@ rhythm_choices = [
     (0, float(4.0 / 16.0)), 
     (1, float(0.25 / 16.0)), 
     (2, float(1.0 / 16.0)), 
-    (3, float(0.5 / 16.0)), 
+    (3, float(0.25 / 16.0)), 
     (4, float(2.0 / 16.0)), 
-    (5, float(0.5 / 16.0)), 
+    (5, float(0.25 / 16.0)), 
     (6, float(1.0 / 16.0)), 
-    (7, float(0.5 / 16.0)), 
+    (7, float(0.25 / 16.0)), 
     (8, float(2.0 / 16.0)), 
     (9, float(0.25 / 16.0)), 
     (10, float(1 / 16.0)), 
-    (11, float(0.5 / 16.0)), 
+    (11, float(0.25 / 16.0)), 
     (12, float(2.0 / 16.0)), 
-    (13, float(0.5 / 16.0)), 
+    (13, float(0.25 / 16.0)), 
     (14, float(1.0 / 16.0)), 
     (15, float(0.25 / 16.0))
 ]
@@ -223,22 +223,52 @@ def place_notes(i, template, notes, degree, prev):
         chosen_length = str(length_num_to_code(code))
         template[i] = chosen_scaleno + chosen_length
     else:
-        rounded = float(pow(2, math.floor(math.log(code, 2))))
-        diff = code - rounded
-        long_length = str(length_num_to_code(rounded))
-        template[i] = chosen_scaleno + long_length
+        upcode = code * performer.timing
 
-    # Might not be enough
-        if length_key_check(diff):
-            short_length = str(length_num_to_code(diff))
-            template[i + int(rounded * 4)] = chosen_scaleno + short_length
+        if upcode == 5:
+            template[i] = chosen_scaleno + "cr"
+            template[i+4] = "rse"
+        elif upcode == 7:
+            template[i] = chosen_scaleno + "dc"
+            template[i+6] = "rse"
+        elif upcode == 9:
+            template[i] = chosen_scaleno + "mi"
+            template[i+8] = "rse"
+        elif upcode == 10:
+            template[i] = chosen_scaleno + "mi"
+            template[i+9] = "rqu"
+        elif upcode == 11:
+            template[i] = chosen_scaleno + "mi"
+            template[i+10] = "rdq"
+        elif upcode == 13:
+            template[i] = chosen_scaleno + "dm"
+            template[i+12] = "rse"
+        elif upcode == 14:
+            template[i] = chosen_scaleno + "dm"
+            template[i+13] = "rqu"
+        elif upcode == 15:
+            template[i] = chosen_scaleno + "dm"
+            template[i+14] = "rdq"
         else:
-            roundtwo = float(pow(2, math.floor(math.log(diff, 2))))
-            difftwo = diff - roundtwo
-            long_lengthtwo = str(length_num_to_code(roundtwo))
-            template[i + int(rounded * 4)] = chosen_scaleno + long_lengthtwo
-            shorter_length = str(length_num_to_code(difftwo))
-            template[i + int(rounded * 4) + int(roundtwo * 4)] = chosen_scaleno + shorter_length
+            print upcode, "OOPS"
+
+    #     if code
+    #     rounded = float(pow(2, math.floor(math.log(code, 2))))
+    #     diff = code - rounded
+    #     long_length = str(length_num_to_code(rounded))
+    #     template[i] = chosen_scaleno + long_length
+
+    # # Might not be enough
+    #     if length_key_check(diff):
+    #         short_length = str(length_num_to_code(diff))
+    #         template[i + int(rounded * 4)] = chosen_scaleno + short_length
+    #     else:
+    #         roundtwo = float(pow(2, math.floor(math.log(diff, 2))))
+    #         difftwo = diff - roundtwo
+    #         long_lengthtwo = str(length_num_to_code(roundtwo))
+    #         template[i + int(rounded * 4)] = chosen_scaleno + long_lengthtwo
+    #         shorter_length = str(length_num_to_code(difftwo))
+    #         template[i + int(rounded * 4) + int(roundtwo * 4)] = chosen_scaleno + shorter_length
 
     return outdegree, template
 

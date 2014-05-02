@@ -39,7 +39,7 @@ def morph():
     if len(watchman.imgbank) > 1:
         b = np.array(mf.extract(watchman.imgbank[1])) 
     else:
-        b = np.array(mf.extract(watchman.imgbank[1])) 
+        b = np.array(mf.extract(watchman.imgbank[0])) 
 
     AandB = np.sum(np.square(a-b)) 
     return AandB

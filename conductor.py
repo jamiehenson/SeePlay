@@ -147,4 +147,4 @@ def conduct(parent):
         if performer.bar > 0:
             progression(parent, parent.user_prog_type, parent.user_key, parent.user_mode)
 
-        threading.Timer(performer.tempo_in_time,conduct,[parent]).start()
+        threading.Timer(performer.tempo_in_time * performer.tsig,conduct,[parent]).start()
