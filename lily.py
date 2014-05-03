@@ -3,6 +3,7 @@ from PySide import QtGui
 import tools
 import watchman
 import performer
+import conductor
 
 show_piano_righthand = True
 show_piano_lefthand = True
@@ -25,8 +26,8 @@ melody = instrumenttools.Piano(
     short_instrument_name="M."
 )
 chords = instrumenttools.Piano(
-    instrument_name="Chords",
-    short_instrument_name="C."
+    instrument_name="Lead",
+    short_instrument_name="L."
 )
 stabs = instrumenttools.Piano(
     instrument_name="Stabs",
@@ -196,10 +197,74 @@ def topup():
         chords_staff.extend("r1")
         chords_count += 1
 
+def form_key():
+    key = conductor.relativekey
+    mode = conductor.relativemode
+
+    if mode in ["ionian", "lydian", "mixolydian", "major"]:
+        mode = "major" 
+    else:
+        mode = "minor"
+
+    keyz = ["A major",
+            "A minor",
+            "Ab major",
+            "Ab minor",
+            "A# minor",
+            "B major",
+            "B minor",
+            "Bb major",
+            "Bb minor",
+            "C major",
+            "C minor",
+            "Cb major",
+            "C# major",
+            "C# minor",
+            "D major",
+            "D minor",
+            "Db major",
+            "D# minor",
+            "E major",
+            "E minor",
+            "Eb major",
+            "Eb minor",
+            "F major",
+            "F minor",
+            "F# major",
+            "F# minor",
+            "G major",
+            "G minor",
+            "Gb major",
+            "G# minor"]
+
+    if str(key + " " + mode) in keyz:
+        keylist = list(key)
+
+        if len(keylist) == 2:
+            if keylist[1] == "b":
+                keylist[1] = "f"
+            elif keylist[1] == "#":
+                keylist[1] = "s"
+
+        key = "".join(keylist)
+        key = key.lower()
+    else:
+        key = "c"
+        mode = "major"
+
+    return str(key), str(mode)
+
 def make(parent):
     global piano_staff, bass_staff
 
-    topup()    
+    topup()
+
+    key, mode = form_key()
+
+    key_signature = KeySignature(key, mode)
+    attach(key_signature, upper_staff)
+    attach(key_signature, lower_staff)
+    attach(key_signature, bass_staff)
 
     if (show_piano_righthand): piano_staff.append(upper_staff)
     if (show_piano_lefthand): piano_staff.append(lower_staff)

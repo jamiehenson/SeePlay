@@ -35,6 +35,7 @@ melodylines = [tacet]
 def write_things(parent):
     if parent.user_sheetmusic: lily.make(parent)
     if parent.user_midioutput: recorder.make(parent)
+    print "You may now close the program."
 
 def init_features(parent):
     global timing, buff, bar
