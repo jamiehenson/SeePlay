@@ -6,8 +6,18 @@ import mixer
 
 sp_midi = None
 
+chord_count = 0
+bass_count = 0
+melody_count = 0
+drums_count = 0
+
 def init(parent):
-    global sp_midi
+    global sp_midi, chord_count, bass_count, melody_count, drums_count
+
+    chord_count = 0
+    bass_count = 0
+    melody_count = 0
+    drums_count = 0    
 
     sp_midi = MIDIFile(5)
     time = 0
@@ -28,14 +38,16 @@ def init(parent):
 
 # Note framework: track,channel,pitch,time,duration,volume
 def add_chords_bar(bar):
-    global sp_midi
+    global sp_midi, chord_count, bass_count, melody_count, drums_count
+
+    chord_count += 1
 
     track = mixer.channels["chords"]
     channel = track
     volume = mixer.get_volume("chords")
 
     sequence = list(bar)
-    beat_ref = (performer.bar - 1) * performer.timing
+    beat_ref = chord_count * performer.timing
 
     for i in xrange(len(sequence)):
         chord = sequence[i]
@@ -54,14 +66,16 @@ def add_chords_bar(bar):
                 sp_midi.addNote(track, channel, note, time, length, volume)
 
 def add_bass_bar(bar):
-    global sp_midi
+    global sp_midi, chord_count, bass_count, melody_count, drums_count
+
+    bass_count += 1
 
     track = mixer.channels["bass"]
     channel = track
     volume = mixer.get_volume("bass")
 
     sequence = list(bar)
-    beat_ref = (performer.bar - 1) * performer.timing
+    beat_ref = bass_count * performer.timing
 
     for i in xrange(len(sequence)):
         note = sequence[i]
@@ -78,14 +92,16 @@ def add_bass_bar(bar):
             sp_midi.addNote(track, channel, pitch, time, length, volume)
 
 def add_melody_bar(bar):
-    global sp_midi
+    global sp_midi, chord_count, bass_count, melody_count, drums_count
+
+    melody_count += 1
 
     track = mixer.channels["melody"]
     channel = track
     volume = mixer.get_volume("melody")
 
     sequence = list(bar)
-    beat_ref = (performer.bar - 1) * performer.timing
+    beat_ref = melody_count * performer.timing
 
     for i in xrange(len(sequence)):
         note = sequence[i]
@@ -102,13 +118,15 @@ def add_melody_bar(bar):
             sp_midi.addNote(track, channel, pitch, time, length, volume)
 
 def add_drums_bar(bar):
-    global sp_midi
+    global sp_midi, chord_count, bass_count, melody_count, drums_count
+
+    drums_count += 1
 
     track = mixer.channels["drums"]
     channel = 10
     volume = mixer.get_volume("drums")
 
-    beat_ref = (performer.bar - 1) * performer.timing
+    beat_ref = drums_count * performer.timing
 
     for i in xrange(len(bar[0])):
         hat = bar[0][i]
