@@ -46,8 +46,8 @@ class SPApp(QtGui.QMainWindow):
 
     def populate_dictionaries(self):
         self.infotexts["Standard A"] = "A standard, balanced ambient profile. (colour driven)"
-        self.infotexts["Standard B"] = "A standard, balanced ambient profile. (motion driven)"
-        self.infotexts["Sparse"] = "A more spaced out ambient profile."
+        # self.infotexts["Standard B"] = "A standard, balanced ambient profile. (motion driven)"
+        # self.infotexts["Sparse"] = "A more spaced out ambient profile."
 
         self.prog_types["None"] = "none"
         self.prog_types["Random"] = "random"

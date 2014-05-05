@@ -12,23 +12,23 @@ motion = None
 def standard_a(parent, img):
     global motion
 
-    b_detail = 3 # NEEDS TO BE AN ODD NUMBER
-    b_grid = watchman.get_brightness_grid(img, b_detail)
-    b_totals = watchman.get_brightness_totals(b_grid)
+    # b_detail = 3 # NEEDS TO BE AN ODD NUMBER
+    # b_grid = watchman.get_brightness_grid(img, b_detail)
+    # b_totals = watchman.get_brightness_totals(b_grid)
     # brightness = watchman.get_brightness(img.histogram(255), 20)
     # brightness = watchman.get_avg_brightness(img)
     brightness = watchman.get_luminosity(img, "a")
     [red_brightness, green_brightness, blue_brightness] = watchman.count_colours(img)
     # motion = watchman.get_motion()
     # motion = extractor.edge()
-    motion = tools.clamp(0, 100, extractor.morph() * 50000)
+    motion = tools.clamp(0, 100, extractor.hue() * 100000)
 
     # watchman.get_avg_brightness(img)
     # watchman.get_luminosity(img, "a")
     # watchman.get_luminosity(img, "b")
     # watchman.get_luminosity(img, "c")
 
-    lower_vol = 0
+    lower_vol = 5
     higher_vol = 120
     old_faces = 0
 
@@ -38,11 +38,26 @@ def standard_a(parent, img):
     #         stabs.multifire(100)
     #     old_faces = facecount
 
-    if motion > 100: 
+    print motion
+
+    if motion > 40: 
         watchman.activity_boost = 0.5 # 1
         stabs.multifire(motion / 2)
     else:
         watchman.activity_boost = 0
+
+    if motion >= 0 and motion <= 0.03:
+        mixer.set_volume(parent, "bass", lower_vol)
+        mixer.set_volume(parent, "drums", lower_vol)
+        mixer.set_volume(parent, "chords", lower_vol)
+        mixer.set_volume(parent, "melody", lower_vol)
+        mixer.set_volume(parent, "stabs", lower_vol)
+    else:
+        mixer.set_volume(parent, "bass", tools.clamp(lower_vol, higher_vol - 40, 127 * (1 - brightness)))
+        mixer.set_volume(parent, "drums", tools.clamp(lower_vol, higher_vol - 20, 127 * brightness))
+        mixer.set_volume(parent, "chords", tools.clamp(lower_vol, higher_vol, 127 * brightness))
+        mixer.set_volume(parent, "melody", tools.clamp(lower_vol, higher_vol, 127 * brightness))
+        mixer.set_volume(parent, "stabs", tools.clamp(lower_vol, higher_vol, 60 * brightness))
 
     watchman.change_activity("bass", red_brightness, 2)
     watchman.change_activity("drums", brightness, 4)
@@ -51,12 +66,6 @@ def standard_a(parent, img):
     watchman.change_activity("section", brightness, 2)
 
     # tools.adjust_mode(parent, brightness)
-
-    mixer.set_volume(parent, "bass", tools.clamp(lower_vol, higher_vol - 40, 100 * (1 - brightness)))
-    mixer.set_volume(parent, "drums", tools.clamp(lower_vol, higher_vol - 20, 100 * brightness))
-    mixer.set_volume(parent, "chords", tools.clamp(lower_vol, higher_vol, 100 * brightness))
-    mixer.set_volume(parent, "melody", tools.clamp(lower_vol, higher_vol, 127 * brightness))
-    mixer.set_volume(parent, "stabs", tools.clamp(lower_vol, higher_vol, 60 * brightness))
 
 # Alternate profile (motion drives volume)
 def standard_b(parent, img):
