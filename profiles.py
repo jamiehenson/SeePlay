@@ -38,7 +38,7 @@ def standard_a(parent, img):
     #         stabs.multifire(100)
     #     old_faces = facecount
 
-    print motion
+    # print motion
 
     if motion > 40: 
         watchman.activity_boost = 0.5 # 1
