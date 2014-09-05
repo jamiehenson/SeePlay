@@ -1,7 +1,7 @@
 SeePlay.
+==================================
 A live, general purpose musical composer and performer for visual media.
 By Jamie Henson (2014)
-==================================
 
 SeePlay is an OS X application that watches your screen, captures its contents, performs visual analysis on the contents to extract important features, and composes music in real time based upon those features that is heavily grounded in musical theory. Users can control what kind of music is made - for example, the key, tempo and chord progression.
 
